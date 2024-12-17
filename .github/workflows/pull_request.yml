@@ -10,36 +10,12 @@ jobs:
       matrix:
         include:
           - arch: mipsel-buildroot-linux-musl-
-            theme: zbolt
-            small: false
-            rotate: true
-            calibrate: false
-            asset: guppyscreen-zbolt
-
-          - arch: mipsel-buildroot-linux-musl-
             theme: material
-            small: false
-            rotate: true
-            calibrate: false
             asset: guppyscreen
-
-          - arch: mipsel-buildroot-linux-musl-
-            theme: material
-            small: true
-            rotate: false
-            calibrate: true
-            asset: guppyscreen-smallscreen
-
-          - arch: aarch64-none-linux-gnu-
-            theme: material
-            small: false
-            rotate: false
-            calibrate: true
-            asset: guppyscreen-arm
 
     runs-on: ubuntu-22.04
     container:
-      image: ballaswag/guppydev:latest
+      image: pellcorp/guppydev:latest
       options: --user 1001
   
     env:
@@ -57,20 +33,9 @@ jobs:
       run: |
         echo "GUPPYSCREEN_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
 
-    - if: matrix.small
-      name: export screen size
+    - name: export screen rotate
       run: |
-        echo "GUPPY_SMALL_SCREEN=${{ matrix.small }}" >> $GITHUB_ENV
-
-    - if: matrix.rotate
-      name: export screen rotate
-      run: |
-        echo "GUPPY_ROTATE=${{ matrix.rotate }}" >> $GITHUB_ENV
-        
-    - if: matrix.calibrate
-      name: export touch calibrate
-      run: |
-        echo "EVDEV_CALIBRATE=${{ matrix.calibrate }}" >> $GITHUB_ENV
+        echo "GUPPY_ROTATE=true" >> $GITHUB_ENV
 
     - name: patch lv_drivers
       run: |

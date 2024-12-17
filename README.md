@@ -20,50 +20,8 @@ Guppy Screen is a touch UI for Klipper using APIs exposed by Moonraker. It build
 </p>
 
 ## Installation / Update
-Run the following interactive script via SSH on your K1/Max/CR-10 SE/Ender 3 V3 KE/Nebula Pad to install Guppy Screen.
 
-#### Material Design Theme
-```
-sh -c "$(wget --no-check-certificate -qO - https://raw.githubusercontent.com/ballaswag/guppyscreen/main/installer.sh)"
-```
-
-#### Z-Bolt Theme (Only for the K1/Max)
-```
-sh -c "$(wget --no-check-certificate -qO - https://raw.githubusercontent.com/ballaswag/guppyscreen/main/installer.sh)" -s zbolt
-```
-
-### Install on a PI (Debian/Raspbian)
-Tested on a BTT Pad 7. Please install with care and make sure you're okay with resetting your setup if things break.
-```
-wget -O - https://raw.githubusercontent.com/ballaswag/guppyscreen/main/installer-deb.sh | bash
-```
-
-### Nightly Builds
-#### Material (Nightly)
-```
-sh -c "$(wget --no-check-certificate -qO - https://raw.githubusercontent.com/ballaswag/guppyscreen/main/installer.sh)" -s nightly
-```
-
-#### Z-Bolt (Nightly)
-```
-sh -c "$(wget --no-check-certificate -qO - https://raw.githubusercontent.com/ballaswag/guppyscreen/main/installer.sh)" -s zbolt nightly
-```
-
-#### Raspbian Variant (Nightly)
-```
-wget -O - https://raw.githubusercontent.com/ballaswag/guppyscreen/main/installer-deb.sh | bash -s nightly
-```
-
-### Android
-Guppy Screen works on Android! Download and try with the latest [APK](https://github.com/ballaswag/guppyscreen/releases/latest/download/app-release.apk).  
-  
-<img src="https://github.com/ballaswag/guppyscreen/assets/145094472/d0437cd6-9b82-470f-8889-c4a5b74bfa6e" alt="guppyscreen on android" width="600" />
-
-## Uninstall
-ssh into your K1/Max and run the follwow command:
-```
-/usr/data/guppyscreen/reinstall-creality.sh
-```
+Only for Installation via Simple AF
 
 ## Features
 :white_check_mark: Console/Macro Shell  

@@ -48,11 +48,9 @@ ASSET_DIR		= material_46
 DEFINES			+= -D GUPPY_SMALL_SCREEN
 endif
 
-
 ifdef GUPPY_ROTATE
 DEFINES			+= -D GUPPY_ROTATE
 endif
-
 
 ifeq ($(GUPPY_THEME),zbolt)
 CSRCS 			+= $(wildcard $(LVGL_DIR)/assets/zbolt/*.c)
