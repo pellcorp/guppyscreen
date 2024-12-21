@@ -38,7 +38,9 @@ BeltsCalibrationPanel::BeltsCalibrationPanel(KWebSocketClient &c, std::mutex &l)
 		    c.send_jsonrpc("printer.emergency_stop");
 		  })
   , back_btn(button_cont, &back, "Back", &BeltsCalibrationPanel::_handle_callback, this)
-  , image_fullsized(false)
+  , image_fullsized(false),
+  belt_shaper_calibration_macro("BELTS_SHAPER_CALIBRATION"),
+  excitate_axis_at_frequency_macro("EXCITATE_AXIS_AT_FREQUENCY")
 {
   lv_obj_move_background(cont);
 
@@ -116,6 +118,19 @@ void BeltsCalibrationPanel::foreground() {
 }
 
 void BeltsCalibrationPanel::handle_callback(lv_event_t *event) {
+  Config *conf = Config::get_instance();
+  auto df = conf->get_json("/default_printer");
+  if (!df.empty()) {
+    auto v = conf->get_json(conf->df() + "default_macros/belt_shaper_calibration");
+    if (!v.is_null()) {
+      belt_shaper_calibration_macro = v.template get<std::string>();
+    }
+
+    v = conf->get_json(conf->df() + "default_macros/excitate_axis_at_frequency");
+    if (!v.is_null()) {
+      excitate_axis_at_frequency_macro = v.template get<std::string>();
+    }
+  }
   lv_obj_t *btn = lv_event_get_current_target(event);
   if (btn == calibrate_btn.get_container()) {
     auto config_root = KUtils::get_root_path("config");
@@ -127,12 +142,8 @@ void BeltsCalibrationPanel::handle_callback(lv_event_t *event) {
 
     auto screen_width = (double)lv_disp_get_physical_hor_res(NULL) / 100.0;
     auto screen_height = (double)lv_disp_get_physical_ver_res(NULL) / 100.0;
-    ws.gcode_script(fmt::format("GUPPY_BELTS_SHAPER_CALIBRATION PNG_OUT_PATH={} PNG_WIDTH={} PNG_HEIGHT={}",
-				png_path, screen_width, screen_height));
-
-    // ws.gcode_script(fmt::format("GUPPY_BELTS_SHAPER_CALIBRATION PNG_OUT_PATH={} PNG_WIDTH={} PNG_HEIGHT={} FREQ_START=5 FREQ_END=10",
-    // 				png_path, screen_width, screen_height));
-    
+    ws.gcode_script(fmt::format("{} PNG_OUT_PATH={} PNG_WIDTH={} PNG_HEIGHT={}",
+				belt_shaper_calibration_macro, png_path, screen_width, screen_height));
 
     lv_obj_add_flag(graph, LV_OBJ_FLAG_HIDDEN);
     lv_img_set_src(graph, NULL);    
@@ -148,7 +159,8 @@ void BeltsCalibrationPanel::handle_callback(lv_event_t *event) {
     if (!KUtils::is_homed()) {
       ws.gcode_script("G28");
     }
-    ws.gcode_script(fmt::format("GUPPY_EXCITATE_AXIS_AT_FREQ FREQUENCY={} AXIS={}", excite_hz, excite_buf));
+    ws.gcode_script(fmt::format("{} FREQUENCY={} AXIS={}",
+        excitate_axis_at_frequency_macro, excite_hz, excite_buf));
 
   } else if (btn == back_btn.get_container()) {
     lv_obj_move_background(cont);

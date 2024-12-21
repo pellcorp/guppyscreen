@@ -55,8 +55,10 @@ void Config::init(std::string config_path, const std::string thumbdir) {
 
   json cooldown_conf = {{ "cooldown", "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=0\nSET_HEATER_TEMPERATURE HEATER=heater_bed TARGET=0"}};
   json default_macros_conf = {
-    {"load_filament", "_GUPPY_LOAD_MATERIAL"},
-    {"unload_filament", "_GUPPY_QUIT_MATERIAL"}
+    {"load_filament", "LOAD_MATERIAL"},
+    {"unload_filament", "QUIT_MATERIAL"},
+    {"belt_shaper_calibration", "BELTS_SHAPER_CALIBRATION"},
+    {"excitate_axis_at_frequency", "EXCITATE_AXIS_AT_FREQUENCY"}
   };
 
   if (stat(config_path.c_str(), &buffer) == 0) {
@@ -109,6 +111,11 @@ void Config::init(std::string config_path, const std::string thumbdir) {
     auto &guppy_init = data["/guppy_init_script"_json_pointer];
     if (guppy_init.is_null()) {
       data["/guppy_init_script"_json_pointer] = "/etc/init.d/S99guppyscreen";
+    }
+
+    auto &factory_reset = data["/factory_reset_script"_json_pointer];
+    if (factory_reset.is_null()) {
+      data["/factory_reset_script"_json_pointer] = "/etc/init.d/S58factoryreset";
     }
 
     auto &guppy_update = data["/guppy_update_script"_json_pointer];
