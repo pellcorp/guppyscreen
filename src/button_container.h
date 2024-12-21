@@ -14,7 +14,8 @@ class ButtonContainer {
 		  lv_event_cb_t cb,
 		  void *user_data,
 		  const std::string &prompt_text = {},
-		  const std::function<void()> &prompt_callback = {});
+		  const std::function<void()> &prompt_callback = {},
+		  const bool force_prompt = false);
   ~ButtonContainer();
 
   lv_obj_t *get_container();
@@ -41,6 +42,7 @@ class ButtonContainer {
   lv_obj_t *label;
   std::string prompt_text;
   std::function<void()> prompt_callback;
+  bool force_prompt;
 };
 
 #endif // __BUTTON_CONTAINER_H__

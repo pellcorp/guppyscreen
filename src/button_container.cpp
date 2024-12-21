@@ -8,12 +8,14 @@ ButtonContainer::ButtonContainer(lv_obj_t *parent,
 				 lv_event_cb_t cb,
 				 void* user_data,
 				 const std::string &prompt,
-				 const std::function<void()> &pcb)
+				 const std::function<void()> &pcb,
+				 const bool force)
   : btn_cont(lv_obj_create(parent))
   , btn(lv_imgbtn_create(btn_cont))
   , label(lv_label_create(btn_cont))
   , prompt_text(prompt)
   , prompt_callback(pcb)
+  , force_prompt(force)
 {
   lv_obj_set_style_pad_all(btn_cont, 0, 0);
   auto width_scale = (double)lv_disp_get_physical_hor_res(NULL) / 800.0;
@@ -31,26 +33,25 @@ ButtonContainer::ButtonContainer(lv_obj_t *parent,
 
   Config *conf = Config::get_instance();
   auto estop = conf->get_json("/prompt_emergency_stop");
-  auto prompt_estop = estop.is_null() ? false : estop.template get<bool>();
+  auto prompt_estop = force || (!estop.is_null() && estop.template get<bool>());
 
   if (cb != NULL && !pcb) {
     lv_obj_add_event_cb(btn_cont, &ButtonContainer::_handle_callback, LV_EVENT_PRESSED, this);
     lv_obj_add_event_cb(btn_cont, &ButtonContainer::_handle_callback, LV_EVENT_RELEASED, this);
     
     lv_obj_add_event_cb(btn_cont, cb, LV_EVENT_CLICKED, user_data);
-  }
-  else if (cb != NULL && pcb) {
+  } else if (cb != NULL && pcb) {
     if (prompt_estop) {
       lv_obj_add_event_cb(btn_cont, [](lv_event_t *e) {
-	lv_event_code_t code = lv_event_get_code(e);
-	if (code == LV_EVENT_CLICKED) {
-	  ((ButtonContainer*)e->user_data)->handle_prompt();
-	}
+        lv_event_code_t code = lv_event_get_code(e);
+        if (code == LV_EVENT_CLICKED) {
+          ((ButtonContainer*)e->user_data)->handle_prompt();
+        }
       }, LV_EVENT_CLICKED, this);
     } else {
       lv_obj_add_event_cb(btn_cont, &ButtonContainer::_handle_callback, LV_EVENT_PRESSED, this);
       lv_obj_add_event_cb(btn_cont, &ButtonContainer::_handle_callback, LV_EVENT_RELEASED, this);
-    
+
       lv_obj_add_event_cb(btn_cont, cb, LV_EVENT_CLICKED, user_data);
     }
   }

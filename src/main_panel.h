@@ -46,6 +46,7 @@ class MainPanel : public NotifyConsumer {
   void handle_fanpanel_cb(lv_event_t *event);
   void handle_ledpanel_cb(lv_event_t *event);
   void handle_print_cb(lv_event_t *event);
+  void handle_emergency_cb(lv_event_t *event);
 
   lv_obj_t *create_button(lv_obj_t *parent,
 			  const void *btn_img,
@@ -81,6 +82,11 @@ class MainPanel : public NotifyConsumer {
     MainPanel *panel = (MainPanel*)event->user_data;
     panel->handle_print_cb(event);
   };
+
+  static void _handle_emergency_cb(lv_event_t *event) {
+      MainPanel *panel = (MainPanel*)event->user_data;
+      panel->handle_emergency_cb(event);
+    };
 
  private:
   void create_main(lv_obj_t *parent);
@@ -118,5 +124,6 @@ class MainPanel : public NotifyConsumer {
   ButtonContainer action_btn;
   ButtonContainer led_btn;
   ButtonContainer print_btn;
+  ButtonContainer emergency_btn;
 };
 #endif // __MAIN_PANEL_H__
