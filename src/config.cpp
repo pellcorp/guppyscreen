@@ -57,7 +57,7 @@ void Config::init(std::string config_path, const std::string thumbdir) {
   json default_macros_conf = {
     {"load_filament", "LOAD_MATERIAL"},
     {"unload_filament", "QUIT_MATERIAL"},
-    {"belt_shaper_calibration", "BELTS_SHAPER_CALIBRATION"},
+    {"belts_shaper_calibration", "BELTS_SHAPER_CALIBRATION"},
     {"excitate_axis_at_frequency", "EXCITATE_AXIS_AT_FREQUENCY"}
   };
 

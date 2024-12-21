@@ -15,8 +15,6 @@ jobs:
       matrix:
         include:
           - arch: mipsel-buildroot-linux-musl-
-            theme: material
-            asset: guppyscreen
 
     runs-on: ubuntu-22.04
     container:
@@ -27,22 +25,15 @@ jobs:
       CROSS_COMPILE: ${{ matrix.arch }}
       CC: ${{ matrix.arch }}
       CXX: ${{ matrix.arch }}
-      GUPPY_THEME: ${{ matrix.theme }}
-  
+
     steps:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
 
-    - if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
-      name: set guppyscreen nightly version
+    - name: set guppyscreen nightly version
       run: |
-        echo "GUPPYSCREEN_VERSION=nightly-saf-${{ github.sha }}" >> $GITHUB_ENV
-
-    - if: startsWith(github.ref, 'refs/tags/')
-      name: set guppyscreen nightly version
-      run: |
-        echo "GUPPYSCREEN_VERSION=saf-${{ github.ref_name }}" >> $GITHUB_ENV
+        echo "GUPPYSCREEN_VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
     - name: patch lv_drivers
       run: |
@@ -77,12 +68,12 @@ jobs:
     - name: package release
       run: |
         chmod +x ./release.sh
-        ./release.sh ${{ matrix.asset }}
+        ./release.sh
 
     - uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.asset }}
-        path: ./${{ matrix.asset }}.tar.gz
+        name: guppyscreen
+        path: ./guppyscreen.tar.gz
 
     - name: nightly release
       uses: softprops/action-gh-release@v2
@@ -90,13 +81,5 @@ jobs:
         prerelease: true
         name: nightly
         tag_name: nightly
-        files: ${{ matrix.asset }}.tar.gz
-        fail_on_unmatched_files: true
-
-    - name: stable release
-      uses: softprops/action-gh-release@v2
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: ${{ matrix.asset }}.tar.gz
-        generate_release_notes: true
+        files: guppyscreen.tar.gz
         fail_on_unmatched_files: true

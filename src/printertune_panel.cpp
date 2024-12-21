@@ -41,6 +41,8 @@ PrinterTunePanel::PrinterTunePanel(KWebSocketClient &c, std::mutex &l, lv_obj_t 
   lv_obj_set_size(cont, LV_PCT(100), LV_PCT(100));
 
   tmc_tune_btn.disable();
+  tmc_status_btn.disable();
+  inputshaper_btn.disable();
 
   static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(5), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
   static lv_coord_t grid_main_col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),

@@ -39,7 +39,7 @@ BeltsCalibrationPanel::BeltsCalibrationPanel(KWebSocketClient &c, std::mutex &l)
 		  })
   , back_btn(button_cont, &back, "Back", &BeltsCalibrationPanel::_handle_callback, this)
   , image_fullsized(false),
-  belt_shaper_calibration_macro("BELTS_SHAPER_CALIBRATION"),
+  belts_shaper_calibration_macro("BELTS_SHAPER_CALIBRATION"),
   excitate_axis_at_frequency_macro("EXCITATE_AXIS_AT_FREQUENCY")
 {
   lv_obj_move_background(cont);
@@ -56,7 +56,6 @@ BeltsCalibrationPanel::BeltsCalibrationPanel(KWebSocketClient &c, std::mutex &l)
   lv_obj_set_size(graph_cont, LV_PCT(50), LV_PCT(50));
 
   lv_img_set_zoom(graph, 100);
-  // lv_img_set_src(graph, "A:/home/balla/Downloads/belts_calibration.png");
   lv_obj_center(graph);
 
   lv_obj_add_flag(spinner, LV_OBJ_FLAG_HIDDEN);
@@ -103,7 +102,6 @@ BeltsCalibrationPanel::BeltsCalibrationPanel(KWebSocketClient &c, std::mutex &l)
   ws.register_method_callback("notify_gcode_response",
 			      "BeltsCalibrationPanel",
 			      [this](json& d) { this->handle_macro_response(d); });
-  
 }
 
 BeltsCalibrationPanel::~BeltsCalibrationPanel() {
@@ -121,9 +119,9 @@ void BeltsCalibrationPanel::handle_callback(lv_event_t *event) {
   Config *conf = Config::get_instance();
   auto df = conf->get_json("/default_printer");
   if (!df.empty()) {
-    auto v = conf->get_json(conf->df() + "default_macros/belt_shaper_calibration");
+    auto v = conf->get_json(conf->df() + "default_macros/belts_shaper_calibration");
     if (!v.is_null()) {
-      belt_shaper_calibration_macro = v.template get<std::string>();
+      belts_shaper_calibration_macro = v.template get<std::string>();
     }
 
     v = conf->get_json(conf->df() + "default_macros/excitate_axis_at_frequency");
@@ -143,7 +141,7 @@ void BeltsCalibrationPanel::handle_callback(lv_event_t *event) {
     auto screen_width = (double)lv_disp_get_physical_hor_res(NULL) / 100.0;
     auto screen_height = (double)lv_disp_get_physical_ver_res(NULL) / 100.0;
     ws.gcode_script(fmt::format("{} PNG_OUT_PATH={} PNG_WIDTH={} PNG_HEIGHT={}",
-				belt_shaper_calibration_macro, png_path, screen_width, screen_height));
+				belts_shaper_calibration_macro, png_path, screen_width, screen_height));
 
     lv_obj_add_flag(graph, LV_OBJ_FLAG_HIDDEN);
     lv_img_set_src(graph, NULL);    
@@ -192,13 +190,13 @@ void BeltsCalibrationPanel::handle_image_clicked(lv_event_t *e) {
 }
 
 void BeltsCalibrationPanel::handle_macro_response(json &j) {
-  spdlog::trace("belts calbiration macro response: {}", j.dump());
+  spdlog::trace("belts calibration macro response: {}", j.dump());
   auto &v = j["/params/0"_json_pointer];
   if (!v.is_null()) {
     std::string resp = v.template get<std::string>();
     std::lock_guard<std::mutex> lock(lv_lock);
-    if (resp.rfind("// Command {guppy_belts_calibration} finished", 0) == 0) {
-      spdlog::trace("belts calbiration finished");
+    if (resp.rfind("// Command {graph_belts} finished", 0) == 0) {
+      spdlog::trace("belts calibration finished");
       auto config_root = KUtils::get_root_path("config");
       auto png_path = fmt::format("{}/{}", config_root.length() > 0 ? config_root : "/tmp" , BELTS_PNG);
 

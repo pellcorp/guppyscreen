@@ -429,7 +429,7 @@ void InputShaperPanel::handle_macro_response(json &j) {
 	? fmt::format("{} -o {} -w {} -l {}", Y_DATA, png_path, screen_width, screen_height)
 	: Y_DATA;
 
-      ws.gcode_script(fmt::format("RUN_SHELL_COMMAND CMD=guppy_input_shaper PARAMS={:?}", arg));
+      ws.gcode_script(fmt::format("RUN_SHELL_COMMAND CMD=belts_input_shaper PARAMS={:?}", arg));
 
     } else if ("// Resonances data written to " X_DATA " file" == resp) {
       auto config_root = KUtils::get_root_path("config");
@@ -440,7 +440,7 @@ void InputShaperPanel::handle_macro_response(json &j) {
 	? fmt::format("{} -o {} -w {} -l {}", X_DATA, png_path, screen_width, screen_height)
 	: X_DATA;
 
-      ws.gcode_script(fmt::format("RUN_SHELL_COMMAND CMD=guppy_input_shaper PARAMS={:?}", arg));
+      ws.gcode_script(fmt::format("RUN_SHELL_COMMAND CMD=belts_input_shaper PARAMS={:?}", arg));
     }
   }
 }
