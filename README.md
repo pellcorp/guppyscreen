@@ -2,20 +2,20 @@
 
 Guppy Screen is a touch UI for Klipper using APIs exposed by Moonraker. It builds on LVGL as a standalone executable, has no dependency on any display servers such as X/Wayland.
 <p align="center">
-    <a aria-label="Downloads" href="https://github.com/ballaswag/guppyscreen/releases">
-      <img src="https://img.shields.io/github/downloads/ballaswag/guppyscreen/total?style=flat-square">
+    <a aria-label="Downloads" href="https://github.com/pellcorp/guppyscreen/releases">
+      <img src="https://img.shields.io/github/downloads/pellcorp/guppyscreen/total?style=flat-square">
   </a>
-    <a aria-label="Stars" href="https://github.com/ballaswag/guppyscreen/stargazers">
-      <img src="https://img.shields.io/github/stars/ballaswag/guppyscreen?style=flat-square">
+    <a aria-label="Stars" href="https://github.com/pellcorp/guppyscreen/stargazers">
+      <img src="https://img.shields.io/github/stars/pellcorp/guppyscreen?style=flat-square">
   </a>
-    <a aria-label="Forks" href="https://github.com/ballaswag/guppyscreen/network/members">
-      <img src="https://img.shields.io/github/forks/ballaswag/guppyscreen?style=flat-square">
+    <a aria-label="Forks" href="https://github.com/pellcorp/guppyscreen/network/members">
+      <img src="https://img.shields.io/github/forks/pellcorp/guppyscreen?style=flat-square">
   </a>
-    <a aria-label="License" href="https://github.com/ballaswag/guppyscreen/blob/develop/LICENSE">
-      <img src="https://img.shields.io/github/license/ballaswag/guppyscreen?style=flat-square">
+    <a aria-label="License" href="https://github.com/pellcorp/guppyscreen/blob/develop/LICENSE">
+      <img src="https://img.shields.io/github/license/pellcorp/guppyscreen?style=flat-square">
   </a>
-    <a aria-label="Last commit" href="https://github.com/ballswag/guppyscreen/commits/">
-      <img src="https://img.shields.io/github/last-commit/ballaswag/guppyscreen?style=flat-square">
+    <a aria-label="Last commit" href="https://github.com/pellcorp/guppyscreen/commits/">
+      <img src="https://img.shields.io/github/last-commit/pellcorp/guppyscreen?style=flat-square">
   </a>
 </p>
 
@@ -41,28 +41,10 @@ Only for Installation via Simple AF
 :white_check_mark: TMC Metrics  
 :white_check_mark: Multi-Printer support  
 
-## Roadmap
-:bangbang: Exclude Object  
-:bangbang: Firmware Retraction  
-
-Open for feature requests.
-
 ## Documentation
 You can find various Guppy Screen documents [here](https://ballaswag.github.io/docs/guppyscreen/configuration/).
 
-## Screenshot
-### Material Theme
-![Material Theme Guppy Screen](https://github.com/ballaswag/guppyscreen/blob/main/screenshots/material/material_screenshot.png)
-
-Earlier development screenshots can be found [here](https://github.com/ballaswag/guppyscreen/blob/main/screenshots)
-
-## Video Demo
-https://www.reddit.com/r/crealityk1/comments/17jp59g/new_touch_ui_for_the_k1/
-
 ## Support Guppy Screen
-You can directly support this project by <a href='https://ko-fi.com/ballaswag' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-or
-[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/ballaswag)
 
 ## Credits
 [Material Design Icons](https://pictogrammers.com/library/mdi/)  
