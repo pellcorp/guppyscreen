@@ -13,7 +13,7 @@ LV_IMG_DECLARE(refresh_img);
 LV_IMG_DECLARE(spoolman_img);
 LV_IMG_DECLARE(update_img);
 LV_IMG_DECLARE(sysinfo_img);
-
+LV_IMG_DECLARE(emergency);
 LV_IMG_DECLARE(print);
 
 SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent, SpoolmanPanel &sm)
@@ -29,6 +29,20 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   , spoolman_btn(cont, &spoolman_img, "Spoolman", &SettingPanel::_handle_callback, this)
   , guppy_restart_btn(cont, &refresh_img, "Restart Guppy", &SettingPanel::_handle_callback, this)
   , guppy_update_btn(cont, &update_img, "Update Guppy", &SettingPanel::_handle_callback, this)
+  , factory_reset_btn(cont, &emergency, "Factory\nReset", &SettingPanel::_handle_callback, this,
+    		  "Are you sure you want to execute an emergency factory reset?",
+          [](){
+            spdlog::info("emergency factory reset pressed");
+            Config *conf = Config::get_instance();
+            auto factory_reset_script = conf->get<std::string>("/factory_reset_script");
+            const fs::path script(factory_reset_script);
+            if (fs::exists(script)) {
+              sp::call({factory_reset_script, "info"});
+            } else {
+              spdlog::warn("Failed to execute emergency factory reset.");
+            }
+          },
+          true)
 {
   lv_obj_clear_flag(cont, LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_set_size(cont, LV_PCT(100), LV_PCT(100));
@@ -51,8 +65,7 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   lv_obj_set_grid_cell(spoolman_btn.get_container(), LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 2, 1);
   lv_obj_set_grid_cell(guppy_restart_btn.get_container(), LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_START, 2, 1);
   lv_obj_set_grid_cell(guppy_update_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 2, 1);
-//  lv_obj_set_grid_cell(printer_select_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 2, 1);
-  
+  lv_obj_set_grid_cell(factory_reset_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 2, 1);
 }
 
 SettingPanel::~SettingPanel() {
