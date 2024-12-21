@@ -152,8 +152,6 @@ void PromptPanel::background() {
 void PromptPanel::handle_callback(lv_event_t *event) {
     lv_obj_t *btn = lv_event_get_current_target(event);
 
-    PromptPanel *panel = (PromptPanel*)event->user_data;
-
     lv_obj_t *label = lv_obj_get_child(btn, 0);
     lv_obj_t *command = lv_obj_get_child(btn, 1);
     // check if btn in command map
@@ -172,8 +170,6 @@ void PromptPanel::handle_callback(lv_event_t *event) {
         spdlog::debug("button: {}", cmd);
         ws.gcode_script(cmd);
     }
-
-
 }
 
 void PromptPanel::check_height() {

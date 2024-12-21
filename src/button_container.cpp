@@ -108,9 +108,10 @@ void ButtonContainer::handle_callback(lv_event_t *e) {
 }
 
 void ButtonContainer::handle_prompt() {
-  static const char * btns[] = {"Confirm", "Cancel", ""};
+  static const char *force_btns[] = {"Cancel", "Confirm", ""};
+  static const char *btns[] = {"Confirm", "Cancel", ""};
 
-  lv_obj_t *mbox1 = lv_msgbox_create(NULL, NULL, prompt_text.c_str(), btns, false);
+  lv_obj_t *mbox1 = lv_msgbox_create(NULL, NULL, prompt_text.c_str(), (force_prompt ? force_btns : btns), false);
   lv_obj_t *msg = ((lv_msgbox_t*)mbox1)->text;
   lv_obj_set_style_text_align(msg, LV_TEXT_ALIGN_CENTER, 0);  
   lv_obj_set_width(msg, LV_PCT(100));
@@ -127,16 +128,26 @@ void ButtonContainer::handle_prompt() {
   lv_obj_set_size(btnm, LV_PCT(90), 50 *hscale);
   lv_obj_set_size(mbox1, LV_PCT(50), LV_PCT(35));
 
-  lv_obj_add_event_cb(mbox1, [](lv_event_t *e) {
-    lv_obj_t *obj = lv_obj_get_parent(lv_event_get_target(e));
-    uint32_t clicked_btn = lv_msgbox_get_active_btn(obj);
-    if(clicked_btn == 0) {
-      ((ButtonContainer*)e->user_data)->run_callback();
-    }
-    
-    lv_msgbox_close(obj);
-
-  }, LV_EVENT_VALUE_CHANGED, this);
+  // this is nasty as fuck, I can't figure out how to pass state into the lambda
+  if (force_prompt) {
+    lv_obj_add_event_cb(mbox1, [](lv_event_t *e) {
+      lv_obj_t *obj = lv_obj_get_parent(lv_event_get_target(e));
+      uint32_t clicked_btn = lv_msgbox_get_active_btn(obj);
+      if(clicked_btn == 1) {
+        ((ButtonContainer*)e->user_data)->run_callback();
+      }
+      lv_msgbox_close(obj);
+    }, LV_EVENT_VALUE_CHANGED, this);
+  } else {
+    lv_obj_add_event_cb(mbox1, [](lv_event_t *e) {
+        lv_obj_t *obj = lv_obj_get_parent(lv_event_get_target(e));
+        uint32_t clicked_btn = lv_msgbox_get_active_btn(obj);
+        if(clicked_btn == 0) {
+          ((ButtonContainer*)e->user_data)->run_callback();
+        }
+        lv_msgbox_close(obj);
+      }, LV_EVENT_VALUE_CHANGED, this);
+  }
 
   lv_obj_center(mbox1);
 }

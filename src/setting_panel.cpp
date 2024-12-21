@@ -37,7 +37,7 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
             auto factory_reset_script = conf->get<std::string>("/factory_reset_script");
             const fs::path script(factory_reset_script);
             if (fs::exists(script)) {
-              sp::call({factory_reset_script, "info"});
+              sp::call({factory_reset_script, "reset"});
             } else {
               spdlog::warn("Failed to execute emergency factory reset.");
             }
