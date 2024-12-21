@@ -107,20 +107,20 @@ void SettingPanel::handle_callback(lv_event_t *event) {
       Config *conf = Config::get_instance();
       auto init_script = conf->get<std::string>("/guppy_init_script");
       const fs::path script(init_script);
-      if (fs::exists(script) || init_script.rfind("service guppyscreen", 0) == 0) {
-        sp::call({init_script, "restart"});
+      if (fs::exists(script)) {
+        sp::call({script, "restart"});
       } else {
-        	spdlog::warn("Failed to restart Guppy Screen. Did not find restart script.");
+        spdlog::warn("Failed to restart Guppy Screen. Did not find restart script.");
       }
     } else if (btn == guppy_update_btn.get_container()) {
       spdlog::trace("update guppy pressed");
-      // TODO: throw this inside the global threadpool to make it async
-      auto update_script = fs::canonical("/proc/self/exe").parent_path() / "update.sh";
+      Config *conf = Config::get_instance();
+      auto update_script = conf->get<std::string>("/guppy_update_script");
       const fs::path script(update_script);
       if (fs::exists(script)) {
-	sp::call(script);
+      	sp::call(script);
       } else {
-	spdlog::warn("Failed to update Guppy Screen. Did not find update script.");
+	      spdlog::warn("Failed to update Guppy Screen. Did not find update script.");
       }
     } else if (btn == printer_select_btn.get_container()) {
       spdlog::trace("setting printers pressed");

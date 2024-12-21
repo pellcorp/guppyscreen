@@ -119,6 +119,11 @@ void Config::init(std::string config_path, const std::string thumbdir) {
       data["/guppy_init_script"_json_pointer] = "/etc/init.d/S99guppyscreen";
     }
 
+    auto &guppy_update = data["/guppy_update_script"_json_pointer];
+    if (guppy_update.is_null()) {
+      data["/guppy_update_script"_json_pointer] = "/usr/data/pellcorp/k1/update-guppyscreen.sh";
+    }
+
     auto &ll = data[json::json_pointer(df() + "log_level")];
     if (ll.is_null()) {
       data[json::json_pointer(df() + "log_level")] = "debug";
