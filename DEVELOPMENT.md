@@ -23,24 +23,6 @@ The Guppy Screen uses features (filesystem) from C++17, so a gcc/g++ version (7.
 
 ### Build Environment
 
-#### Ubuntu and Debian
-For Ubuntu/Debian install build essentials and libsdl2-dev packages.
-
-`sudo apt-get install -y build-essential cmake libsdl2-dev`
-
-#### Arch and Derivatives
-
-For Arch and derivatives install 'base-devel' and 'sdl2' packages.
-
-`sudo pacman -S base-devel cmake sdl2`
-
-#### Mipsel Tool chain
-
-To build guppyscreen for Mipsel (Ingenic X2000E) - specific to the K1 SoC, you will need the mips-gcc720 tool chain.
-
-1. Download the toolchain [here](https://github.com/ballaswag/k1-discovery/releases/download/1.0.0/mips-gcc720-glibc229.tar.gz)
-2. `tar xf mips-gcc720-glibc229.tar.gz && export PATH=<path-to-mips-toolchain/bin>:$PATH`
-
 ### The Code
 
 Clone the guppyscreen repo (and submodules) and apply a couple of patches locally.
@@ -52,20 +34,16 @@ Clone the guppyscreen repo (and submodules) and apply a couple of patches locall
 ### Mipsel (Ingenic X2000E) - specific to the K1 SoC
 Building for the K1/Max
 
-1. `export CROSS_COMPILE=mips-linux-gnu-`
-2. `make clean && make -j$(nproc) build`
-
-After an initial `make build`, you can make changes to src guppy files and then use `make` to compile the files that need compiling.
+1. `./build.sh clean`
+2. `./build.sh`
 
 The executable is ./build/bin/guppyscreen
 
 ### x86_64 (Intel/AMD)
 Building and running Guppy Screen on your local machine speeds up development. Changes can be tested on the local machine before rebuilding for the other architectures.
 
-1. `unset CROSS_COMPILE`
-2. `make clean && make -j$(nproc) build`
-
-After an initial `make build`, you can make changes to src guppy files and then use `make` to compile the files that need compiling.
+1. `SIMULATION=true ./build.sh clean`
+2. `SIMULATION=true ./build.sh`
 
 The executable is ./build/bin/guppyscreen
 

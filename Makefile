@@ -48,9 +48,7 @@ ASSET_DIR		= material_46
 DEFINES			+= -D GUPPY_SMALL_SCREEN
 endif
 
-ifdef GUPPY_ROTATE
 DEFINES			+= -D GUPPY_ROTATE
-endif
 
 ifeq ($(GUPPY_THEME),zbolt)
 CSRCS 			+= $(wildcard $(LVGL_DIR)/assets/zbolt/*.c)
@@ -61,6 +59,8 @@ endif
 
 ifdef GUPPYSCREEN_VERSION
 DEFINES			+= -D GUPPYSCREEN_VERSION="\"${GUPPYSCREEN_VERSION}\""
+else
+DEFINES			+= -D GUPPYSCREEN_VERSION="\"dev-snapshot\""
 endif
 
 OBJEXT 			?= .o
