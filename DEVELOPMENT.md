@@ -28,12 +28,19 @@ Clone the guppyscreen repo (and submodules) and apply a couple of patches locall
 1. `git clone --recursive https://github.com/ballaswag/guppyscreen && cd guppyscreen`
 2. `(cd lv_drivers/ && git apply ../patches/0001-lv_driver_fb_ioctls.patch)`
 3. `(cd spdlog/ && git apply ../patches/0002-spdlog_fmt_initializer_list.patch)`
+4. `(cd lvgl/ && git apply ../patches/0003-lvgl-dpi-text-scale.patch)`
 
 ### Mipsel (Ingenic X2000E) - specific to the K1 SoC
 Building for the K1/Max
 
 1. `./build.sh clean`
-2. `./build.sh`
+2. `./build.sh wpaclean`
+3. `./build.sh wpaclient`
+4. `./build.sh libhvclean`
+5 `./build.sh wpaclient`
+6. `./build.sh libhv.a`
+7. `./build.sh libspdlog.a`
+8. `./build.sh`
 
 The executable is ./build/bin/guppyscreen
 

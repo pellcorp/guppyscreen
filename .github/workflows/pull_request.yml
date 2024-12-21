@@ -10,8 +10,6 @@ jobs:
       matrix:
         include:
           - arch: mipsel-buildroot-linux-musl-
-            theme: material
-            asset: guppyscreen
 
     runs-on: ubuntu-22.04
     container:
@@ -22,8 +20,7 @@ jobs:
       CROSS_COMPILE: ${{ matrix.arch }}
       CC: ${{ matrix.arch }}
       CXX: ${{ matrix.arch }}
-      GUPPY_THEME: ${{ matrix.theme }}
-  
+
     steps:
     - uses: actions/checkout@v3
       with:
@@ -66,9 +63,18 @@ jobs:
     - name: package release
       run: |
         chmod +x ./release.sh
-        ./release.sh ${{ matrix.asset }}
+        ./release.sh
 
     - uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.asset }}
-        path: ./${{ matrix.asset }}.tar.gz
+        name: guppyscreen
+        path: ./guppyscreen.tar.gz
+
+    - name: branch release
+      uses: softprops/action-gh-release@v2
+      with:
+        prerelease: true
+        name: ${{ github.ref_name }}
+        tag_name: ${{ github.ref_name }}
+        files: guppyscreen.tar.gz
+        fail_on_unmatched_files: true
