@@ -1,8 +1,9 @@
-name: validate pull request
+name: branch build
 
 on:
-  pull_request:
-    branches: [ "main", "develop" ]
+  push:
+    branches-ignore:
+      - main
 
 jobs:
   build:
@@ -28,7 +29,7 @@ jobs:
 
     - name: set guppyscreen version
       run: |
-        echo "GUPPYSCREEN_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+        echo "GUPPYSCREEN_VERSION=${{ github.ref_name }}-${{ github.sha }}" >> $GITHUB_ENV
 
     - name: patch lv_drivers
       run: |
@@ -57,9 +58,6 @@ jobs:
     - name: make guppyscreen
       run: make -j
 
-    - name: make kd_graphic_mode
-      run: make kd_graphic_mode
-
     - name: package release
       run: |
         chmod +x ./release.sh
@@ -73,7 +71,6 @@ jobs:
     - name: branch release
       uses: softprops/action-gh-release@v2
       with:
-        prerelease: true
         name: ${{ github.ref_name }}
         tag_name: ${{ github.ref_name }}
         files: guppyscreen.tar.gz

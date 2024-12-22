@@ -62,9 +62,6 @@ jobs:
     - name: make guppyscreen
       run: make -j
 
-    - name: make kd_graphic_mode
-      run: make kd_graphic_mode
-
     - name: package release
       run: |
         chmod +x ./release.sh
