@@ -202,17 +202,16 @@ void PromptPanel::handle_macro_response(json &j) {
     auto &v = j["/params/0"_json_pointer];
 
     if (!v.is_null()) {
-        spdlog::debug("data found");
+        spdlog::trace("data found");
         std::string resp = v.template get<std::string>();
         std::lock_guard<std::mutex> lock(lv_lock);
-        spdlog::debug("data: {}", resp);
+        spdlog::trace("data: {}", resp);
 
         if (resp.find("// action:", 0) == 0) {
             // it is an action
             std::string command = resp.substr(10);
             spdlog::debug("action: {}", command);
 
-            
             if (command.find("prompt_begin") == 0) {
                 std::string prompt_header = command.substr(13);
                 spdlog::debug("PROMPT_BEGIN: {}", prompt_header);

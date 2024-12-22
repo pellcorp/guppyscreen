@@ -110,8 +110,7 @@ lv_obj_t *HomingPanel::get_container() {
 }
 
 void HomingPanel::foreground() {
-  auto v = State::get_instance()
-    ->get_data("/printer_state/toolhead/homed_axes"_json_pointer);
+  auto v = State::get_instance()->get_data("/printer_state/toolhead/homed_axes"_json_pointer);
   if (!v.is_null()) {
     std::string homed_axes = v.template get<std::string>();
     if (homed_axes.find("x") != std::string::npos) {
@@ -145,8 +144,7 @@ void HomingPanel::foreground() {
 
   //Set the Z axis buttons
 
-  v = Config::get_instance()->get_json("/invert_z_icon");
-  bool inverted = !v.is_null() && v.template get<bool>();
+  const bool inverted = Config::get_instance()->get<bool>("/invert_z_icon");
   if (inverted) {
     // UP arrow
     z_up_btn.set_image(&z_farther);
@@ -169,56 +167,36 @@ void HomingPanel::handle_callback(lv_event_t *event) {
   if (btn == home_all_btn.get_container()) {
     spdlog::debug("home all pressed");
     ws.gcode_script("G28 X Y Z");
-
-  }
-  else if (btn == home_xy_btn.get_container()) {
+  } else if (btn == home_xy_btn.get_container()) {
     spdlog::debug("home xy pressed");
     ws.gcode_script("G28 X Y");
-
-  }
-  else if (btn == y_up_btn.get_container()) {
+  } else if (btn == y_up_btn.get_container()) {
     spdlog::debug("y up pressed");
     move_op = fmt::format("G0 Y+{} F1200", distance);
-
-  }
-  else if (btn == y_down_btn.get_container()) {
+  } else if (btn == y_down_btn.get_container()) {
     spdlog::debug("y down pressed");
     move_op = fmt::format("G0 Y-{} F1200", distance);
-
-  }
-  else if (btn == x_up_btn.get_container()) {
+  } else if (btn == x_up_btn.get_container()) {
     spdlog::debug("x up pressed");
     move_op = fmt::format("G0 X+{} F1200", distance);
-
-  }
-  else if (btn == x_down_btn.get_container()) {
+  } else if (btn == x_down_btn.get_container()) {
     spdlog::debug("x down pressed");
     move_op = fmt::format("G0 X-{} F1200", distance);
-
-  }
-  else if (btn == z_up_btn.get_container()) {
+  } else if (btn == z_up_btn.get_container()) {
     spdlog::debug("z up pressed");
     move_op = fmt::format("G0 Z+{} F1200", distance);
-
-  }
-  else if (btn == z_down_btn.get_container()) {
+  } else if (btn == z_down_btn.get_container()) {
     spdlog::debug("z down pressed");
     move_op = fmt::format("G0 Z-{} F1200", distance);
-
-  }
-  else if (btn == emergency_btn.get_container()) {
+  } else if (btn == emergency_btn.get_container()) {
     spdlog::debug("emergency stop pressed");
     ws.send_jsonrpc("printer.emergency_stop");
-
-  }
-  else if (btn == motoroff_btn.get_container()) {
+  } else if (btn == motoroff_btn.get_container()) {
     spdlog::debug("motor off pressed");
     ws.gcode_script("M84");
-
   } else if (btn == back_btn.get_container()) {
     lv_obj_move_background(homing_cont);
-  }
-  else {
+  } else {
     spdlog::debug("Unknown action button pressed");
   }
 

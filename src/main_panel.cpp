@@ -131,8 +131,7 @@ void MainPanel::consume(json &j) {
   }  
 }
 
-static void scroll_begin_event(lv_event_t * e)
-{
+static void scroll_begin_event(lv_event_t * e) {
   /*Disable the scroll animations. Triggered when a tab button is clicked */
   if (lv_event_get_code(e) == LV_EVENT_SCROLL_BEGIN) {
     lv_anim_t * a = (lv_anim_t*)lv_event_get_param(e);
@@ -159,7 +158,6 @@ void MainPanel::create_panel() {
   lv_obj_set_style_pad_all(setting_tab, 0, 0);
 
   create_main(main_tab);
-  
 }
 
 void MainPanel::handle_homing_cb(lv_event_t *event) {
@@ -204,8 +202,7 @@ void MainPanel::handle_emergency_cb(lv_event_t *event) {
   }
 }
 
-void MainPanel::create_main(lv_obj_t * parent)
-{
+void MainPanel::create_main(lv_obj_t * parent) {
     lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_ROW_WRAP);
 
     static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -257,11 +254,11 @@ void MainPanel::create_sensors(json &temp_sensors) {
     if (!sensor.value()["color"].is_number()) {
       std::string color = sensor.value()["color"].template get<std::string>();
       if (color == "red") {
-	color_code = lv_palette_main(LV_PALETTE_RED);
+	      color_code = lv_palette_main(LV_PALETTE_RED);
       } else if (color == "purple") {
-	color_code = lv_palette_main(LV_PALETTE_PURPLE);
+	      color_code = lv_palette_main(LV_PALETTE_PURPLE);
       } else if (color == "blue") {
-	color_code = lv_palette_main(LV_PALETTE_BLUE);	
+	      color_code = lv_palette_main(LV_PALETTE_BLUE);
       }
     } else {
       color_code = lv_palette_main((lv_palette_t)sensor.value()["color"].template get<int>());
