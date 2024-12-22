@@ -12,6 +12,10 @@ class Config {
  private:
   static Config *instance;
   std::string path;
+  // this is dodgy af, I want a way to return an empty
+  // object from get_json to avoid mutating the data object
+  // with a new field, but I don't know if there is a better way
+  json empty = json(nullptr);
 
  protected:
   json data;
@@ -34,7 +38,6 @@ class Config {
   json &get_json(const std::string &json_path);
 
   void save();
-  std::string& df();
   std::string get_thumbnail_path();
   std::string get_wifi_interface();
   std::string get_path();
