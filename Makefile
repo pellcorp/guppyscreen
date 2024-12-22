@@ -105,14 +105,6 @@ $(BUILD_OBJ_DIR)/%.o: %.c
 	@$(COMPILE_CC)  $(CFLAGS) -c $< -o $@
 	@echo "CC $<"
 
-$(BUILD_OBJ_DIR)/kd_graphic_mode.o: src/kd_graphic_mode.cpp
-	@mkdir -p $(dir $@)
-	@$(COMPILE_CC)  $(CFLAGS) -c $< -o $@
-	@echo "CC $<"
-
-kd_graphic_mode: $(BUILD_OBJ_DIR)/kd_graphic_mode.o
-	$(CC) -o $(BUILD_BIN_DIR)/kd_graphic_mode $(BUILD_OBJ_DIR)/kd_graphic_mode.o
-
 default: $(TARGET)
 	@mkdir -p $(dir $(BUILD_BIN_DIR)/)
 	$(CXX) -o $(BUILD_BIN_DIR)/$(BIN) $(TARGET) $(LDFLAGS) $(LDLIBS)
@@ -129,22 +121,5 @@ wpaclean:
 
 clean:
 	rm -rf $(BUILD_DIR)
-
-install:
-	install -d $(DESTDIR)$(bindir)
-	install $(BUILD_BIN_DIR)/$(BIN) $(DESTDIR)$(bindir)
-
-uninstall:
-	$(RM) -r $(addprefix $(DESTDIR)$(bindir)/,$(BIN))
-
-build:
-	$(MAKE) wpaclean
-	$(MAKE) wpaclient
-	$(MAKE) libhvclean
-	$(MAKE) libhv.a
-	$(MAKE) spdlogclean
-	$(MAKE) libspdlog.a
-	$(MAKE) clean
-	$(MAKE) -j$(nproc)
 
 -include			$(DEPS)
