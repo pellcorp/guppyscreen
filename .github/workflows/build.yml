@@ -2,7 +2,7 @@ name: guppy build
 
 on:
   push:
-    branches: [ "develop", "main" ]
+    branches: [ "main" ]
     tags:
       - "*"
 
@@ -31,8 +31,9 @@ jobs:
       with:
         submodules: recursive
 
-    - name: set guppyscreen nightly version
+    - name: set guppyscreen version
       run: |
+        echo "GUPPYSCREEN_BRANCH=nightly" >> $GITHUB_ENV
         echo "GUPPYSCREEN_VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
     - name: patch lv_drivers

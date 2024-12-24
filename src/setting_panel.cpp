@@ -109,12 +109,13 @@ void SettingPanel::handle_callback(lv_event_t *event) {
         spdlog::warn("Failed to restart Guppy Screen. Did not find restart script.");
       }
     } else if (btn == guppy_update_btn.get_container()) {
-      spdlog::trace("update guppy pressed");
+
       Config *conf = Config::get_instance();
       auto update_script = conf->get<std::string>("/guppy_update_script");
       const fs::path script(update_script);
       if (fs::exists(script)) {
-      	sp::call(script);
+        spdlog::info(fmt::format("Updating for branch {}", GUPPYSCREEN_BRANCH));
+      	sp::call({script, GUPPYSCREEN_BRANCH});
       } else {
 	      spdlog::warn("Failed to update Guppy Screen. Did not find update script.");
       }

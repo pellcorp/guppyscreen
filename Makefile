@@ -34,13 +34,12 @@ prefix 			?= /usr
 bindir 			?= $(prefix)/bin
 
 #Collect the files to compile
-MAINSRC = 		$(filter-out $(LVGL_DIR)/src/kd_graphic_mode.cpp, $(wildcard $(LVGL_DIR)/src/*.cpp))
+MAINSRC = 		$(wildcard $(LVGL_DIR)/src/*.cpp)
 
 include $(LVGL_DIR)/lvgl/lvgl.mk
 include $(LVGL_DIR)/lv_drivers/lv_drivers.mk
 
 CSRCS 			+= $(wildcard $(LVGL_DIR)/assets/*.c)
-CSRCS			+= $(wildcard $(LVGL_DIR)/lv_touch_calibration/*.c)
 
 ASSET_DIR		= material
 CSRCS 			+= $(wildcard $(LVGL_DIR)/assets/$(ASSET_DIR)/*.c)
@@ -48,7 +47,13 @@ CSRCS 			+= $(wildcard $(LVGL_DIR)/assets/$(ASSET_DIR)/*.c)
 ifdef GUPPYSCREEN_VERSION
 DEFINES			+= -D GUPPYSCREEN_VERSION="\"${GUPPYSCREEN_VERSION}\""
 else
-DEFINES			+= -D GUPPYSCREEN_VERSION="\"dev-snapshot\""
+DEFINES			+= -D GUPPYSCREEN_VERSION="\"unknown\""
+endif
+
+ifdef GUPPYSCREEN_BRANCH
+DEFINES			+= -D GUPPYSCREEN_BRANCH="\"${GUPPYSCREEN_BRANCH}\""
+else
+DEFINES			+= -D GUPPYSCREEN_BRANCH="\"unknown\""
 endif
 
 OBJEXT 			?= .o
