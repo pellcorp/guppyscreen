@@ -1,3 +1,15 @@
+diff --git a/lvgl.mk b/lvgl.mk
+index 0ea126daa..6d1cf19c4 100644
+--- a/lvgl.mk
++++ b/lvgl.mk
+@@ -1,5 +1,5 @@
+-include $(LVGL_DIR)/$(LVGL_DIR_NAME)/demos/lv_demos.mk
+-include $(LVGL_DIR)/$(LVGL_DIR_NAME)/examples/lv_examples.mk
++#include $(LVGL_DIR)/$(LVGL_DIR_NAME)/demos/lv_demos.mk
++#include $(LVGL_DIR)/$(LVGL_DIR_NAME)/examples/lv_examples.mk
+ include $(LVGL_DIR)/$(LVGL_DIR_NAME)/src/core/lv_core.mk
+ include $(LVGL_DIR)/$(LVGL_DIR_NAME)/src/draw/lv_draw.mk
+ include $(LVGL_DIR)/$(LVGL_DIR_NAME)/src/extra/lv_extra.mk
 diff --git a/src/core/lv_disp.c b/src/core/lv_disp.c
 index cacade51d..846b14b0d 100644
 --- a/src/core/lv_disp.c

@@ -4,8 +4,6 @@
 #include <mutex>
 #include <functional>
 
-#include "lv_tc.h"
-#include "lv_tc_screen.h"
 #include "lvgl/lvgl.h"
 
 #include "platform.h"
@@ -42,9 +40,7 @@ class GuppyScreen {
   static GuppyScreen *init(std::function<void(lv_color_t, lv_color_t)> hal_init);
   static void loop();
   static void new_theme_apply_cb(lv_theme_t *th, lv_obj_t *obj);
-  static void handle_calibrated(lv_event_t *event);
-  static void save_calibration_coeff(lv_tc_coeff_t coeff);
-  static void refresh_theme();
+    static void refresh_theme();
 };
 
 #endif  // __GUPPY_SCREEN_H__
