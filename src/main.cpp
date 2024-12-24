@@ -1,8 +1,6 @@
 #include "lvgl/lvgl.h"
 #include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
-#include "lv_tc.h"
-#include "lv_tc_screen.h"
 
 #include <unistd.h>
 #include <pthread.h>
