@@ -29,7 +29,8 @@ jobs:
 
     - name: set guppyscreen version
       run: |
-        echo "GUPPYSCREEN_VERSION=${{ github.ref_name }}-${{ github.sha }}" >> $GITHUB_ENV
+        echo "GUPPYSCREEN_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+        echo "GUPPYSCREEN_VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
     - name: patch lv_drivers
       run: |

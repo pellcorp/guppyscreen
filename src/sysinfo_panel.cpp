@@ -211,8 +211,8 @@ void SysInfoPanel::foreground() {
     auto ip = KUtils::interface_ip(iface);
     network_detail.push_back(fmt::format("\t{}: {}", iface, ip));
   }
-  lv_label_set_text(network_label, fmt::format("{}\n\nSAF GuppyScreen\n\tVersion: " GUPPYSCREEN_VERSION,
-					       fmt::join(network_detail, "\n")).c_str());
+  lv_label_set_text(network_label, fmt::format("{}\n\nSAF GuppyScreen\n\tVersion: {}-{}", fmt::join(network_detail, "\n"),
+          GUPPYSCREEN_BRANCH, GUPPYSCREEN_VERSION).c_str());
 }
 
 void SysInfoPanel::handle_callback(lv_event_t *e)
