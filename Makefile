@@ -72,16 +72,6 @@ LDLIBS	 			:= -lm
 
 DEFINES				+= -D _GNU_SOURCE -DSPDLOG_COMPILED_LIB
 
-ifdef EVDEV_CALIBRATE
-DEFINES +=  -D EVDEV_CALIBRATE
-endif
-
-# SIMULATION is enabled by default, need CROSS_COMPILE variable to do MIPS build
-ifndef CROSS_COMPILE
-DEFINES +=  -D LV_BUILD_TEST=0 -D SIMULATOR
-LDLIBS += -lSDL2
-endif
-
 COMPILE_CC				= $(CC) $(CFLAGS) $(INC) $(DEFINES)
 COMPILE_CXX				= $(CC) $(CFLAGS) $(INC) $(DEFINES)
 

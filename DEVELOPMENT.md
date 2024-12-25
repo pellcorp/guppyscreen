@@ -29,10 +29,6 @@ https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
 4. `sudo apt-get update`
 5. `sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin`
 
-##### For Arch and Derivatives
-
-1. `sudo systemctl start docker`
-
 ### The Code
 
 Clone the guppyscreen repo (and submodules) and apply a couple of patches locally.
