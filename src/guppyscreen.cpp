@@ -74,11 +74,9 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
   /*LittlevGL init*/
   lv_init();
 
-#if !defined(SIMULATOR)
   /*Linux frame buffer device init*/
   fbdev_init();
   fbdev_unblank();
-#endif  // SIMULATOR
 
   hal_init(primary_color, secondary_color);
   lv_png_init();
@@ -133,18 +131,15 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
 
 void GuppyScreen::loop() {
   /*Handle LitlevGL tasks (tickless mode)*/
-#if !defined(SIMULATOR)
   std::atomic_bool is_sleeping(false);
   Config *conf = Config::get_instance();
   int32_t display_sleep = conf->get<int32_t>("/display_sleep_sec") * 1000;
-#endif
 
   while (1) {
     lv_lock.lock();
     lv_timer_handler();
     lv_lock.unlock();
 
-#if !defined(SIMULATOR)
     if (display_sleep != -1) {
       if (lv_disp_get_inactive_time(NULL) > display_sleep) {
         if (!is_sleeping.load()) {
@@ -163,7 +158,6 @@ void GuppyScreen::loop() {
         }
       }
     }
-#endif  // SIMULATOR
 
     usleep(5000);
   }
