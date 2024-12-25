@@ -20,7 +20,6 @@ PrinterTunePanel::PrinterTunePanel(KWebSocketClient &c, std::mutex &l, lv_obj_t 
   , bedmesh_panel(c, l)
   , finetune_panel(finetune)
   , limits_panel(c, l)
-  , inputshaper_panel(c, l)
   , belts_calibration_panel(c, l)
   , bedmesh_btn(cont, &bedmesh_img, "Bed Mesh", &PrinterTunePanel::_handle_callback, this)
   , finetune_btn(cont, &fine_tune_img, "Fine Tune", &PrinterTunePanel::_handle_callback, this)
@@ -80,9 +79,6 @@ void PrinterTunePanel::handle_callback(lv_event_t *event) {
     } else if (btn == bedmesh_btn.get_container()) {
       spdlog::trace("tune bedmesh pressed");
       bedmesh_panel.foreground();
-    } else if (btn == inputshaper_btn.get_container()) {
-      spdlog::trace("tune inputshaper pressed");
-      inputshaper_panel.foreground();
     } else if (btn == belts_calibration_btn.get_container()) {
       spdlog::trace("tune belts pressed");
       belts_calibration_panel.foreground();
