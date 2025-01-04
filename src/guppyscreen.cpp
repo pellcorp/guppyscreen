@@ -56,9 +56,7 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
   auto secondary_color = lv_color_hex(std::stoul(theme_conf->get<std::string>("/secondary_color"), nullptr, 16));
 
   auto console_sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
-  auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-      conf->get<std::string>("/log_path"), 1048576 * 10, 3);
-  spdlog::sinks_init_list log_sinks{console_sink, file_sink};
+  spdlog::sinks_init_list log_sinks{console_sink};
 
   auto klogger = std::make_shared<spdlog::logger>("guppyscreen", log_sinks);
   spdlog::register_logger(klogger);
