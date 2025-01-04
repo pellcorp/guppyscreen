@@ -48,8 +48,7 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
   auto ll = spdlog::level::from_str(conf->get<std::string>("/log_level"));
 
   const std::string selected_theme = conf->get_json("/theme").template get<std::string>();
-  auto theme_config = fs::canonical(conf->get_path()).parent_path() / "themes" / selected_theme;
-
+  auto theme_config = fs::canonical(conf->get_path()).parent_path() / "themes" / (selected_theme + ".json");
   ThemeConfig *theme_conf = ThemeConfig::get_instance();
   theme_conf->init(theme_config);
 
