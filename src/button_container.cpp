@@ -109,7 +109,7 @@ void ButtonContainer::handle_callback(lv_event_t *e) {
 }
 
 void ButtonContainer::handle_prompt() {
-  static const char *force_btns[] = {"Abort", "Execute", ""};
+  static const char *force_btns[] = {"Cancel", "Confirm", ""};
   static const char *btns[] = {"Confirm", "Cancel", ""};
 
   lv_obj_t *mbox1 = lv_msgbox_create(NULL, NULL, prompt_text.c_str(), (force_prompt ? force_btns : btns), false);
