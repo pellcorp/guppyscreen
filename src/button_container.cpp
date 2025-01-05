@@ -2,6 +2,7 @@
 #include "config.h"
 #include "spdlog/spdlog.h"
 
+LV_FONT_DECLARE(lv_font_montserrat_22);
 ButtonContainer::ButtonContainer(lv_obj_t *parent,
 				 const void *btn_img,
 				 const char *text,
@@ -108,7 +109,7 @@ void ButtonContainer::handle_callback(lv_event_t *e) {
 }
 
 void ButtonContainer::handle_prompt() {
-  static const char *force_btns[] = {"Cancel", "Confirm", ""};
+  static const char *force_btns[] = {"Abort", "Execute", ""};
   static const char *btns[] = {"Confirm", "Cancel", ""};
 
   lv_obj_t *mbox1 = lv_msgbox_create(NULL, NULL, prompt_text.c_str(), (force_prompt ? force_btns : btns), false);
@@ -126,8 +127,12 @@ void ButtonContainer::handle_prompt() {
   auto hscale = (double)lv_disp_get_physical_ver_res(NULL) / 480.0;
 
   lv_obj_set_size(btnm, LV_PCT(90), 50 *hscale);
-  lv_obj_set_size(mbox1, LV_PCT(50), LV_PCT(35));
-
+  if (force_prompt) {
+    lv_obj_set_size(mbox1, LV_PCT(95), LV_PCT(52));
+    lv_obj_set_style_text_font(mbox1, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  } else {
+    lv_obj_set_size(mbox1, LV_PCT(50), LV_PCT(35));
+  }
   // this is nasty as fuck, I can't figure out how to pass state into the lambda
   if (force_prompt) {
     lv_obj_add_event_cb(mbox1, [](lv_event_t *e) {

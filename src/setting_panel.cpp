@@ -30,7 +30,7 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   , guppy_restart_btn(cont, &refresh_img, "Restart Guppy", &SettingPanel::_handle_callback, this)
   , guppy_update_btn(cont, &update_img, "Update Guppy", &SettingPanel::_handle_callback, this)
   , factory_reset_btn(cont, &emergency, "Factory\nReset", &SettingPanel::_handle_callback, this,
-    		  "Are you sure you want to execute an emergency factory reset?\nThis will reset the printer to stock creality firmware!",
+    		  "**WARNING** **WARNING** **WARNING** **WARNING**\n\nAre you sure you want to execute an emergency factory reset?\n\nThis will reset the printer to stock creality firmware!",
           [](){
             spdlog::info("emergency factory reset pressed");
             Config *conf = Config::get_instance();
