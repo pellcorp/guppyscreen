@@ -11,8 +11,10 @@
     "wpa_supplicant": "/var/run/wpa_supplicant",
     "default_macros": {
         "cooldown": "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=0\nSET_HEATER_TEMPERATURE HEATER=heater_bed TARGET=0",
-        "load_filament": "LOAD_MATERIAL",
-        "unload_filament": "UNLOAD_MATERIAL",
+        "load_filament": "LOAD_MATERIAL EXTRUDER_TEMP={} EXTRUDE_LEN={}",
+        "unload_filament": "UNLOAD_MATERIAL EXTRUDER_TEMP={}",
+        "extrude": "_GUPPYSCREEN_EXTRUDE EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
+        "retract": "_GUPPYSCREEN_RETRACT EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
         "belts_shaper_calibration": "BELTS_SHAPER_CALIBRATION",
         "excitate_axis_at_frequency": "EXCITATE_AXIS_AT_FREQUENCY"
     },
