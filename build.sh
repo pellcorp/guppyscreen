@@ -37,7 +37,9 @@ else
 
     if [ -n "$PRINTER_IP" ] && [ -f build/bin/guppyscreen ]; then
         sshpass -p 'creality_2023' scp build/bin/guppyscreen root@$PRINTER_IP:
-        sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen /usr/data/guppyscreen"
+        sshpass -p 'creality_2023' scp guppyscreen.json root@$PRINTER_IP:
+        sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen /usr/data/guppyscreen/"
+        sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen.json /usr/data/guppyscreen/"
         sshpass -p 'creality_2023' ssh root@$PRINTER_IP "/etc/init.d/S99guppyscreen restart"
     fi
 fi

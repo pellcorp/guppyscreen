@@ -142,23 +142,28 @@ void ExtruderPanel::handle_callback(lv_event_t *e) {
     }
 
     if (btn == extrude_btn.get_container()) {
+      Config *conf = Config::get_instance();
       const char * temp = lv_btnmatrix_get_btn_text(temp_selector.get_selector(),
 						   temp_selector.get_selected_idx());
       const char * len = lv_btnmatrix_get_btn_text(length_selector.get_selector(),
 						   length_selector.get_selected_idx());
       const char *speed = lv_btnmatrix_get_btn_text(speed_selector.get_selector(),
 						    speed_selector.get_selected_idx());
-      ws.gcode_script(fmt::format("M109 S{}\nM83\nG1 E{} F{}", temp, len, std::stoi(speed) * 60));
+
+      const std::string extrude_macro = conf->get<std::string>("/default_macros/extrude");
+      ws.gcode_script(fmt::format(extrude_macro, temp, len, std::stoi(speed) * 60));
     }
 
     if (btn == retract_btn.get_container()) {
+      Config *conf = Config::get_instance();
       const char * temp = lv_btnmatrix_get_btn_text(temp_selector.get_selector(),
 						   temp_selector.get_selected_idx());
       const char * len = lv_btnmatrix_get_btn_text(length_selector.get_selector(),
 						   length_selector.get_selected_idx());
       const char *speed = lv_btnmatrix_get_btn_text(speed_selector.get_selector(),
 						    speed_selector.get_selected_idx());
-      ws.gcode_script(fmt::format("M109 S{}\nM83\nG1 E-{} F{}", temp, len, std::stoi(speed) * 60));
+			const std::string retract_macro = conf->get<std::string>("/default_macros/retract");
+      ws.gcode_script(fmt::format(retract_macro, temp, len, std::stoi(speed) * 60));
     }
 
     if (btn == unload_btn.get_container()) {
@@ -167,7 +172,7 @@ void ExtruderPanel::handle_callback(lv_event_t *e) {
 
       const char *temp = lv_btnmatrix_get_btn_text(temp_selector.get_selector(),
                                                    temp_selector.get_selected_idx());
-      ws.gcode_script(fmt::format("{} EXTRUDER_TEMP={}", unload_filament_macro, temp));
+      ws.gcode_script(fmt::format(unload_filament_macro, temp));
     }
 
     if (btn == load_btn.get_container()) {
@@ -178,7 +183,7 @@ void ExtruderPanel::handle_callback(lv_event_t *e) {
                                                    temp_selector.get_selected_idx());
       const char *len = lv_btnmatrix_get_btn_text(length_selector.get_selector(),
                                                   length_selector.get_selected_idx());
-      ws.gcode_script(fmt::format("{} EXTRUDER_TEMP={} EXTRUDE_LEN={}", load_filament_macro, temp, len));
+      ws.gcode_script(fmt::format(load_filament_macro, temp, len));
     }
 
     if (btn == cooldown_btn.get_container()) {

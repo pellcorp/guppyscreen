@@ -183,6 +183,7 @@ int KWebSocketClient::send_jsonrpc(const std::string &method) {
 
 int KWebSocketClient::gcode_script(const std::string &gcode) {
   json cmd = {{ "script", gcode }};
+  spdlog::trace("{}", gcode);
   return send_jsonrpc("printer.gcode.script", cmd);
 }
 
