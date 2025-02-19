@@ -162,7 +162,7 @@ void WifiPanel::handle_callback(lv_event_t *e) {
 						selected_network,
 						ip).c_str());
       } else {
-        lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nFailed",
+        lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nNo IP Address",
             selected_network).c_str());
       }
       lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
@@ -225,7 +225,7 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
                           cur_network,
                           ip).c_str());
             } else {
-              lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nFailed", cur_network).c_str());
+              lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nNo IP Address", cur_network).c_str());
               lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WARNING "    " LV_SYMBOL_WIFI);
             }
             lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
@@ -268,7 +268,7 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
                       cur_network,
                       ip).c_str());
           } else {
-            lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nFailed",
+            lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nNo IP Address",
                       selected_network).c_str());
             lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WARNING "    " LV_SYMBOL_WIFI);
           }
