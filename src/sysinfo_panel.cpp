@@ -84,12 +84,12 @@ SysInfoPanel::SysInfoPanel()
   lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_ROW);
 
   lv_obj_clear_flag(left_cont, LV_OBJ_FLAG_SCROLLABLE);
-  lv_obj_set_size(left_cont, LV_PCT(60), LV_PCT(100));
+  lv_obj_set_size(left_cont, LV_PCT(50), LV_PCT(100));
   lv_obj_set_flex_flow(left_cont, LV_FLEX_FLOW_COLUMN);
   lv_obj_set_flex_align(left_cont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
   lv_obj_clear_flag(right_cont, LV_OBJ_FLAG_SCROLLABLE);
-  lv_obj_set_size(right_cont, LV_PCT(40), LV_PCT(100));
+  lv_obj_set_size(right_cont, LV_PCT(50), LV_PCT(100));
   lv_obj_set_flex_flow(right_cont, LV_FLEX_FLOW_COLUMN);
   lv_obj_set_flex_align(right_cont, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
