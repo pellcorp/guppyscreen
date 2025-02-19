@@ -207,7 +207,6 @@ void WifiPanel::handle_callback(lv_event_t *e) {
 
 void WifiPanel::handle_wpa_event(const std::string &event) {
   if (event.rfind("<3>CTRL-EVENT-SCAN-RESULTS", 0) == 0) {
-    // result ready
     spdlog::trace("got scan result event");
     std::istringstream f(wpa_event.send_command("SCAN_RESULTS"));
     std::string line;
@@ -216,6 +215,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
 
     if (find_current_network()) {
       spdlog::trace("handle wpa event scan results - current network {}", cur_network);
+    } else {
+      lv_label_set_text(wifi_label, "");
     }
 
     std::lock_guard<std::mutex> lock(lv_lock);
@@ -231,12 +232,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
         if (inserted.second) {
           lv_table_set_cell_value(wifi_table, index, 0, wifi_parts[4].c_str());
           if (cur_network != wifi_parts[4]) {
-            spdlog::trace("adding symbol");
             lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
-            lv_label_set_text(wifi_label, "");
           } else if (cur_network.length() > 0) {
-            spdlog::trace("adding symbol with ok");
-
             auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
             if (ip != "0.0.0.0") {
               lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
@@ -276,11 +273,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
       for (const auto &wifi : pairs) {
         lv_table_set_cell_value(wifi_table, index, 0, wifi.first.c_str());
         if (cur_network != wifi.first) {
-          spdlog::trace("adding symbol");
           lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
-          lv_label_set_text(wifi_label, "");
         } else if (cur_network.length() > 0) {
-          spdlog::trace("adding symbol with ok");
           auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
           if (ip != "0.0.0.0") {
             lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
@@ -301,6 +295,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
       lv_obj_scroll_to_y(wifi_table, 0, LV_ANIM_OFF);
       lv_obj_clear_flag(wifi_table, LV_OBJ_FLAG_HIDDEN);
       lv_obj_add_flag(spinner, LV_OBJ_FLAG_HIDDEN);
+    } else {
+      lv_label_set_text(wifi_label, "");
     }
   }
 }
