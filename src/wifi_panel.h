@@ -28,7 +28,7 @@ class WifiPanel {
     WifiPanel *panel = (WifiPanel*)event->user_data;
     panel->handle_back_btn(event);
   };
-  
+
   static void _handle_callback(lv_event_t *event) {
     WifiPanel *panel = (WifiPanel*)event->user_data;
     panel->handle_callback(event);
