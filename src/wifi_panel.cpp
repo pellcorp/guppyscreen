@@ -10,6 +10,7 @@
 #include <algorithm>
 
 LV_IMG_DECLARE(back);
+LV_IMG_DECLARE(refresh_img);
 
 static void draw_part_event_cb(lv_event_t * e) {
   lv_obj_t * obj = lv_event_get_target(e);
@@ -35,6 +36,7 @@ WifiPanel::WifiPanel(std::mutex &l)
   , wifi_label(lv_label_create(prompt_cont))
   , password_input(lv_textarea_create(prompt_cont))
   , back_btn(cont, &back, "Back", &WifiPanel::_handle_back_btn, this)
+  , refresh_btn(cont, &refresh_img, "Refresh", &WifiPanel::_handle_refresh_btn, this)
   , kb(lv_keyboard_create(cont))
 {
   lv_obj_set_size(cont, LV_PCT(100), LV_PCT(100));
@@ -48,6 +50,8 @@ WifiPanel::WifiPanel(std::mutex &l)
 
   lv_obj_add_flag(back_btn.get_container(), LV_OBJ_FLAG_FLOATING);  
   lv_obj_align(back_btn.get_container(), LV_ALIGN_BOTTOM_RIGHT, 0, -20);
+  lv_obj_add_flag(refresh_btn.get_container(), LV_OBJ_FLAG_FLOATING);
+  lv_obj_align(refresh_btn.get_container(), LV_ALIGN_BOTTOM_RIGHT, -100, -20);
   
   lv_obj_set_flex_grow(top_cont, 1);
   lv_obj_set_flex_flow(top_cont, LV_FLEX_FLOW_ROW);
@@ -83,7 +87,7 @@ WifiPanel::WifiPanel(std::mutex &l)
   lv_obj_align(wifi_label, LV_ALIGN_TOP_LEFT, 0, 10);
   lv_obj_align(password_input, LV_ALIGN_TOP_MID, 0, 100);
 
-  lv_obj_set_size(password_input, LV_PCT(80), LV_SIZE_CONTENT);
+  lv_obj_set_size(password_input, LV_PCT(100), LV_SIZE_CONTENT);
   //lv_textarea_set_password_mode(password_input, true);
   lv_textarea_set_one_line(password_input, true);
 
@@ -125,6 +129,14 @@ void WifiPanel::handle_back_btn(lv_event_t *e) {
     lv_obj_add_flag(wifi_table, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
     lv_obj_move_background(cont);
+  }
+}
+
+void WifiPanel::handle_refresh_btn(lv_event_t *e) {
+  lv_event_code_t code = lv_event_get_code(e);
+  if(code == LV_EVENT_CLICKED) {
+    spdlog::info("Refreshing");
+    foreground();
   }
 }
 
