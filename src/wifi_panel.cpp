@@ -167,6 +167,10 @@ void WifiPanel::handle_callback(lv_event_t *e) {
   }
 
   if (code == LV_EVENT_VALUE_CHANGED) {
+    // we need to reload the current network so we have the right state to compare
+    find_current_network();
+    spdlog::info("handle callback - current network {}", cur_network);
+
     if (cur_network.length() > 0 && cur_network == selected_network) {
       auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
       if (ip != "0.0.0.0") {
@@ -210,7 +214,7 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
     uint32_t index = 0;
 
     find_current_network();
-    spdlog::trace("current network {}", cur_network);
+    spdlog::info("handle wpa event scan results - current network {}", cur_network);
 
     std::lock_guard<std::mutex> lock(lv_lock);
     while (std::getline(f, line)) {
@@ -227,7 +231,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
           if (cur_network != wifi_parts[4]) {
             spdlog::trace("adding symbol");
             lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
-          } else {
+            lv_label_set_text(wifi_label, "");
+          } else if (cur_network.length() > 0) {
             spdlog::trace("adding symbol with ok");
 
             auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
@@ -252,7 +257,7 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
     lv_obj_add_flag(spinner, LV_OBJ_FLAG_HIDDEN);
   } else if (event.rfind("<3>CTRL-EVENT-CONNECTED", 0) == 0) {
     if (find_current_network()) {
-      spdlog::trace("current network {}", cur_network);
+      spdlog::info("handle wpa event connected - current network {}", cur_network);
       std::vector<std::pair<std::string, int>> pairs;
       for (auto it = wifi_name_db.begin(); it != wifi_name_db.end(); ++it) {
 	      pairs.push_back(*it);
@@ -271,7 +276,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
         if (cur_network != wifi.first) {
           spdlog::trace("adding symbol");
           lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
-        } else {
+          lv_label_set_text(wifi_label, "");
+        } else if (cur_network.length() > 0) {
           spdlog::trace("adding symbol with ok");
           auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
           if (ip != "0.0.0.0") {
@@ -281,7 +287,7 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
                       ip).c_str());
           } else {
             lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nNo IP Address",
-                      selected_network).c_str());
+                      cur_network).c_str());
             lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WARNING "    " LV_SYMBOL_WIFI);
           }
           lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
