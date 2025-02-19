@@ -11,8 +11,7 @@
 
 LV_IMG_DECLARE(back);
 
-static void draw_part_event_cb(lv_event_t * e)
-{
+static void draw_part_event_cb(lv_event_t * e) {
   lv_obj_t * obj = lv_event_get_target(e);
   lv_obj_draw_part_dsc_t * dsc = lv_event_get_draw_part_dsc(e);
   if(dsc->part == LV_PART_ITEMS) {
@@ -67,6 +66,7 @@ WifiPanel::WifiPanel(std::mutex &l)
   
   lv_obj_add_event_cb(wifi_table, &WifiPanel::_handle_callback, LV_EVENT_VALUE_CHANGED, this);
   lv_obj_add_event_cb(wifi_table, &WifiPanel::_handle_callback, LV_EVENT_SIZE_CHANGED, this);
+  lv_obj_add_event_cb(wifi_table, &WifiPanel::_handle_callback, LV_EVENT_LONG_PRESSED, this);
   lv_obj_add_event_cb(wifi_table, draw_part_event_cb, LV_EVENT_DRAW_PART_BEGIN, NULL);
 
   lv_obj_set_scroll_dir(wifi_table, LV_DIR_TOP | LV_DIR_BOTTOM);
@@ -84,7 +84,7 @@ WifiPanel::WifiPanel(std::mutex &l)
   lv_obj_align(password_input, LV_ALIGN_TOP_MID, 0, 40);
 
   lv_obj_set_size(password_input, LV_PCT(80), LV_SIZE_CONTENT);
-  lv_textarea_set_password_mode(password_input, true);
+  //lv_textarea_set_password_mode(password_input, true);
   lv_textarea_set_one_line(password_input, true);
 
   lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
@@ -131,23 +131,24 @@ void WifiPanel::handle_back_btn(lv_event_t *e) {
 void WifiPanel::handle_callback(lv_event_t *e) {
   lv_event_code_t code = lv_event_get_code(e);
 
-  if(code == LV_EVENT_VALUE_CHANGED) {
+  if (code == LV_EVENT_VALUE_CHANGED || code == LV_EVENT_LONG_PRESSED) {
     uint16_t row;
     uint16_t col;
-
     lv_table_get_selected_cell(wifi_table, &row, &col);
+
     if (row == LV_TABLE_CELL_NONE || col == LV_TABLE_CELL_NONE) {
       return;
     }
-
     selected_network = lv_table_get_cell_value(wifi_table, row, 0);
+}
+
+if (code == LV_EVENT_VALUE_CHANGED) {
     if (cur_network.length() > 0 && cur_network == selected_network) {
       auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
       lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
 						selected_network,
 						ip).c_str());
       lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
-
     } else if (list_networks.count(selected_network)) {
       auto nid = list_networks.find(selected_network)->second;
       wpa_event.send_command(fmt::format("SELECT_NETWORK {}", nid));
@@ -157,8 +158,14 @@ void WifiPanel::handle_callback(lv_event_t *e) {
       lv_obj_clear_flag(password_input, LV_OBJ_FLAG_HIDDEN);
       lv_event_send(password_input, LV_EVENT_FOCUSED, NULL);
     }
-
     lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
+  } else if (code == LV_EVENT_LONG_PRESSED) {
+    if (list_networks.count(selected_network)) {
+      spdlog::info("Removing network {}", selected_network);
+      auto nid = list_networks.find(selected_network)->second;
+      wpa_event.send_command(fmt::format("REMOVE_NETWORK {}", nid));
+      wpa_event.send_command("SAVE_CONFIG");
+    }
   }
 }
 
@@ -177,33 +184,32 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
     std::lock_guard<std::mutex> lock(lv_lock);
     while (std::getline(f, line)) {
       if (line.rfind("bss", 0) == 0) {
-	continue;
+	      continue;
       }
 
       auto wifi_parts = KUtils::split(line, '\t');
       spdlog::trace("wifi parts {}", fmt::join(wifi_parts, ", "));
       if (wifi_parts.size() == 5) {
-	auto inserted = wifi_name_db.insert({wifi_parts[4], std::stoi(wifi_parts[2])});
-	if (inserted.second) {
-	  lv_table_set_cell_value(wifi_table, index, 0, wifi_parts[4].c_str());
-	  if (cur_network != wifi_parts[4]) {
-	    spdlog::trace("adding symbol");
-	    lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
-	  } else {
-	    spdlog::trace("adding symbol with ok");
-	    lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
-	    auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
-	    lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
-						      cur_network,
-						      ip).c_str());
-	    lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
-	    lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
-	  }
-
-	  index++;
-	}
+        auto inserted = wifi_name_db.insert({wifi_parts[4], std::stoi(wifi_parts[2])});
+        if (inserted.second) {
+          lv_table_set_cell_value(wifi_table, index, 0, wifi_parts[4].c_str());
+          if (cur_network != wifi_parts[4]) {
+            spdlog::trace("adding symbol");
+            lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
+          } else {
+            spdlog::trace("adding symbol with ok");
+            lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
+            auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
+            lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+                        cur_network,
+                        ip).c_str());
+            lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
+          }
+          index++;
+        }
       }
-    }
+    } // while
     lv_obj_scroll_to_y(wifi_table, 0, LV_ANIM_OFF);
     lv_obj_clear_flag(wifi_table, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(spinner, LV_OBJ_FLAG_HIDDEN);
@@ -212,34 +218,33 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
       spdlog::trace("cur_network {}", cur_network);
       std::vector<std::pair<std::string, int>> pairs;
       for (auto it = wifi_name_db.begin(); it != wifi_name_db.end(); ++it) {
-	pairs.push_back(*it);
+	      pairs.push_back(*it);
       }
       
       std::sort(pairs.begin(), pairs.end(), [=](std::pair<std::string, int>& a,
-						std::pair<std::string, int>& b)
-      {
-	return a.second > b.second;
+						std::pair<std::string, int>& b) {
+	      return a.second > b.second;
       });
       
       std::lock_guard<std::mutex> lock(lv_lock);
 
       uint32_t index = 0;
       for (const auto &wifi : pairs) {
-	lv_table_set_cell_value(wifi_table, index, 0, wifi.first.c_str());
-	if (cur_network != wifi.first) {
-	  spdlog::trace("adding symbol");
-	  lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
-	} else {
-	  spdlog::trace("adding symbol with ok");
-	  lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
-	    auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
-	    lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
-						      cur_network,
-						      ip).c_str());
-	    lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
-	    lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
-	}
-	index++;
+        lv_table_set_cell_value(wifi_table, index, 0, wifi.first.c_str());
+        if (cur_network != wifi.first) {
+          spdlog::trace("adding symbol");
+          lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
+        } else {
+          spdlog::trace("adding symbol with ok");
+          lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
+          auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
+          lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+                      cur_network,
+                      ip).c_str());
+          lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
+          lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
+        }
+        index++;
       }
 
       lv_obj_scroll_to_y(wifi_table, 0, LV_ANIM_OFF);
@@ -249,10 +254,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
   }
 }
 
-void WifiPanel::handle_kb_input(lv_event_t *e)
-{
+void WifiPanel::handle_kb_input(lv_event_t *e) {
   const lv_event_code_t code = lv_event_get_code(e);
-
   if (code == LV_EVENT_FOCUSED) {
     lv_keyboard_set_textarea(kb, password_input);
     lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
@@ -275,10 +278,10 @@ void WifiPanel::handle_kb_input(lv_event_t *e)
     lv_obj_clear_state(password_input, LV_STATE_FOCUSED);
     lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
   } else if (code == LV_EVENT_CLICKED) {
-      lv_obj_t *target = lv_event_get_target(e);
-      if (target != kb && target != password_input) {  
-        lv_event_send(password_input, LV_EVENT_DEFOCUSED, NULL);
-      }
+    lv_obj_t *target = lv_event_get_target(e);
+    if (target != kb && target != password_input) {
+      lv_event_send(password_input, LV_EVENT_DEFOCUSED, NULL);
+    }
   }
 }
 
@@ -304,15 +307,13 @@ bool WifiPanel::find_current_network() {
   while (std::getline(f, line)) {
     auto wifi_parts = KUtils::split(line, '\t');
     if (wifi_parts.size() == 4 && line.find("[CURRENT]") != std::string::npos) {
-	cur_network = wifi_parts[1];
-	list_networks.insert({wifi_parts[1], wifi_parts[0]});
-	found = true;
+      cur_network = wifi_parts[1];
+      list_networks.insert({wifi_parts[1], wifi_parts[0]});
+      found = true;
     }
-
     if (wifi_parts.size() > 1) {
       list_networks.insert({wifi_parts[1], wifi_parts[0]});
     }
   }
-
   return found;
 }

@@ -36,8 +36,7 @@ MacrosPanel::MacrosPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent)
   lv_obj_set_style_text_font(kb, &lv_font_montserrat_16, LV_STATE_DEFAULT);
 }
 
-MacrosPanel::~MacrosPanel()
-{
+MacrosPanel::~MacrosPanel() {
   if (cont != NULL) {
     lv_obj_del(cont);
     cont = NULL;
@@ -82,11 +81,11 @@ void MacrosPanel::handle_hide_show(lv_event_t *e) {
     bool show_hidden = lv_obj_has_state(show_hide_switch, LV_STATE_CHECKED);
     if (show_hidden) {
       for (const auto &m : macro_items) {
-	m->show();
+	      m->show();
       }
     } else {
       for (const auto &m : macro_items) {
-	m->hide_if_hidden();
+	      m->hide_if_hidden();
       }
     }
   }
