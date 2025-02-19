@@ -128,6 +128,19 @@ void WifiPanel::handle_back_btn(lv_event_t *e) {
   }
 }
 
+void WifiPanel::remove_network(lv_event_t *e) {
+  lv_obj_t * obj = lv_event_get_current_target(e);
+  const std::string action = lv_msgbox_get_active_btn_text(obj);
+  lv_msgbox_close(obj);
+
+  if (action == "OK") {
+    spdlog::info("Removing network {}", selected_network);
+    auto nid = list_networks.find(selected_network)->second;
+    wpa_event.send_command(fmt::format("REMOVE_NETWORK {}", nid));
+    wpa_event.send_command("SAVE_CONFIG");
+  }
+}
+
 void WifiPanel::handle_callback(lv_event_t *e) {
   lv_event_code_t code = lv_event_get_code(e);
 
@@ -135,19 +148,23 @@ void WifiPanel::handle_callback(lv_event_t *e) {
     uint16_t row;
     uint16_t col;
     lv_table_get_selected_cell(wifi_table, &row, &col);
-
     if (row == LV_TABLE_CELL_NONE || col == LV_TABLE_CELL_NONE) {
       return;
     }
     selected_network = lv_table_get_cell_value(wifi_table, row, 0);
-}
+  }
 
-if (code == LV_EVENT_VALUE_CHANGED) {
+  if (code == LV_EVENT_VALUE_CHANGED) {
     if (cur_network.length() > 0 && cur_network == selected_network) {
       auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
-      lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+      if (ip != "0.0.0.0") {
+        lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
 						selected_network,
 						ip).c_str());
+      } else {
+        lv_label_set_text(wifi_label, fmt::format("Connection failed for {}",
+            selected_network).c_str());
+      }
       lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
     } else if (list_networks.count(selected_network)) {
       auto nid = list_networks.find(selected_network)->second;
@@ -161,10 +178,12 @@ if (code == LV_EVENT_VALUE_CHANGED) {
     lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
   } else if (code == LV_EVENT_LONG_PRESSED) {
     if (list_networks.count(selected_network)) {
-      spdlog::info("Removing network {}", selected_network);
-      auto nid = list_networks.find(selected_network)->second;
-      wpa_event.send_command(fmt::format("REMOVE_NETWORK {}", nid));
-      wpa_event.send_command("SAVE_CONFIG");
+        static const char *btns[] = {"OK", "Cancel"};
+        lv_obj_t * mbox = lv_msgbox_create(NULL, "", fmt::format("Delete {}?", selected_network).c_str(), btns, false);
+        lv_obj_set_width(mbox, LV_PCT(50));
+        lv_obj_align(mbox, LV_ALIGN_TOP_MID, 0, 0);
+        lv_obj_add_event_cb(mbox, _remove_network, LV_EVENT_VALUE_CHANGED, this);
+        lv_obj_center(mbox);
     }
   }
 }
@@ -198,11 +217,17 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
             lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
           } else {
             spdlog::trace("adding symbol with ok");
-            lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
+
             auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
-            lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
-                        cur_network,
-                        ip).c_str());
+            if (ip != "0.0.0.0") {
+              lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
+              lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+                          cur_network,
+                          ip).c_str());
+            } else {
+              lv_label_set_text(wifi_label, fmt::format("Connection failed for {}", cur_network).c_str());
+              lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WARNING "    " LV_SYMBOL_WIFI);
+            }
             lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
           }
@@ -238,9 +263,14 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
           spdlog::trace("adding symbol with ok");
           lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
           auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
-          lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+          if (ip != "0.0.0.0") {
+            lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
                       cur_network,
                       ip).c_str());
+          } else {
+            lv_label_set_text(wifi_label, fmt::format("Connection failed for {}",
+                      selected_network).c_str());
+          }
           lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
           lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
         }

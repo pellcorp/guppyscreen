@@ -215,17 +215,14 @@ void SysInfoPanel::foreground() {
           GUPPYSCREEN_BRANCH, GUPPYSCREEN_VERSION).c_str());
 }
 
-void SysInfoPanel::handle_callback(lv_event_t *e)
-{
+void SysInfoPanel::handle_callback(lv_event_t *e) {
   if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
     lv_obj_t *btn = lv_event_get_current_target(e);
 
-    if (btn == back_btn.get_container())
-    {
+    if (btn == back_btn.get_container()) {
       lv_obj_move_background(cont);
     }
-  }
-  else if (lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) {
+  } else if (lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) {
     lv_obj_t *obj = lv_event_get_target(e);
     Config *conf = Config::get_instance();
     if (obj == loglevel_dd) {
@@ -242,13 +239,11 @@ void SysInfoPanel::handle_callback(lv_event_t *e)
           conf->save();
         }
       }
-    }
-    else if (obj == prompt_estop_toggle) {
+    } else if (obj == prompt_estop_toggle) {
       bool should_prompt = lv_obj_has_state(prompt_estop_toggle, LV_STATE_CHECKED);
       conf->set<bool>("/prompt_emergency_stop", should_prompt);
       conf->save();
-    }
-    else if (obj == display_sleep_dd) {
+    } else if (obj == display_sleep_dd) {
       char buf[64];
       lv_dropdown_get_selected_str(display_sleep_dd, buf, sizeof(buf));
       std::string sleep_label = std::string(buf);
@@ -258,8 +253,7 @@ void SysInfoPanel::handle_callback(lv_event_t *e)
         conf->set<int32_t>("/display_sleep_sec", el->second);
         conf->save();
       }
-    }
-    else if (obj == z_icon_toggle) {
+    } else if (obj == z_icon_toggle) {
       bool inverted = lv_obj_has_state(z_icon_toggle, LV_STATE_CHECKED);
       conf->set<bool>("/invert_z_icon", inverted);
       conf->save();
