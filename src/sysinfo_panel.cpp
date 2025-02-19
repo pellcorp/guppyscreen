@@ -177,7 +177,7 @@ SysInfoPanel::SysInfoPanel()
   lv_obj_set_size(theme_cont, LV_PCT(100), LV_SIZE_CONTENT);
   lv_obj_set_style_pad_all(theme_cont, 0, 0);
   l = lv_label_create(theme_cont);
-  lv_label_set_text(l, "Theme Color");
+  lv_label_set_text(l, "Theme Colour");
   lv_obj_align(l, LV_ALIGN_LEFT_MID, 0, 0);
   lv_obj_align(theme_dd, LV_ALIGN_RIGHT_MID, 0, 0);
 
