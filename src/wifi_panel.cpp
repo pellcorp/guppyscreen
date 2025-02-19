@@ -80,8 +80,8 @@ WifiPanel::WifiPanel(std::mutex &l)
   lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_set_style_border_width(prompt_cont, 0, 0);
   
-  lv_obj_align(wifi_label, LV_ALIGN_TOP_MID, 0, 10);
-  lv_obj_align(password_input, LV_ALIGN_TOP_MID, 0, 40);
+  lv_obj_align(wifi_label, LV_ALIGN_TOP_LEFT, 0, 10);
+  lv_obj_align(password_input, LV_ALIGN_TOP_MID, 0, 100);
 
   lv_obj_set_size(password_input, LV_PCT(80), LV_SIZE_CONTENT);
   //lv_textarea_set_password_mode(password_input, true);
@@ -158,11 +158,11 @@ void WifiPanel::handle_callback(lv_event_t *e) {
     if (cur_network.length() > 0 && cur_network == selected_network) {
       auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
       if (ip != "0.0.0.0") {
-        lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+        lv_label_set_text(wifi_label, fmt::format("Connected to {}\n\nIP: {}",
 						selected_network,
 						ip).c_str());
       } else {
-        lv_label_set_text(wifi_label, fmt::format("Connection failed for {}",
+        lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nFailed",
             selected_network).c_str());
       }
       lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
@@ -171,7 +171,7 @@ void WifiPanel::handle_callback(lv_event_t *e) {
       wpa_event.send_command(fmt::format("SELECT_NETWORK {}", nid));
       wpa_event.send_command("SAVE_CONFIG");
     } else {
-      lv_label_set_text(wifi_label, fmt::format("Enter password for {}", selected_network).c_str());
+      lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nPassword:", selected_network).c_str());
       lv_obj_clear_flag(password_input, LV_OBJ_FLAG_HIDDEN);
       lv_event_send(password_input, LV_EVENT_FOCUSED, NULL);
     }
@@ -198,7 +198,7 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
     uint32_t index = 0;
 
     find_current_network();
-    spdlog::trace("cur_network {}", cur_network);
+    spdlog::trace("current network {}", cur_network);
 
     std::lock_guard<std::mutex> lock(lv_lock);
     while (std::getline(f, line)) {
@@ -221,11 +221,11 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
             auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
             if (ip != "0.0.0.0") {
               lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
-              lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+              lv_label_set_text(wifi_label, fmt::format("Connected to {}\n\nIP: {}",
                           cur_network,
                           ip).c_str());
             } else {
-              lv_label_set_text(wifi_label, fmt::format("Connection failed for {}", cur_network).c_str());
+              lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nFailed", cur_network).c_str());
               lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WARNING "    " LV_SYMBOL_WIFI);
             }
             lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
@@ -240,7 +240,7 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
     lv_obj_add_flag(spinner, LV_OBJ_FLAG_HIDDEN);
   } else if (event.rfind("<3>CTRL-EVENT-CONNECTED", 0) == 0) {
     if (find_current_network()) {
-      spdlog::trace("cur_network {}", cur_network);
+      spdlog::trace("current network {}", cur_network);
       std::vector<std::pair<std::string, int>> pairs;
       for (auto it = wifi_name_db.begin(); it != wifi_name_db.end(); ++it) {
 	      pairs.push_back(*it);
@@ -261,15 +261,16 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
           lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WIFI);
         } else {
           spdlog::trace("adding symbol with ok");
-          lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
           auto ip = KUtils::interface_ip(KUtils::get_wifi_interface());
           if (ip != "0.0.0.0") {
-            lv_label_set_text(wifi_label, fmt::format("Connected to network {}\nIP: {}",
+            lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_OK "    " LV_SYMBOL_WIFI);
+            lv_label_set_text(wifi_label, fmt::format("Connected to {}\n\nIP: {}",
                       cur_network,
                       ip).c_str());
           } else {
-            lv_label_set_text(wifi_label, fmt::format("Connection failed for {}",
+            lv_label_set_text(wifi_label, fmt::format("Connect to {}\n\nFailed",
                       selected_network).c_str());
+            lv_table_set_cell_value(wifi_table, index, 1, LV_SYMBOL_WARNING "    " LV_SYMBOL_WIFI);
           }
           lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);
           lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
@@ -333,6 +334,7 @@ bool WifiPanel::find_current_network() {
   spdlog::trace("nets = {}", nets);
   std::istringstream f(nets);
   std::string line;
+  cur_network = ""; // reset it to nothing in case we deleted the network
   bool found = false;
   while (std::getline(f, line)) {
     auto wifi_parts = KUtils::split(line, '\t');
