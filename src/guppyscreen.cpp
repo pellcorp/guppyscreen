@@ -123,6 +123,24 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
   lv_obj_set_style_bg_opa(screen_saver, LV_OPA_100, 0);
   lv_obj_move_background(screen_saver);
 
+#ifdef GUPPY_CALIBRATE
+  lv_obj_t *main_screen = lv_disp_get_scr_act(NULL);
+  auto calibration_coeff = conf->get_json("/touch_calibration_coeff");
+  if (calibration_coeff.is_null()) {
+    lv_tc_register_coeff_save_cb(&GuppyScreen::save_calibration_coeff);
+    lv_obj_t *touch_calibrate_scr = lv_tc_screen_create();
+    lv_disp_load_scr(touch_calibrate_scr);
+    lv_tc_screen_start(touch_calibrate_scr);
+    lv_obj_add_event_cb(touch_calibrate_scr, &GuppyScreen::handle_calibrated, LV_EVENT_READY, main_screen);
+    spdlog::info("running touch calibration");
+  } else {
+    // load calibration data
+    auto c = calibration_coeff.template get<std::vector<float>>();
+    lv_tc_coeff_t coeff = {true, c[0], c[1], c[2], c[3], c[4], c[5]};
+    lv_tc_set_coeff(coeff, false);
+    spdlog::info("loaded calibration coefficients");
+  }
+#endif
   return gs;
 }
 
@@ -183,6 +201,21 @@ void GuppyScreen::new_theme_apply_cb(lv_theme_t *th, lv_obj_t *obj) {
     lv_obj_add_style(obj, &style_imgbtn_disabled, LV_STATE_DISABLED);
   }
 }
+
+#ifdef GUPPY_CALIBRATE
+void GuppyScreen::handle_calibrated(lv_event_t *event) {
+  spdlog::info("finished calibration");
+  lv_obj_t *main_screen = (lv_obj_t *)event->user_data;
+  lv_disp_load_scr(main_screen);
+}
+
+void GuppyScreen::save_calibration_coeff(lv_tc_coeff_t coeff) {
+  Config *conf = Config::get_instance();
+  conf->set<std::vector<float>>("/touch_calibration_coeff",
+                                {coeff.a, coeff.b, coeff.c, coeff.d, coeff.e, coeff.f});
+  conf->save();
+}
+#endif
 
 void GuppyScreen::refresh_theme() {
   lv_theme_t *th = lv_theme_default_get();

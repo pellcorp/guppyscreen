@@ -40,6 +40,11 @@ include $(LVGL_DIR)/lvgl/lvgl.mk
 include $(LVGL_DIR)/lv_drivers/lv_drivers.mk
 
 CSRCS 			+= $(wildcard $(LVGL_DIR)/assets/*.c)
+ifdef GUPPY_CALIBRATE
+CSRCS			+= $(wildcard $(LVGL_DIR)/lv_touch_calibration/*.c)
+DEFINES += -D GUPPY_CALIBRATE
+DEFINES += -D EVDEV_CALIBRATE
+endif
 
 ASSET_DIR		= material
 ifdef GUPPY_SMALL_SCREEN

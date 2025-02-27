@@ -9,7 +9,7 @@ GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 function docker_make() {
     target_arg="GUPPY_ROTATE=true"
     if [ -n "$GUPPY_SMALL_SCREEN" ]; then
-        target_arg="GUPPY_SMALL_SCREEN=true"
+        target_arg="GUPPY_SMALL_SCREEN=true GUPPY_CALIBRATE=true"
     fi
 
     docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH $target_arg CROSS_COMPILE=mipsel-buildroot-linux-musl- make $@"
