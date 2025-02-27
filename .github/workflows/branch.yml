@@ -9,12 +9,20 @@ jobs:
       matrix:
         include:
           - arch: mipsel-buildroot-linux-musl-
+            small: false
+            rotate: true
+            asset: guppyscreen
+
+          - arch: mipsel-buildroot-linux-musl-
+            small: true
+            rotate: false
+            asset: guppyscreen-smallscreen
 
     runs-on: ubuntu-22.04
     container:
       image: pellcorp/guppydev:latest
       options: --user 1001
-  
+
     env:
       CROSS_COMPILE: ${{ matrix.arch }}
       CC: ${{ matrix.arch }}
@@ -29,6 +37,16 @@ jobs:
       run: |
         echo "GUPPYSCREEN_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
         echo "GUPPYSCREEN_VERSION=${{ github.sha }}" >> $GITHUB_ENV
+
+    - if: matrix.small
+      name: export screen size
+      run: |
+        echo "GUPPY_SMALL_SCREEN=${{ matrix.small }}" >> $GITHUB_ENV
+
+    - if: matrix.rotate
+      name: export screen rotate
+      run: |
+          echo "GUPPY_ROTATE=${{ matrix.rotate }}" >> $GITHUB_ENV
 
     - name: patch lv_drivers
       run: |
@@ -50,7 +68,7 @@ jobs:
 
     - name: make libhv
       run: make libhv.a
-    
+
     - name: make libspdlog
       run: make libspdlog.a
 
@@ -60,17 +78,17 @@ jobs:
     - name: package release
       run: |
         chmod +x ./release.sh
-        ./release.sh
+        ./release.sh ${{ matrix.asset }}
 
     - uses: actions/upload-artifact@v4
       with:
-        name: guppyscreen
-        path: ./guppyscreen.tar.gz
+        name: ${{ matrix.asset }}
+        path: ./${{ matrix.asset }}.tar.gz
 
     - name: branch release
       uses: softprops/action-gh-release@v2
       with:
         name: ${{ github.ref_name }}
         tag_name: ${{ github.ref_name }}
-        files: guppyscreen.tar.gz
+        files: ${{ matrix.asset }}.tar.gz
         fail_on_unmatched_files: true
