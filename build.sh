@@ -7,12 +7,22 @@ GIT_REVISION=$(git rev-parse --short HEAD)
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 function docker_make() {
-    docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH CROSS_COMPILE=mipsel-buildroot-linux-musl- make $@"
+    target_arg="GUPPY_ROTATE=true"
+    if [ -n "$GUPPY_SMALL_SCREEN" ]; then
+        target_arg="GUPPY_SMALL_SCREEN=true"
+    fi
+
+    docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH $target_arg CROSS_COMPILE=mipsel-buildroot-linux-musl- make $@"
 }
+
+unset GUPPY_SMALL_SCREEN
 
 while true; do
     if [ "$1" = "--setup" ]; then
         SETUP=true
+        shift
+    elif [ "$1" = "--small" ]; then
+        export GUPPY_SMALL_SCREEN=true
         shift
     elif [ "$1" = "--printer" ]; then
         shift
