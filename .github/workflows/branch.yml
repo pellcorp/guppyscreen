@@ -12,11 +12,13 @@ jobs:
             small: false
             rotate: true
             asset: guppyscreen
+            calibrate: false
 
           - arch: mipsel-buildroot-linux-musl-
             small: true
             rotate: false
             asset: guppyscreen-smallscreen
+            calibrate: true
 
     runs-on: ubuntu-22.04
     container:
@@ -47,6 +49,11 @@ jobs:
       name: export screen rotate
       run: |
           echo "GUPPY_ROTATE=${{ matrix.rotate }}" >> $GITHUB_ENV
+
+    - if: matrix.calibrate
+      name: export touch calibrate
+      run: |
+        echo "GUPPY_CALIBRATE=${{ matrix.calibrate }}" >> $GITHUB_ENV
 
     - name: patch lv_drivers
       run: |

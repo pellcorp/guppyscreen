@@ -1,7 +1,10 @@
 #include "lvgl/lvgl.h"
 #include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
-
+#ifdef GUPPY_CALIBRATE
+#include "lv_tc.h"
+#include "lv_tc_screen.h"
+#endif
 #include <unistd.h>
 #include <pthread.h>
 #include <time.h>
@@ -79,5 +82,10 @@ static void hal_init(lv_color_t primary, lv_color_t secondary) {
     lv_indev_drv_init(&indev_drv_1);
     indev_drv_1.read_cb = evdev_read; // no calibration
     indev_drv_1.type = LV_INDEV_TYPE_POINTER;
+
+#ifdef GUPPY_CALIBRATE
+    spdlog::info("using touch calibration");
+    lv_tc_indev_drv_init(&indev_drv_1, evdev_read);
+#endif
     lv_indev_drv_register(&indev_drv_1);
 }
