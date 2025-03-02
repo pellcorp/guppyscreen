@@ -2,8 +2,6 @@
 
 Grumpyscreen is a fork of GuppyScreen specifically for Simple AF
 
-Grumpy Screen is a touch UI for Klipper using APIs exposed by Moonraker.
-
 ## Features
 
 :white_check_mark: Console/Macro Shell  
@@ -20,9 +18,9 @@ Grumpy Screen is a touch UI for Klipper using APIs exposed by Moonraker.
 
 ## Credits
 
-[Guppyscreen](https://github.com/ballaswag/guppyscreen)
-[Material Design Icons](https://pictogrammers.com/library/mdi/)
-[Moonraker](https://github.com/Arksine/moonraker)  
-[KlipperScreen](https://github.com/KlipperScreen/KlipperScreen)  
-[Fluidd](https://github.com/fluidd-core/fluidd)  
-[Klippain-shaketune](https://github.com/Frix-x/klippain-shaketune)  
+- [Guppyscreen](https://github.com/ballaswag/guppyscreen)
+- [Material Design Icons](https://pictogrammers.com/library/mdi/)
+- [Moonraker](https://github.com/Arksine/moonraker)  
+- [KlipperScreen](https://github.com/KlipperScreen/KlipperScreen)  
+- [Fluidd](https://github.com/fluidd-core/fluidd)  
+- [Klippain-shaketune](https://github.com/Frix-x/klippain-shaketune)  
