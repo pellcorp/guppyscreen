@@ -1,29 +1,11 @@
-# Guppy Screen for Klipper
+# Grumpy Screen for Klipper
 
-Guppy Screen is a touch UI for Klipper using APIs exposed by Moonraker. It builds on LVGL as a standalone executable, has no dependency on any display servers such as X/Wayland.
-<p align="center">
-    <a aria-label="Downloads" href="https://github.com/pellcorp/guppyscreen/releases">
-      <img src="https://img.shields.io/github/downloads/pellcorp/guppyscreen/total?style=flat-square">
-  </a>
-    <a aria-label="Stars" href="https://github.com/pellcorp/guppyscreen/stargazers">
-      <img src="https://img.shields.io/github/stars/pellcorp/guppyscreen?style=flat-square">
-  </a>
-    <a aria-label="Forks" href="https://github.com/pellcorp/guppyscreen/network/members">
-      <img src="https://img.shields.io/github/forks/pellcorp/guppyscreen?style=flat-square">
-  </a>
-    <a aria-label="License" href="https://github.com/pellcorp/guppyscreen/blob/develop/LICENSE">
-      <img src="https://img.shields.io/github/license/pellcorp/guppyscreen?style=flat-square">
-  </a>
-    <a aria-label="Last commit" href="https://github.com/pellcorp/guppyscreen/commits/">
-      <img src="https://img.shields.io/github/last-commit/pellcorp/guppyscreen?style=flat-square">
-  </a>
-</p>
+Grumpyscreen is a fork of GuppyScreen specifically for Simple AF
 
-## Installation / Update
-
-Only for Installation via Simple AF
+Grumpy Screen is a touch UI for Klipper using APIs exposed by Moonraker.
 
 ## Features
+
 :white_check_mark: Console/Macro Shell  
 :white_check_mark: Bedmesh  
 :white_check_mark: Belt Calibration/Excitate  
@@ -36,12 +18,9 @@ Only for Installation via Simple AF
 :white_check_mark: Limits (Velocity, Acel, Square Corner Velocity, etc.)  
 :white_check_mark: File Browser  
 
-## Documentation
-You can find various Guppy Screen documents [here](https://ballaswag.github.io/docs/guppyscreen/configuration/).
-
-## Support Guppy Screen
-
 ## Credits
+
+[Guppyscreen](https://github.com/ballaswag/guppyscreen)
 [Material Design Icons](https://pictogrammers.com/library/mdi/)
 [Moonraker](https://github.com/Arksine/moonraker)  
 [KlipperScreen](https://github.com/KlipperScreen/KlipperScreen)  
