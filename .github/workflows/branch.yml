@@ -10,13 +10,11 @@ jobs:
         include:
           - arch: mipsel-buildroot-linux-musl-
             small: false
-            rotate: true
             asset: guppyscreen
             calibrate: false
 
           - arch: mipsel-buildroot-linux-musl-
             small: true
-            rotate: false
             asset: guppyscreen-smallscreen
             calibrate: true
 
@@ -44,11 +42,6 @@ jobs:
       name: export screen size
       run: |
         echo "GUPPY_SMALL_SCREEN=${{ matrix.small }}" >> $GITHUB_ENV
-
-    - if: matrix.rotate
-      name: export screen rotate
-      run: |
-          echo "GUPPY_ROTATE=${{ matrix.rotate }}" >> $GITHUB_ENV
 
     - if: matrix.calibrate
       name: export touch calibrate

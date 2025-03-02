@@ -7,7 +7,6 @@ GIT_REVISION=$(git rev-parse --short HEAD)
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 function docker_make() {
-    target_arg="GUPPY_ROTATE=true"
     if [ -n "$GUPPY_SMALL_SCREEN" ]; then
         target_arg="GUPPY_SMALL_SCREEN=true GUPPY_CALIBRATE=true"
     fi

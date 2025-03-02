@@ -65,7 +65,7 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
   spdlog::set_default_logger(klogger);
   klogger->flush_on(ll);
 
-  spdlog::info("Guppy Screen Version: {}-{}", GUPPYSCREEN_BRANCH, GUPPYSCREEN_VERSION);
+  spdlog::info("Grumpy Screen Version: {}-{}", GUPPYSCREEN_BRANCH, GUPPYSCREEN_VERSION);
 
   spdlog::info("DPI: {}", LV_DPI_DEF);
   /*LittlevGL init*/
