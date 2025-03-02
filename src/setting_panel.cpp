@@ -27,8 +27,8 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   , restart_firmware_btn(cont, &refresh_img, "Restart\nFirmware", &SettingPanel::_handle_callback, this)
   , sysinfo_btn(cont, &sysinfo_img, "System", &SettingPanel::_handle_callback, this)
   , spoolman_btn(cont, &spoolman_img, "Spoolman", &SettingPanel::_handle_callback, this)
-  , guppy_restart_btn(cont, &refresh_img, "Restart Guppy", &SettingPanel::_handle_callback, this)
-  , guppy_update_btn(cont, &update_img, "Update Guppy", &SettingPanel::_handle_callback, this)
+  , guppy_restart_btn(cont, &refresh_img, "Restart Grumpy", &SettingPanel::_handle_callback, this)
+  , guppy_update_btn(cont, &update_img, "Update Grumpy", &SettingPanel::_handle_callback, this)
   , factory_reset_btn(cont, &emergency, "Factory\nReset", &SettingPanel::_handle_callback, this,
     		  "**WARNING** **WARNING** **WARNING** **WARNING**\n\nAre you sure you want to execute an emergency factory reset?\n\nThis will reset the printer to stock creality firmware!",
           [](){
@@ -106,7 +106,7 @@ void SettingPanel::handle_callback(lv_event_t *event) {
       if (fs::exists(script)) {
         sp::call({script, "restart"});
       } else {
-        spdlog::warn("Failed to restart Guppy Screen. Did not find restart script.");
+        spdlog::warn("Failed to restart Grumpy Screen. Did not find restart script.");
       }
     } else if (btn == guppy_update_btn.get_container()) {
 
@@ -117,7 +117,7 @@ void SettingPanel::handle_callback(lv_event_t *event) {
         spdlog::info(fmt::format("Updating for branch {}", GUPPYSCREEN_BRANCH));
       	sp::call({script, GUPPYSCREEN_BRANCH});
       } else {
-	      spdlog::warn("Failed to update Guppy Screen. Did not find update script.");
+	      spdlog::warn("Failed to update Grumpy Screen. Did not find update script.");
       }
     }
   }
