@@ -67,7 +67,7 @@ void LedPanel::init(json &l) {
   leds.clear();
   for (auto &led : l.items()) {
     std::string key = led.key();
-    spdlog::trace("create led {}, {}", l.dump(), led.value().dump());
+    spdlog::debug("create led {}, {}", l.dump(), led.value().dump());
     std::string display_name = led.value()["display_name"].template get<std::string>();
 
     lv_event_cb_t led_cb = &LedPanel::_handle_led_update;
@@ -129,12 +129,12 @@ void LedPanel::handle_led_update(lv_event_t *event) {
   if (lv_event_get_code(event) == LV_EVENT_RELEASED) {
     double pct = (double)lv_slider_get_value(obj) / 100.0;
 
-    spdlog::trace("updating led brightness to {}", pct);
+    spdlog::debug("updating led brightness to {}", pct);
 
     for (auto &l : leds) {
       if (obj == l.second->get_slider()) {
 	      std::string led_name = KUtils::get_obj_name(l.first);
-      	spdlog::trace("update led {}", led_name);
+      	spdlog::debug("update led {}", led_name);
         ws.gcode_script(fmt::format(fmt::format("SET_PIN PIN={} VALUE={}", led_name, pct)));
         break;
       }
@@ -145,13 +145,13 @@ void LedPanel::handle_led_update(lv_event_t *event) {
     for (auto &l : leds) {
       if (obj == l.second->get_off()) {
 	      std::string led_name = KUtils::get_obj_name(l.first);
-      	spdlog::trace("turning off led {}", led_name);
+      	spdlog::debug("turning off led {}", led_name);
         ws.gcode_script(fmt::format("SET_PIN PIN={} VALUE=0", led_name));
         l.second->update_value(0);
         break;
       } else if (obj == l.second->get_max()) {
         std::string led_name = KUtils::get_obj_name(l.first);
-        spdlog::trace("turning led to max {}", led_name);
+        spdlog::debug("turning led to max {}", led_name);
         ws.gcode_script(fmt::format("SET_PIN PIN={} VALUE=1", led_name));
         l.second->update_value(100);
         break;
@@ -166,12 +166,12 @@ void LedPanel::handle_led_update_generic(lv_event_t *event) {
   if (lv_event_get_code(event) == LV_EVENT_RELEASED) {
     double pct = (double)lv_slider_get_value(obj) / 100.0;
 
-    spdlog::trace("updating led brightness to {}", pct);
+    spdlog::debug("updating led brightness to {}", pct);
 
     for (auto &l : leds) {
       if (obj == l.second->get_slider()) {
 	      std::string led_name = KUtils::get_obj_name(l.first);
-      	spdlog::trace("update led {}", led_name);
+      	spdlog::debug("update led {}", led_name);
         ws.gcode_script(fmt::format(fmt::format("SET_LED LED={} WHITE={}", led_name, pct)));
         break;
       }
@@ -182,13 +182,13 @@ void LedPanel::handle_led_update_generic(lv_event_t *event) {
     for (auto &l : leds) {
       if (obj == l.second->get_off()) {
 	      std::string led_name = KUtils::get_obj_name(l.first);
-      	spdlog::trace("turning off led {}", led_name);
+      	spdlog::debug("turning off led {}", led_name);
         ws.gcode_script(fmt::format("SET_LED LED={} WHITE=0", led_name));
         l.second->update_value(0);
         break;
       } else if (obj == l.second->get_max()) {
         std::string led_name = KUtils::get_obj_name(l.first);
-        spdlog::trace("turning led to max {}", led_name);
+        spdlog::debug("turning led to max {}", led_name);
         ws.gcode_script(fmt::format("SET_LED LED={} WHITE=1", led_name));
         l.second->update_value(100);
         break;
