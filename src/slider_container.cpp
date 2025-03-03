@@ -8,29 +8,6 @@ SliderContainer::SliderContainer(lv_obj_t *parent,
 				 const void *max_btn_img,
 				 const char *max_text,
 				 lv_event_cb_t cb,
-				 void *user_data)
-  : SliderContainer(parent,
-		    label_text,
-		    off_btn_img,
-		    off_text,
-		    cb,
-		    user_data,
-		    max_btn_img,
-		    max_text,
-		    cb,
-		    user_data,
-		    cb,
-		    user_data,
-		    "%") {
-}
-
-SliderContainer::SliderContainer(lv_obj_t *parent,
-				 const char *label_text,
-				 const void *off_btn_img,
-				 const char *off_text,
-				 const void *max_btn_img,
-				 const char *max_text,
-				 lv_event_cb_t cb,
 				 void *user_data,
 				 std::string u)
   : SliderContainer(parent,
@@ -47,7 +24,6 @@ SliderContainer::SliderContainer(lv_obj_t *parent,
 		    user_data,
 		    u) {
 }
-
 
 SliderContainer::SliderContainer(lv_obj_t *parent,
 				 const char *label_text,
@@ -91,7 +67,7 @@ SliderContainer::SliderContainer(lv_obj_t *parent,
   lv_obj_set_style_pad_all(control_cont, 0, 0);
   lv_obj_set_style_pad_bottom(control_cont, 7, 0);
 
-  lv_obj_clear_flag(slider_cont, LV_OBJ_FLAG_SCROLLABLE);    
+  lv_obj_clear_flag(slider_cont, LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_set_size(slider_cont, LV_PCT(45), LV_SIZE_CONTENT);
   lv_obj_set_style_pad_all(slider_cont, 0, 0);
 
@@ -103,12 +79,13 @@ SliderContainer::SliderContainer(lv_obj_t *parent,
     max_btn.hide();
   }
 
+  lv_label_set_text(slider_value, "");
   if (slider_cb != NULL) {
     lv_obj_add_event_cb(slider, slider_cb, LV_EVENT_RELEASED, slider_user_data);
+  } else {
+    lv_obj_add_flag(slider, LV_OBJ_FLAG_HIDDEN);
   }
-
-  lv_obj_add_event_cb(slider, &SliderContainer::_handle_value_update,
-		      LV_EVENT_VALUE_CHANGED, this);
+  lv_obj_add_event_cb(slider, &SliderContainer::_handle_value_update, LV_EVENT_VALUE_CHANGED, this);
 }
 
 SliderContainer::~SliderContainer() {
