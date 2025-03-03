@@ -8,15 +8,7 @@
 
 class SliderContainer {
  public:
-  SliderContainer(lv_obj_t *parent,
-		  const char *label_text,
-		  const void *off_bnt_img,
-		  const char *off_text,
-		  const void *max_bnt_img,
-		  const char *max_text,
-		  lv_event_cb_t cb,
-		  void *user_data);
-
+  // this is for sliders where the off_cb, max_cb and slider cb are the same
   SliderContainer(lv_obj_t *parent,
 		  const char *label_text,
 		  const void *off_bnt_img,
@@ -40,6 +32,7 @@ class SliderContainer {
 		  lv_event_cb_t slider_cb,
 		  void * slider_user_data,
 		  std::string u);
+
   ~SliderContainer();
   lv_obj_t *get_container();
   lv_obj_t *get_slider();

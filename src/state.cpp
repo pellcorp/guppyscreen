@@ -204,47 +204,6 @@ json State::get_display_sensors() {
       display_sensors[e] = sensors_by_id[e];
     }
   }
-
-  if (display_sensors.empty()) {
-    // default to first extruders/heaters from printer objects
-    uint32_t color_idx = 0;
-    lv_palette_t color = GUPPY_COLORS[color_idx];
-    for (auto &e: extruders) {
-      spdlog::debug("default extruder {}", e);
-      color = GUPPY_COLORS[color_idx % GUPPY_COLOR_SIZE];
-      display_sensors[e] = {
-        { "id", e },
-        { "display_name", KUtils::to_title(e) },
-        { "controllable", true },
-        { "color", color }
-      };
-      color_idx++;
-    }
-
-    for (auto &e: heaters) {
-      spdlog::debug("default heaters {}", e);
-      color = GUPPY_COLORS[color_idx % GUPPY_COLOR_SIZE];
-      display_sensors[e] = {
-        { "id", e },
-        { "display_name", KUtils::to_title(e) },
-        { "controllable", true },
-        { "color", color }
-      };
-      color_idx++;
-    }
-
-    for (auto &e: sensors) {
-      spdlog::debug("default sensors {}", e);
-      color = GUPPY_COLORS[color_idx % GUPPY_COLOR_SIZE];
-      display_sensors[e] = {
-        { "id", e },
-        { "display_name", KUtils::to_title(e) },
-        { "controllable", false },
-        { "color", color }
-      };
-      color_idx++;
-    }
-  }
   return display_sensors;
 }
 
@@ -266,27 +225,12 @@ json State::get_display_fans() {
       display_fans[e] = fans_by_id[e];
     }
   }
-		    
-  // hack to allow output_pin defined fans		    
+
   auto output_pins = get_output_pins();
   for (auto &e : output_pins) {
     if (fans_by_id.contains(e)) {
       spdlog::debug("found user configured output_pin fan {}", e);
       display_fans[e] = fans_by_id[e];
-    }
-  }
-
-  // default to top standard fans
-  if (display_fans.empty()) {
-    for (auto &e: fans) {
-      size_t pos = e.find_last_of(' ');
-      std::string display_name = KUtils::to_title(pos != std::string::npos
-						  ? e.substr(pos + 1)
-						  : "Part Fan");
-      display_fans[e] = {
-        {"id", e},
-        {"display_name", display_name}
-      };
     }
   }
   return display_fans;
@@ -296,41 +240,36 @@ json State::get_display_leds() {
   Config *conf = Config::get_instance();
   json &user_leds = conf->get_json("/leds");
 
-  json leds_by_id;
+  std::vector<std::string> user_led_ids;
   if (!user_leds.is_null()) {
     for (auto &s : user_leds) {
-      leds_by_id[s["id"].template get<std::string>()] = s;
+      user_led_ids.push_back(s["id"].template get<std::string>());
+    }
+  }
+
+  std::vector<std::string> system_led_ids;
+  auto leds = get_leds();
+  for (auto &e : leds) {
+    if (std::find(user_led_ids.begin(), user_led_ids.end(), e) != user_led_ids.end()) {
+      spdlog::debug("found user configured led {}", e);
+      system_led_ids.push_back(e);
+    }
+  }
+
+  auto output_pins = get_output_pins();
+  for (auto &e : output_pins) {
+    if (std::find(user_led_ids.begin(), user_led_ids.end(), e) != user_led_ids.end()) {
+      spdlog::debug("found user configured output_pin leds {}", e);
+      system_led_ids.push_back(e);
     }
   }
 
   json display_leds;
-  auto leds = get_leds();
-  for (auto &e : leds) {
-    if (leds_by_id.contains(e)) {
-      spdlog::debug("found user configured led {}", e);
-      display_leds[e] = leds_by_id[e];
+  for (auto &s : user_leds) {
+    auto id = s["id"].template get<std::string>();
+    if (std::find(system_led_ids.begin(), system_led_ids.end(), id) != system_led_ids.end()) {
+      display_leds.push_back(s);
     }
   }
-
-  // hack to allow output_pin defined leds
-  auto output_pins = get_output_pins();
-  for (auto &e : output_pins) {
-    if (leds_by_id.contains(e)) {
-      spdlog::debug("found user configured output_pin leds {}", e);
-      display_leds[e] = leds_by_id[e];
-    }
-  }
-
-  if (display_leds.empty()) {
-    for (auto &e: leds) {
-      size_t pos = e.find_last_of(' ');
-      std::string display_name = KUtils::to_title(pos != std::string::npos ? e.substr(pos + 1) : "LED");
-      display_leds[e] = {
-        {"id", e},
-        {"display_name", display_name}
-      };
-    }
-  }
-
   return display_leds;
 }

@@ -65,10 +65,11 @@ void LedPanel::consume(json &j) {
 void LedPanel::init(json &l) {
   std::lock_guard<std::mutex> lock(lv_lock);
   leds.clear();
-  for (auto &led : l.items()) {
-    std::string key = led.key();
-    spdlog::debug("create led {}, {}", l.dump(), led.value().dump());
-    std::string display_name = led.value()["display_name"].template get<std::string>();
+  for (auto &led : l) {
+    std::string key = led["id"].template get<std::string>();
+    spdlog::debug("create led {}, {}", l.dump(), led.dump());
+    std::string display_name = led["display_name"].template get<std::string>();
+    bool pwm = led["pwm"].is_null() ? true : led["pwm"].template get<bool>();
 
     lv_event_cb_t led_cb = &LedPanel::_handle_led_update;
     if (key.rfind("output_pin ", 0) != 0) {
@@ -76,12 +77,22 @@ void LedPanel::init(json &l) {
       led_cb = &LedPanel::_handle_led_update_generic;
     }
 
-    auto lptr = std::make_shared<SliderContainer>(leds_cont, display_name.c_str(), &cancel, "Off",
-						  &light_img, "Max", led_cb, this);
-    leds.insert({key, lptr});
+    if (pwm) {
+      auto lptr = std::make_shared<SliderContainer>(leds_cont, display_name.c_str(),
+                &cancel, "Off", led_cb, this,
+                &light_img, "Max", led_cb, this,
+                led_cb, this, "%");
+      leds.insert({key, lptr});
+    } else {
+      auto lptr = std::make_shared<SliderContainer>(leds_cont, display_name.c_str(),
+                    &cancel, "Off", led_cb, this,
+                    &light_img, "On", led_cb, this,
+                    NULL, this, "%");
+          leds.insert({key, lptr});
+    }
   }
 
-  if (leds.size() > 3) {
+  if (leds.size() > 4) {
     lv_obj_add_flag(leds_cont, LV_OBJ_FLAG_SCROLLABLE);
   } else {
     lv_obj_clear_flag(leds_cont, LV_OBJ_FLAG_SCROLLABLE);    

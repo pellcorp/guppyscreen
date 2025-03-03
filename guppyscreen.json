@@ -32,7 +32,28 @@
     "leds": [
         {
             "id": "output_pin LED",
-            "display_name": "LED"
+            "display_name": "LED",
+            "pwm": true
+        },
+        {
+            "id": "output_pin red_pin",
+            "display_name": "Red",
+            "pwm": false
+        },
+        {
+            "id": "output_pin green_pin",
+            "display_name": "Green",
+            "pwm": false
+        },
+        {
+            "id": "output_pin yellow_pin",
+            "display_name": "Yellow",
+            "pwm": false
+        },
+        {
+            "id": "output_pin light_pin",
+            "display_name": "Light",
+            "pwm": false
         }
     ],
     "log_level": "info",
