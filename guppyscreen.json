@@ -1,54 +1,47 @@
 {
-    "display_brightness": 90,
-    "display_sleep_sec": 600,
-    "invert_z_icon": false,
-    "guppy_init_script": "/etc/init.d/S99guppyscreen",
-    "guppy_update_script": "/usr/data/pellcorp/k1/update-guppyscreen.sh",
-    "factory_reset_script": "/etc/init.d/S58factoryreset",
-    "prompt_emergency_stop": true,
-    "theme": "blue",
-    "thumbnail_path": "/usr/data/printer_data/thumbnails",
-    "wpa_supplicant": "/var/run/wpa_supplicant",
-    "display_rotate": 3,
     "default_macros": {
-        "cooldown": "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=0\nSET_HEATER_TEMPERATURE HEATER=heater_bed TARGET=0",
-        "load_filament": "LOAD_MATERIAL EXTRUDER_TEMP={} EXTRUDE_LEN={}",
-        "unload_filament": "UNLOAD_MATERIAL EXTRUDER_TEMP={}",
-        "extrude": "_GUPPYSCREEN_EXTRUDE EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
-        "retract": "_GUPPYSCREEN_RETRACT EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
         "belts_shaper_calibration": "BELTS_SHAPER_CALIBRATION",
-        "excitate_axis_at_frequency": "EXCITATE_AXIS_AT_FREQUENCY"
+        "cooldown": "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=0\nSET_HEATER_TEMPERATURE HEATER=heater_bed TARGET=0",
+        "excitate_axis_at_frequency": "EXCITATE_AXIS_AT_FREQUENCY",
+        "extrude": "_GUPPYSCREEN_EXTRUDE EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
+        "load_filament": "LOAD_MATERIAL EXTRUDER_TEMP={} EXTRUDE_LEN={}",
+        "retract": "_GUPPYSCREEN_RETRACT EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
+        "unload_filament": "UNLOAD_MATERIAL EXTRUDER_TEMP={}"
     },
-    "log_level": "info",
-    "moonraker_api_key": false,
-    "moonraker_host": "127.0.0.1",
-    "moonraker_port": 7125,
+    "display_brightness": 90,
+    "display_rotate": 3,
+    "display_sleep_sec": 600,
+    "factory_reset_script": "/etc/init.d/S58factoryreset",
     "fans": [
         {
-            "id": "fan_generic part",
-            "display_name": "Toolhead"
+            "display_name": "Toolhead",
+            "id": "fan_generic part"
         },
         {
-            "id": "fan_generic auxiliary",
-            "display_name": "Auxiliary"
+            "display_name": "Auxiliary",
+            "id": "fan_generic auxiliary"
         },
         {
-            "id": "fan_generic chamber",
-            "display_name": "Chamber"
+            "display_name": "Chamber",
+            "id": "fan_generic chamber"
         }
     ],
+    "guppy_init_script": "/etc/init.d/S99guppyscreen",
+    "guppy_update_script": "/usr/data/pellcorp/k1/update-guppyscreen.sh",
+    "invert_z_icon": false,
+    "log_level": "info",
     "monitored_sensors": [
         {
-            "id": "extruder",
-            "display_name": "Extruder",
+            "color": "red",
             "controllable": true,
-            "color": "red"
+            "display_name": "Extruder",
+            "id": "extruder"
         },
         {
-            "id": "heater_bed",
-            "display_name": "Bed",
+            "color": "purple",
             "controllable": true,
-            "color": "purple"
+            "display_name": "Bed",
+            "id": "heater_bed"
         },
         {
             "color": "blue",
@@ -56,5 +49,12 @@
             "display_name": "Chamber",
             "id": "temperature_sensor chamber_temp"
         }
-    ]
+    ],
+    "moonraker_api_key": false,
+    "moonraker_host": "127.0.0.1",
+    "moonraker_port": 7125,
+    "prompt_emergency_stop": true,
+    "theme": "blue",
+    "thumbnail_path": "/usr/data/printer_data/thumbnails",
+    "wpa_supplicant": "/var/run/wpa_supplicant"
 }
