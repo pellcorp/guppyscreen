@@ -7,8 +7,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 RUN mkdir /toolchains && \
     wget https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--musl--stable-2024.02-1.tar.bz2 -O /tmp/mips32el--musl--stable-2024.02-1.tar.bz2 && \
+    wget https://github.com/tttapa/docker-arm-cross-toolchain/releases/latest/download/x-tools-armv8-rpi3-linux-gnueabihf-gcc12.tar.xz -O /tmp/x-tools-armv8-rpi3-linux-gnueabihf-gcc12.tar.xz && \
     tar -jxf /tmp/mips32el--musl--stable-2024.02-1.tar.bz2 -C /toolchains && \
-    rm /tmp/mips32el--musl--stable-2024.02-1.tar.bz2
-ENV PATH=/toolchains/mips32el--musl--stable-2024.02-1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    tar -xf /tmp/x-tools-armv8-rpi3-linux-gnueabihf-gcc12.tar.xz -C /toolchains && \
+    rm /tmp/mips32el--musl--stable-2024.02-1.tar.bz2 && \
+    rm /tmp/x-tools-armv8-rpi3-linux-gnueabihf-gcc12.tar.xz
+ENV PATH=/toolchains/mips32el--musl--stable-2024.02-1/bin:/toolchains/x-tools/armv8-rpi3-linux-gnueabihf/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 WORKDIR /toolchains
 CMD ["/bin/bash"]

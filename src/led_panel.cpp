@@ -71,6 +71,7 @@ void LedPanel::init(json &l) {
     std::string display_name = led["display_name"].template get<std::string>();
     bool pwm = led["pwm"].is_null() ? true : led["pwm"].template get<bool>();
 
+    lv_event_cb_t null_cb = NULL;
     lv_event_cb_t led_cb = &LedPanel::_handle_led_update;
     if (key.rfind("output_pin ", 0) != 0) {
       // standard led
@@ -87,7 +88,7 @@ void LedPanel::init(json &l) {
       auto lptr = std::make_shared<SliderContainer>(leds_cont, display_name.c_str(),
                     &cancel, "Off", led_cb, this,
                     &light_img, "On", led_cb, this,
-                    NULL, this, "%");
+                    null_cb, this, "%");
           leds.insert({key, lptr});
     }
   }
