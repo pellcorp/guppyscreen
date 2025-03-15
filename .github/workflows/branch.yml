@@ -18,6 +18,11 @@ jobs:
             asset: guppyscreen-smallscreen
             calibrate: true
 
+          - arch: armv8-rpi3-linux-gnueabihf-
+            small: false
+            calibrate: false
+            asset: guppyscreen-rpi
+
     runs-on: ubuntu-22.04
     container:
       image: pellcorp/guppydev:latest

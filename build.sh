@@ -1,7 +1,10 @@
 #!/bin/bash
 
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd -P)"
+
 PRINTER_IP=
 SETUP=false
+TARGET=mips
 
 GIT_REVISION=$(git rev-parse --short HEAD)
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -11,15 +14,27 @@ function docker_make() {
         target_arg="GUPPY_SMALL_SCREEN=true GUPPY_CALIBRATE=true"
     fi
 
-    docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH $target_arg CROSS_COMPILE=mipsel-buildroot-linux-musl- make $@"
+    docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH $target_arg CROSS_COMPILE=$CROSS_COMPILE make $@"
 }
 
 unset GUPPY_SMALL_SCREEN
 
 while true; do
     if [ "$1" = "--setup" ]; then
-        SETUP=true
         shift
+        SETUP=true
+        TARGET=$1
+        if [ -z "$TARGET" ]; then
+          echo "ERROR: mips or rpi target must be specified"
+          exit 1
+        fi
+        shift
+        if [ "$TARGET" = "rpi" ]; then
+          echo "rpi" > $CURRENT_DIR/.target.cfg
+        else
+          echo "mips" > $CURRENT_DIR/.target.cfg
+        fi
+
     elif [ "$1" = "--small" ]; then
         export GUPPY_SMALL_SCREEN=true
         shift
@@ -31,6 +46,16 @@ while true; do
         break
     fi
 done
+
+if [ -f $CURRENT_DIR/.target.cfg ]; then
+  TARGET=$(cat $CURRENT_DIR/.target.cfg)
+fi
+
+if [ "$TARGET" = "rpi" ]; then
+  export CROSS_COMPILE=armv8-rpi3-linux-gnueabihf-
+else
+  export CROSS_COMPILE=mipsel-buildroot-linux-musl-
+fi
 
 if [ "$SETUP" = "true" ]; then
     docker_make spdlogclean || exit $?
@@ -45,10 +70,14 @@ else
     docker_make $1 || exit $?
 
     if [ -n "$PRINTER_IP" ] && [ -f build/bin/guppyscreen ]; then
-        sshpass -p 'creality_2023' scp build/bin/guppyscreen root@$PRINTER_IP:
-        sshpass -p 'creality_2023' scp guppyscreen.json root@$PRINTER_IP:
-        sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen /usr/data/guppyscreen/"
-        sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen.json /usr/data/guppyscreen/"
-        sshpass -p 'creality_2023' ssh root@$PRINTER_IP "/etc/init.d/S99guppyscreen restart"
+        if [ "$TARGET" = "mips" ]; then
+          sshpass -p 'creality_2023' scp build/bin/guppyscreen root@$PRINTER_IP:
+          sshpass -p 'creality_2023' scp guppyscreen.json root@$PRINTER_IP:
+          sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen /usr/data/guppyscreen/"
+          sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen.json /usr/data/guppyscreen/"
+          sshpass -p 'creality_2023' ssh root@$PRINTER_IP "/etc/init.d/S99guppyscreen restart"
+        else # rpi
+          echo "TODO"
+        fi
     fi
 fi
