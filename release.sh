@@ -19,4 +19,4 @@ if [ "$ASSET_NAME" = "guppyscreen-smallscreen" ]; then
 elif [ "$ASSET_NAME" = "guppyscreen-rpi" ]; then
   sed -i 's/"display_rotate": 3/"display_rotate": 1/g' $RELEASES_DIR/guppyscreen.json
 fi
-tar czf $ASSET_NAME.tar.gz -C $RELEASES_DIR/ .
+tar czf $ASSET_NAME.tar.gz -C releases .
