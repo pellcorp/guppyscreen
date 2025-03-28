@@ -166,7 +166,7 @@ void HomingPanel::handle_callback(lv_event_t *event) {
 
   if (btn == home_all_btn.get_container()) {
     spdlog::debug("home all pressed");
-    ws.gcode_script("G28 X Y Z");
+    ws.gcode_script("G28");
   } else if (btn == home_xy_btn.get_container()) {
     spdlog::debug("home xy pressed");
     ws.gcode_script("G28 X Y");
