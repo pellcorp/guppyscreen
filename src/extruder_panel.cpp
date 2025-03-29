@@ -181,9 +181,7 @@ void ExtruderPanel::handle_callback(lv_event_t *e) {
 
       const char *temp = lv_btnmatrix_get_btn_text(temp_selector.get_selector(),
                                                    temp_selector.get_selected_idx());
-      const char *len = lv_btnmatrix_get_btn_text(length_selector.get_selector(),
-                                                  length_selector.get_selected_idx());
-      ws.gcode_script(fmt::format(load_filament_macro, temp, len));
+      ws.gcode_script(fmt::format(load_filament_macro, temp));
     }
 
     if (btn == cooldown_btn.get_container()) {
