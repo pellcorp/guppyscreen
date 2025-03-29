@@ -28,7 +28,6 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   , sysinfo_btn(cont, &sysinfo_img, "System", &SettingPanel::_handle_callback, this)
   , spoolman_btn(cont, &spoolman_img, "Spoolman", &SettingPanel::_handle_callback, this)
   , guppy_restart_btn(cont, &refresh_img, "Restart Grumpy", &SettingPanel::_handle_callback, this)
-  , guppy_update_btn(cont, &update_img, "Update Grumpy", &SettingPanel::_handle_callback, this)
   , factory_reset_btn(cont, &emergency, "Factory\nReset", &SettingPanel::_handle_callback, this,
     		  "**WARNING** **WARNING** **WARNING** **WARNING**\n\nAre you sure you want to execute an emergency factory reset?\n\nThis will reset the printer to stock creality firmware!",
           [](){
@@ -64,7 +63,6 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   // row 2
   lv_obj_set_grid_cell(spoolman_btn.get_container(), LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 2, 1);
   lv_obj_set_grid_cell(guppy_restart_btn.get_container(), LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_START, 2, 1);
-  lv_obj_set_grid_cell(guppy_update_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 2, 1);
   lv_obj_set_grid_cell(factory_reset_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 2, 1);
 }
 
@@ -101,24 +99,8 @@ void SettingPanel::handle_callback(lv_event_t *event) {
     } else if (btn == guppy_restart_btn.get_container()) {
       spdlog::trace("restart guppy pressed");
       Config *conf = Config::get_instance();
-      auto init_script = conf->get<std::string>("/guppy_init_script");
-      const fs::path script(init_script);
-      if (fs::exists(script)) {
-        sp::call({script, "restart"});
-      } else {
-        spdlog::warn("Failed to restart Grumpy Screen. Did not find restart script.");
-      }
-    } else if (btn == guppy_update_btn.get_container()) {
-
-      Config *conf = Config::get_instance();
-      auto update_script = conf->get<std::string>("/guppy_update_script");
-      const fs::path script(update_script);
-      if (fs::exists(script)) {
-        spdlog::info(fmt::format("Updating for branch {}", GUPPYSCREEN_BRANCH));
-      	sp::call({script, GUPPYSCREEN_BRANCH});
-      } else {
-	      spdlog::warn("Failed to update Grumpy Screen. Did not find update script.");
-      }
+      auto restart_command = conf->get<std::string>("/guppy_restart_cmd");
+      sp::call(restart_command);
     }
   }
 }

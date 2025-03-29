@@ -77,7 +77,15 @@ else
           sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen.json /usr/data/guppyscreen/"
           sshpass -p 'creality_2023' ssh root@$PRINTER_IP "/etc/init.d/S99guppyscreen restart"
         else # rpi
-          echo "TODO"
+          sshpass -p 'raspberry' scp build/bin/guppyscreen pi@$PRINTER_IP:/tmp/
+          cp guppyscreen.json /tmp
+          sed -i 's/"display_rotate": 3/"display_rotate": 0/g' /tmp/guppyscreen.json
+          sed -i 's:/etc/init.d/S99guppyscreen restart:sudo systemctl restart grumpyscreen:g' /tmp/guppyscreen.json
+          sed -i 's:/etc/init.d/S58factoryreset::g' /tmp/guppyscreen.json
+          sshpass -p 'raspberry' scp /tmp/guppyscreen.json pi@$PRINTER_IP:/tmp/
+          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen /home/pi/guppyscreen/"
+          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen.json /home/pi/guppyscreen/"
+          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "sudo systemctl restart grumpyscreen"
         fi
     fi
 fi
