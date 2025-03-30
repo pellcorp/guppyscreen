@@ -85,6 +85,7 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   lv_table_set_col_cnt(file_table, 1);
   lv_obj_add_event_cb(file_table, &PrintPanel::_handle_callback, LV_EVENT_ALL, this);
   lv_obj_set_scroll_dir(file_table, LV_DIR_TOP | LV_DIR_BOTTOM);
+  lv_obj_set_style_pad_bottom(file_table, 60, 0);
 
   lv_obj_set_size(file_view, LV_PCT(50), LV_PCT(100));
   lv_obj_clear_flag(file_view, LV_OBJ_FLAG_SCROLLABLE);
