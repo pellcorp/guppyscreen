@@ -85,6 +85,7 @@ else
           cp guppyscreen.json /tmp
           sed -i 's/"display_rotate": 3/"display_rotate": 0/g' /tmp/guppyscreen.json
           sed -i '/S58factoryreset/d' /tmp/guppyscreen.json
+          sed -i 's:/usr/data/printer_data/thumbnails:/home/pi/printer_data/thumbnails:g' /tmp/guppyscreen.json
           sshpass -p 'raspberry' scp /tmp/guppyscreen.json pi@$PRINTER_IP:/tmp/
           sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen /home/pi/grumpyscreen/"
           sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen.json /home/pi/grumpyscreen/"
