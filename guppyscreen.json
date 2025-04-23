@@ -38,7 +38,7 @@
             "id": "output_pin fan1"
         }
     ],
-    "guppy_restart_cmd": "/etc/init.d/S99guppyscreen restart",
+    "guppy_restart_cmd": "sudo systemctl restart grumpyscreen",
     "invert_z_icon": false,
     "leds": [
         {
