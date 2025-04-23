@@ -40,7 +40,9 @@ class SettingPanel {
   ButtonContainer sysinfo_btn;
   ButtonContainer spoolman_btn;
   ButtonContainer guppy_restart_btn;
+#ifdef GUPPY_FACTORY_RESET
   ButtonContainer factory_reset_btn;
+#endif
 };
 
 #endif // __SETTING_PANEL_H__

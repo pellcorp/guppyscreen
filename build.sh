@@ -10,8 +10,12 @@ GIT_REVISION=$(git rev-parse --short HEAD)
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 function docker_make() {
+    target_arg=""
     if [ -n "$GUPPY_SMALL_SCREEN" ]; then
         target_arg="GUPPY_SMALL_SCREEN=true GUPPY_CALIBRATE=true"
+    fi
+    if [ "$TARGET" = "mips" ]; then
+        target_arg+="GUPPY_FACTORY_RESET=true"
     fi
 
     docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH $target_arg CROSS_COMPILE=$CROSS_COMPILE make $@"
@@ -80,11 +84,10 @@ else
           sshpass -p 'raspberry' scp build/bin/guppyscreen pi@$PRINTER_IP:/tmp/
           cp guppyscreen.json /tmp
           sed -i 's/"display_rotate": 3/"display_rotate": 0/g' /tmp/guppyscreen.json
-          sed -i 's:/etc/init.d/S99guppyscreen restart:sudo systemctl restart grumpyscreen:g' /tmp/guppyscreen.json
-          sed -i 's:/etc/init.d/S58factoryreset::g' /tmp/guppyscreen.json
+          sed -i '/S58factoryreset/d' /tmp/guppyscreen.json
           sshpass -p 'raspberry' scp /tmp/guppyscreen.json pi@$PRINTER_IP:/tmp/
-          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen /home/pi/guppyscreen/"
-          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen.json /home/pi/guppyscreen/"
+          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen /home/pi/grumpyscreen/"
+          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen.json /home/pi/grumpyscreen/"
           sshpass -p 'raspberry' ssh pi@$PRINTER_IP "sudo systemctl restart grumpyscreen"
         fi
     fi
