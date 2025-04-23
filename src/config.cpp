@@ -20,7 +20,7 @@ Config *Config::get_instance() {
   return instance;
 }
 
-void Config::init(std::string config_path, const std::string thumbdir) {
+void Config::init(std::string config_path) {
   path = config_path;
   data = json::parse(std::fstream(config_path));
   std::ofstream o(config_path);

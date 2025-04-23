@@ -32,7 +32,7 @@ int main(void) {
     Config *conf = Config::get_instance();
     auto config_path = fs::canonical("/proc/self/exe").parent_path() / "guppyscreen.json";
     if (fs::exists(config_path)) {
-      conf->init(config_path.string(), "/usr/data/printer_data/thumbnails");
+      conf->init(config_path.string());
     } else {
       spdlog::error(fmt::format("Config file {} not found", config_path.string()));
       return 1;
