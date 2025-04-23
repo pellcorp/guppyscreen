@@ -32,7 +32,6 @@ class PrinterTunePanel {
   BeltsCalibrationPanel belts_calibration_panel;
   ButtonContainer bedmesh_btn;
   ButtonContainer finetune_btn;
-  ButtonContainer inputshaper_btn;
   ButtonContainer belts_calibration_btn;
   ButtonContainer limits_btn;
 };
