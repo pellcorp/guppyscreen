@@ -19,10 +19,14 @@ PrinterTunePanel::PrinterTunePanel(KWebSocketClient &c, std::mutex &l, lv_obj_t 
   , bedmesh_panel(c, l)
   , finetune_panel(finetune)
   , limits_panel(c, l)
+#ifdef GUPPY_BELT_CALIBRATIONS
   , belts_calibration_panel(c, l)
+#endif
   , bedmesh_btn(cont, &bedmesh_img, "Bed Mesh", &PrinterTunePanel::_handle_callback, this)
   , finetune_btn(cont, &fine_tune_img, "Fine Tune", &PrinterTunePanel::_handle_callback, this)
+#ifdef GUPPY_BELT_CALIBRATIONS
   , belts_calibration_btn(cont, &belts_calibration_img, "Belts/Shake", &PrinterTunePanel::_handle_callback, this)
+#endif
   , limits_btn(cont, &limit_img, "Limits", &PrinterTunePanel::_handle_callback, this)
 {
   lv_obj_move_background(cont);
@@ -39,8 +43,10 @@ PrinterTunePanel::PrinterTunePanel(KWebSocketClient &c, std::mutex &l, lv_obj_t 
   // row 1
   lv_obj_set_grid_cell(bedmesh_btn.get_container(), LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 1, 1);
   lv_obj_set_grid_cell(finetune_btn.get_container(), LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_START, 1, 1);
-  lv_obj_set_grid_cell(belts_calibration_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 1, 1);
-  lv_obj_set_grid_cell(limits_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 1, 1);
+  lv_obj_set_grid_cell(limits_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 1, 1);
+ #ifdef GUPPY_BELT_CALIBRATIONS
+  lv_obj_set_grid_cell(belts_calibration_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 1, 1);
+ #endif
 }
 
 PrinterTunePanel::~PrinterTunePanel() {
@@ -72,9 +78,11 @@ void PrinterTunePanel::handle_callback(lv_event_t *event) {
     } else if (btn == bedmesh_btn.get_container()) {
       spdlog::trace("tune bedmesh pressed");
       bedmesh_panel.foreground();
+#ifdef GUPPY_BELT_CALIBRATIONS
     } else if (btn == belts_calibration_btn.get_container()) {
       spdlog::trace("tune belts pressed");
       belts_calibration_panel.foreground();
+#endif
     } else if (btn == limits_btn.get_container()) {
       spdlog::trace("limits pressed");
       limits_panel.foreground();
