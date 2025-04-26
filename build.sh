@@ -15,7 +15,7 @@ function docker_make() {
         target_arg="GUPPY_SMALL_SCREEN=true GUPPY_CALIBRATE=true"
     fi
     if [ "$TARGET" = "mips" ]; then
-        target_arg+="GUPPY_FACTORY_RESET=true"
+        target_arg+="GUPPY_FACTORY_RESET=true GUPPY_BELT_CALIBRATIONS=true"
     fi
 
     docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH $target_arg CROSS_COMPILE=$CROSS_COMPILE make $@"
@@ -87,8 +87,8 @@ else
           sed -i '/S58factoryreset/d' /tmp/guppyscreen.json
           sed -i 's:/usr/data/printer_data/thumbnails:/home/pi/printer_data/thumbnails:g' /tmp/guppyscreen.json
           sshpass -p 'raspberry' scp /tmp/guppyscreen.json pi@$PRINTER_IP:/tmp/
-          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen /home/pi/grumpyscreen/"
-          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen.json /home/pi/grumpyscreen/"
+          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen /home/pi/guppyscreen/"
+          sshpass -p 'raspberry' ssh pi@$PRINTER_IP "mv /tmp/guppyscreen.json /home/pi/guppyscreen/"
           sshpass -p 'raspberry' ssh pi@$PRINTER_IP "sudo systemctl restart grumpyscreen"
         fi
     fi

@@ -29,10 +29,14 @@ class PrinterTunePanel {
   BedMeshPanel bedmesh_panel;
   FineTunePanel &finetune_panel;
   LimitsPanel limits_panel;
+#ifdef GUPPY_BELT_CALIBRATIONS
   BeltsCalibrationPanel belts_calibration_panel;
+#endif
   ButtonContainer bedmesh_btn;
   ButtonContainer finetune_btn;
+#ifdef GUPPY_BELT_CALIBRATIONS
   ButtonContainer belts_calibration_btn;
+#endif
   ButtonContainer limits_btn;
 };
 

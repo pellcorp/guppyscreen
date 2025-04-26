@@ -12,18 +12,21 @@ jobs:
             small: false
             asset: guppyscreen
             calibrate: false
+            belt_calibrations: true
             factory_reset: true
 
           - arch: mipsel-buildroot-linux-musl-
             small: true
             asset: guppyscreen-smallscreen
             calibrate: true
+            belt_calibrations: true
             factory_reset: true
 
           - arch: armv8-rpi3-linux-gnueabihf-
             small: false
             calibrate: false
             factory_reset: false
+            belt_calibrations: false
             asset: guppyscreen-rpi
 
     runs-on: ubuntu-22.04
@@ -50,6 +53,11 @@ jobs:
       name: export screen size
       run: |
         echo "GUPPY_SMALL_SCREEN=${{ matrix.small }}" >> $GITHUB_ENV
+
+    - if: matrix.belt_calibrations
+      name: export belt_calibrations flag
+      run: |
+        echo "GUPPY_BELT_CALIBRATIONS=${{ matrix.belt_calibrations }}" >> $GITHUB_ENV
 
     - if: matrix.factory_reset
       name: export factory reset flag
