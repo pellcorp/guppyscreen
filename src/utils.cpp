@@ -185,14 +185,12 @@ namespace KUtils {
     for (char& c : s) {
       c = last ? std::toupper(c) : std::tolower(c);
       if (c == '_') {
-	c = ' ';
+	      c = ' ';
       }
-
       last = std::isspace(c);
     }
     return s;
   }
-
 
   std::string eta_string(int64_t s) {
     time_t seconds (s);
