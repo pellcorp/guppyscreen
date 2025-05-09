@@ -1,6 +1,6 @@
 #include "sensor_container.h"
 #include "spdlog/spdlog.h"
-
+#include "utils.h"
 #include <string>
 
 SensorContainer::SensorContainer(KWebSocketClient &c,
@@ -143,7 +143,8 @@ void SensorContainer::handle_edit(lv_event_t *e) {
   if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
     spdlog::trace("sensor callback this {}, {}, {}", id, fmt::ptr(this), fmt::ptr(&numpad));
     numpad.set_callback([this](double v) {
-      ws.gcode_script(fmt::format("SET_HEATER_TEMPERATURE HEATER={} TARGET={}", id, v));
+      std::string heater_name = KUtils::get_obj_name(id);
+      ws.gcode_script(fmt::format("SET_HEATER_TEMPERATURE HEATER={} TARGET={}", heater_name, v));
     });
     numpad.foreground_reset();
   }
