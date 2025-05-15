@@ -132,7 +132,18 @@ void MacroItem::handle_kb_input(lv_event_t *e)
     spdlog::trace("macro item keyboard close");
     lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
   }
-  
+}
+
+bool isSpecialMacro(const char* str) {
+  if (str == nullptr) {
+    return false;
+  }
+  for (size_t i = 1; i < strlen(str); ++i) {
+    if (isdigit(str[i])) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void MacroItem::handle_send_macro(lv_event_t *e) {
@@ -144,8 +155,12 @@ void MacroItem::handle_send_macro(lv_event_t *e) {
     for (const auto &p: params) {
       const char *v = lv_textarea_get_text(p.second);
       if (v != NULL && strlen(v) > 0) {
-	const char *k = lv_label_get_text(p.first);
-	kv.push_back(fmt::format("{}={}", k, v));
+        const char *k = lv_label_get_text(p.first);
+        if (isSpecialMacro(macro_name)) {
+          kv.push_back(fmt::format("{}{}", k, v));
+        } else {
+          kv.push_back(fmt::format("{}={}", k, v));
+       }
       }
     }
 
@@ -163,9 +178,9 @@ void MacroItem::handle_hide_show(lv_event_t *e) {
     json h = {
       {"namespace", "guppyscreen"}, 
       {"key", key },
-      {"value", {
-	  { "hidden", !hidden }
-	}
+      { "value", {
+	        { "hidden", !hidden }
+	      }
       }
     };
     
@@ -175,7 +190,7 @@ void MacroItem::handle_hide_show(lv_event_t *e) {
     
     if (hidden) {
       if (!always_visible) {
-	lv_obj_add_flag(cont, LV_OBJ_FLAG_HIDDEN);
+	      lv_obj_add_flag(cont, LV_OBJ_FLAG_HIDDEN);
       }
       lv_label_set_text(hide_show, "    " LV_SYMBOL_EYE_OPEN "    ");
       lv_obj_set_style_text_color(hide_show, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN);

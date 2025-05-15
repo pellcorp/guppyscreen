@@ -139,12 +139,17 @@ void SensorContainer::update_series(int v) {
   }
 }
 
+// SET_TEMPERATURE_FAN_TARGET TEMPERATURE_FAN=chamber_fan TARGET=50
 void SensorContainer::handle_edit(lv_event_t *e) {
   if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
     spdlog::trace("sensor callback this {}, {}, {}", id, fmt::ptr(this), fmt::ptr(&numpad));
     numpad.set_callback([this](double v) {
       std::string heater_name = KUtils::get_obj_name(id);
-      ws.gcode_script(fmt::format("SET_HEATER_TEMPERATURE HEATER={} TARGET={}", heater_name, v));
+      if (id.find("temperature_fan") != std::string::npos) {
+        ws.gcode_script(fmt::format("SET_TEMPERATURE_FAN_TARGET TEMPERATURE_FAN={} TARGET={}", heater_name, v));
+      } else {
+        ws.gcode_script(fmt::format("SET_HEATER_TEMPERATURE HEATER={} TARGET={}", heater_name, v));
+      }
     });
     numpad.foreground_reset();
   }
