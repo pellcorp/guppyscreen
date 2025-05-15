@@ -83,9 +83,9 @@
         },
         {
             "color": "blue",
-            "controllable": false,
+            "controllable": true,
             "display_name": "Chamber",
-            "id": "temperature_sensor chamber_temp"
+            "id": "temperature_fan chamber_fan"
         }
     ],
     "moonraker_api_key": false,
