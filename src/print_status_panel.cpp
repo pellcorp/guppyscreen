@@ -210,18 +210,19 @@ void PrintStatusPanel::init(json &fans) {
 
   reset();
   populate();
-  json &pstat_state = State::get_instance()
-    ->get_data("/printer_state/print_stats/state"_json_pointer);
+  json &pstat_state = State::get_instance()->get_data("/printer_state/print_stats/state"_json_pointer);
   if (!pstat_state.is_null()) {
     auto pstatus = pstat_state.template get<std::string>();
     if (pstatus != "printing" && pstatus != "paused") {
       mini_print_status.hide();
+      if (pstatus != "standby") {
+        background();
+      }
     }
     mini_print_status.update_status(pstatus);
   } else {
     mini_print_status.show();
   }
-  
 }
 
 void PrintStatusPanel::populate() {
@@ -297,7 +298,6 @@ void PrintStatusPanel::handle_metadata(const std::string &gcode_file, json &j) {
   }
 }
 
-
 void PrintStatusPanel::consume(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
 
@@ -314,6 +314,9 @@ void PrintStatusPanel::consume(json &j) {
     auto print_status = pstate.template get<std::string>();
     if (print_status != "printing" && print_status != "paused") {
       mini_print_status.hide();
+      if (print_status != "standby") {
+        background();
+      }
     } else {
       mini_print_status.show();
     }
