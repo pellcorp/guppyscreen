@@ -298,7 +298,7 @@ void PromptPanel::handle_macro_response(json &j) {
                 }
                 if (btn) {
                     lv_obj_set_size(btn, lv_pct(45), 32);
-                    lv_obj_set_style_max_width(btn, lv_pct(45), 0);
+                    lv_obj_set_style_max_width(btn, lv_pct(60), 0);
                     lv_obj_set_style_min_width(btn, 32, 0);
                     lv_obj_set_style_max_height(btn, 54, 0);
                     lv_obj_set_style_min_height(btn, 42, 0);
