@@ -12,8 +12,6 @@
 #include "fan_panel.h"
 #include "led_panel.h"
 #include "print_panel.h"
-#include "macros_panel.h"
-#include "console_panel.h"
 #include "setting_panel.h"
 #include "print_status_panel.h"
 #include "spoolman_panel.h"
@@ -32,7 +30,6 @@ class MainPanel : public NotifyConsumer {
   ~MainPanel();
   void consume(json &data);
   void init(json &data);
-  void subscribe();
   void enable_spoolman();
   
   void create_panel();
@@ -94,10 +91,6 @@ class MainPanel : public NotifyConsumer {
   LedPanel led_panel;
   lv_obj_t *tabview;
   lv_obj_t *main_tab;
-  lv_obj_t *macros_tab;
-  MacrosPanel macros_panel;
-  lv_obj_t *console_tab;
-  ConsolePanel console_panel;
   lv_obj_t *setting_tab;
   SettingPanel setting_panel;
   lv_obj_t *main_cont;
