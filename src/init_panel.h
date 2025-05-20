@@ -4,7 +4,6 @@
 #include "lvgl/lvgl.h"
 #include "websocket_client.h"
 #include "main_panel.h"
-#include "bedmesh_panel.h"
 #include "print_status_panel.h"
 
 #include <mutex>
