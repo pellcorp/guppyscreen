@@ -16,8 +16,6 @@ LV_IMG_DECLARE(heater);
 LV_IMG_DECLARE(emergency);
 
 LV_FONT_DECLARE(materialdesign_font_40);
-#define MACROS_SYMBOL "\xF3\xB1\xB2\x83"
-#define CONSOLE_SYMBOL "\xF3\xB0\x86\x8D"
 #define TUNE_SYMBOL "\xF3\xB1\x95\x82"
 #define HOME_SYMBOL "\xF3\xB0\x8B\x9C"
 #define SETTING_SYMBOL "\xF3\xB0\x92\x93"
@@ -32,10 +30,6 @@ MainPanel::MainPanel(KWebSocketClient &websocket,
   , led_panel(ws, lock)    
   , tabview(lv_tabview_create(lv_scr_act(), LV_DIR_LEFT, 60))
   , main_tab(lv_tabview_add_tab(tabview, HOME_SYMBOL))
-  , macros_tab(lv_tabview_add_tab(tabview, MACROS_SYMBOL))
-  , macros_panel(ws, lock, macros_tab)
-  , console_tab(lv_tabview_add_tab(tabview, CONSOLE_SYMBOL))
-  , console_panel(ws, lock, console_tab)
   , setting_tab(lv_tabview_add_tab(tabview, SETTING_SYMBOL))
   , setting_panel(websocket, lock, setting_tab, sm)
   , main_cont(lv_obj_create(main_tab))
@@ -77,11 +71,6 @@ MainPanel::~MainPanel() {
   sensors.clear();
 }
 
-void MainPanel::subscribe() {
-  spdlog::trace("main panel subscribing");
-  ws.send_jsonrpc("printer.gcode.help", [this](json &d) { console_panel.handle_macros(d); });
-  print_panel.subscribe();
-}
 
 void MainPanel::init(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
@@ -100,7 +89,6 @@ void MainPanel::init(json &j) {
     }
   }
 
-  macros_panel.populate();
 
   auto fans = State::get_instance()->get_display_fans();
   print_status_panel.init(fans);
@@ -145,8 +133,6 @@ void MainPanel::create_panel() {
   // lv_obj_set_style_text_font(lv_scr_act(), LV_FONT_DEFAULT, 0);
 
   lv_obj_set_style_pad_all(main_tab, 0, 0);
-  lv_obj_set_style_pad_all(macros_tab, 0, 0);
-  lv_obj_set_style_pad_all(console_tab, 0, 0);
   lv_obj_set_style_pad_all(setting_tab, 0, 0);
 
   create_main(main_tab);
