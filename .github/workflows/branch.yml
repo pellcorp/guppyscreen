@@ -109,7 +109,9 @@ jobs:
         name: ${{ matrix.asset }}
         path: ./${{ matrix.asset }}.tar.gz
 
-    - name: branch release
+    # fixme - not sure how to allow creation of releases from a pull request
+    - if: github.event_name != 'pull_request'
+      name: branch release
       uses: softprops/action-gh-release@v2
       with:
         name: ${{ github.ref_name }}
