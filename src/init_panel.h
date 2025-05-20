@@ -11,7 +11,7 @@
 
 class InitPanel {
  public:
-  InitPanel(MainPanel &mp, BedMeshPanel &bmp, std::mutex &l);
+  InitPanel(MainPanel &mp, std::mutex &l);
   ~InitPanel();
 
   void connected(KWebSocketClient &ws);
@@ -22,7 +22,6 @@ class InitPanel {
   lv_obj_t *cont;
   lv_obj_t *label;
   MainPanel &main_panel;
-  BedMeshPanel &bedmesh_panel;
   std::mutex &lv_lock;
 };
 

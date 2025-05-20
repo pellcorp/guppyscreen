@@ -14,7 +14,6 @@
 #include "print_panel.h"
 #include "macros_panel.h"
 #include "console_panel.h"
-#include "printertune_panel.h"
 #include "setting_panel.h"
 #include "print_status_panel.h"
 #include "spoolman_panel.h"
@@ -34,7 +33,6 @@ class MainPanel : public NotifyConsumer {
   void consume(json &data);
   void init(json &data);
   void subscribe();
-  PrinterTunePanel& get_tune_panel();
   void enable_spoolman();
   
   void create_panel();
@@ -100,13 +98,11 @@ class MainPanel : public NotifyConsumer {
   MacrosPanel macros_panel;
   lv_obj_t *console_tab;
   ConsolePanel console_panel;
-  lv_obj_t *printertune_tab;
   lv_obj_t *setting_tab;
   SettingPanel setting_panel;
   lv_obj_t *main_cont;
   PrintStatusPanel print_status_panel;
   PrintPanel print_panel;
-  PrinterTunePanel printertune_panel;
   Numpad numpad;
   ExtruderPanel extruder_panel;
   PromptPanel prompt_panel;
