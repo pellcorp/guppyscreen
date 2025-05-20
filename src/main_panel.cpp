@@ -36,13 +36,11 @@ MainPanel::MainPanel(KWebSocketClient &websocket,
   , macros_panel(ws, lock, macros_tab)
   , console_tab(lv_tabview_add_tab(tabview, CONSOLE_SYMBOL))
   , console_panel(ws, lock, console_tab)
-  , printertune_tab(lv_tabview_add_tab(tabview, TUNE_SYMBOL))
   , setting_tab(lv_tabview_add_tab(tabview, SETTING_SYMBOL))
   , setting_panel(websocket, lock, setting_tab, sm)
   , main_cont(lv_obj_create(main_tab))
   , print_status_panel(websocket, lock, main_cont)
   , print_panel(ws, lock, print_status_panel)
-  , printertune_panel(ws, lock, printertune_tab, print_status_panel.get_finetune_panel())
   , numpad(Numpad(main_cont))
   , extruder_panel(ws, lock, numpad, sm)
   , prompt_panel(websocket, lock, main_cont)
@@ -85,10 +83,6 @@ void MainPanel::subscribe() {
   print_panel.subscribe();
 }
 
-PrinterTunePanel& MainPanel::get_tune_panel() {
-  return printertune_panel;
-}
-
 void MainPanel::init(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
   for (const auto &el : sensors) {
@@ -110,7 +104,6 @@ void MainPanel::init(json &j) {
 
   auto fans = State::get_instance()->get_display_fans();
   print_status_panel.init(fans);
-  printertune_panel.init(j);
 }
 
 void MainPanel::consume(json &j) {  
@@ -154,7 +147,6 @@ void MainPanel::create_panel() {
   lv_obj_set_style_pad_all(main_tab, 0, 0);
   lv_obj_set_style_pad_all(macros_tab, 0, 0);
   lv_obj_set_style_pad_all(console_tab, 0, 0);
-  lv_obj_set_style_pad_all(printertune_tab, 0, 0);
   lv_obj_set_style_pad_all(setting_tab, 0, 0);
 
   create_main(main_tab);

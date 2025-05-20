@@ -7,11 +7,10 @@
 #include <algorithm>
 #include <cstdio>
 
-InitPanel::InitPanel(MainPanel &mp, BedMeshPanel &bmp, std::mutex& l)
+InitPanel::InitPanel(MainPanel &mp, std::mutex& l)
   : cont(lv_obj_create(lv_scr_act()))
   , label(lv_label_create(cont))
   , main_panel(mp)
-  , bedmesh_panel(bmp)
   , lv_lock(l)
 {
   lv_obj_set_size(cont, LV_PCT(55), LV_SIZE_CONTENT);
@@ -106,8 +105,6 @@ void InitPanel::connected(KWebSocketClient &ws) {
 			    State::get_instance()->set_data("printer_state",
 							    data, "/result/status");
 			    this->main_panel.init(data);
-			    this->bedmesh_panel.refresh_views_with_lock(
-									data["/result/status/bed_mesh"_json_pointer]);
 			    spdlog::debug("done init");
 			    std::lock_guard<std::mutex> lock(this->lv_lock);
 			    lv_obj_add_flag(this->cont, LV_OBJ_FLAG_HIDDEN);
