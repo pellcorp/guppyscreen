@@ -167,8 +167,7 @@ void PrintPanel::consume(json &j) {
   }
   
   std::lock_guard<std::mutex> lock(lv_lock);
-  if(pstat_state.template get<std::string>() != "printing"
-     && pstat_state.template get<std::string>() != "paused") {
+  if (pstat_state.template get<std::string>() != "printing" && pstat_state.template get<std::string>() != "paused") {
     status_btn.disable();
   } else {
     status_btn.enable();
@@ -189,18 +188,16 @@ void PrintPanel::subscribe() {
       }
     }
     Tree *dir = root.find_path(KUtils::split(cur_path, '/'));
-    // need to simply this using the directory endpoint
+    // need to simplify this using the directory endpoint
     cur_dir = dir;
     this->populate_files(d);
   });
 }
 
 void PrintPanel::foreground() {
-  json &pstat_state = State::get_instance()
-    ->get_data("/printer_state/print_stats/state"_json_pointer);
-  spdlog::debug("print panel print stats {}",
-		pstat_state.is_null() ? "nil" : pstat_state.template get<std::string>());
-    
+  json &pstat_state = State::get_instance()->get_data("/printer_state/print_stats/state"_json_pointer);
+  spdlog::debug("print panel print stats {}", pstat_state.is_null() ? "nil" : pstat_state.template get<std::string>());
+
   if (!pstat_state.is_null()
       && pstat_state.template get<std::string>() != "printing"
       && pstat_state.template get<std::string>() != "paused") {
@@ -231,22 +228,21 @@ void PrintPanel::handle_callback(lv_event_t *e) {
     const char *filename = str_fn+5; // +5 skips the LV_SYMBOL and spaces
     if (std::memcmp(LV_SYMBOL_DIRECTORY, str_fn, 3) == 0) {
       if ((strcmp(filename, "..") == 0)) {
-	if (cur_dir->parent != cur_dir) {
-	  cur_dir = cur_dir->parent;
-	  show_dir(cur_dir, sorted_by);
-	}
+        if (cur_dir->parent != cur_dir) {
+          cur_dir = cur_dir->parent;
+          show_dir(cur_dir, sorted_by);
+        }
       } else {
-	Tree *dir = cur_dir->get_child(filename);
-	if (dir != NULL) {
-	  cur_dir = dir;
-	  show_dir(cur_dir, sorted_by);
-	}
+        Tree *dir = cur_dir->get_child(filename);
+        if (dir != NULL) {
+          cur_dir = dir;
+          show_dir(cur_dir, sorted_by);
+        }
       }
-    }
-    else {
+    } else {
       if (cur_file != cur_dir->get_child(filename)) {
-	cur_file = cur_dir->get_child(filename);
-	show_file_detail(cur_file);
+        cur_file = cur_dir->get_child(filename);
+        show_file_detail(cur_file);
       }
     }
   }
@@ -260,26 +256,24 @@ void PrintPanel::show_dir(Tree *dir, uint32_t sort_type) {
   std::vector<Tree> sorted_files;
   if (sort_type == SORTED_BY_MODIFIED) {
     KUtils::sort_map_values<std::string, Tree>(dir->children, sorted_files, [reversed](Tree &x, Tree &y) {
-	if (x.is_leaf() && !y.is_leaf()) {
-	  return false;
-	} else if (!x.is_leaf() && y.is_leaf()) {
-	  return true;
-	}
-
-	return reversed ? x.date_modified > y.date_modified : y.date_modified > x.date_modified;
-      });
+      if (x.is_leaf() && !y.is_leaf()) {
+        return false;
+      } else if (!x.is_leaf() && y.is_leaf()) {
+        return true;
+      }
+      return reversed ? x.date_modified > y.date_modified : y.date_modified > x.date_modified;
+    });
   } else {
     KUtils::sort_map_values<std::string, Tree>(dir->children, sorted_files, [reversed](Tree &x, Tree &y) {
-	if (x.is_leaf() && !y.is_leaf()) {
-	  return false;
-	} else if (!x.is_leaf() && y.is_leaf()) {
-	  return true;
-	}
-
-	return reversed ? x.name > y.name : y.name > x.name;
-      });
+      if (x.is_leaf() && !y.is_leaf()) {
+        return false;
+      } else if (!x.is_leaf() && y.is_leaf()) {
+        return true;
+      }
+      return reversed ? x.name > y.name : y.name > x.name;
+    });
   }
-      
+
   sorted_by = (sorted_by ^ sort_type) & sort_type;
   for (const auto &c : sorted_files) {
     if (c.is_leaf()) {
@@ -298,13 +292,12 @@ void PrintPanel::show_dir(Tree *dir, uint32_t sort_type) {
     if (c.is_leaf()) {
       const auto &selected = dir->children.find(c.name);
       if (selected != dir->children.cend()) {
-	cur_file = &selected->second;
-	show_file_detail(cur_file);
+        cur_file = &selected->second;
+        show_file_detail(cur_file);
       }
       break;
     }
   }
-
 }
 
 void PrintPanel::show_file_detail(Tree *f) {
@@ -342,24 +335,17 @@ void PrintPanel::handle_back_btn(lv_event_t *event) {
 void PrintPanel::handle_print_callback(lv_event_t *event) {
   lv_event_code_t code = lv_event_get_code(event);
   if (code == LV_EVENT_CLICKED && cur_file != NULL) {
-
-    json &pstat_state = State::get_instance()
-      ->get_data("/printer_state/print_stats/state"_json_pointer);
-    spdlog::debug("print panel print stats {}",
-		  pstat_state.is_null() ? "nil" : pstat_state.template get<std::string>());
+    json &pstat_state = State::get_instance()->get_data("/printer_state/print_stats/state"_json_pointer);
+    spdlog::debug("print panel print stats {}", pstat_state.is_null() ? "nil" : pstat_state.template get<std::string>());
     
     if (!pstat_state.is_null()
-	&& pstat_state.template get<std::string>() != "printing"
-	&& pstat_state.template get<std::string>() != "paused") {
+          && pstat_state.template get<std::string>() != "printing"
+          && pstat_state.template get<std::string>() != "paused") {
       spdlog::debug("printer ready to print. print file {}", cur_file->full_path);
-	
-      // ws.send_jsonrpc("printer.gcode.script",
-      // 		    json::parse(R"({"script":"PRINT_PREPARE_CLEAR"})"));
 
       json fname_input = {{"filename", cur_file->full_path }};
       ws.send_jsonrpc("printer.print.start", fname_input);
       print_status.foreground();
-
     } else {
       lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
       lv_obj_move_foreground(prompt_cont);
@@ -382,26 +368,24 @@ void PrintPanel::handle_btns(lv_event_t *event) {
     if (cur_file != NULL) {
       spdlog::trace("status prompt clicked");
       if (btn == queue_btn) {
-	spdlog::trace("status prompt queue clicked");
+	      spdlog::trace("status prompt queue clicked");
       }
 
       if (btn == job_btn) {
-	spdlog::trace("status prompt job clicked");
+	      spdlog::trace("status prompt job clicked");
       }
 
       if (btn == cancel_btn) {
-	spdlog::trace("status prompt cancel clicked");
-	lv_obj_move_background(prompt_cont);
-	lv_obj_add_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
+        spdlog::trace("status prompt cancel clicked");
+        lv_obj_move_background(prompt_cont);
+        lv_obj_add_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
       }
     }
 
     if (btn == refresh_btn) {
       subscribe();
-      
     } else if (btn == modified_sort_btn) {
       show_dir(cur_dir, SORTED_BY_MODIFIED);
-
     } else if (btn == az_sort_btn) {
       show_dir(cur_dir, SORTED_BY_NAME);
     }
