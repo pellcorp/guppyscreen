@@ -9,7 +9,7 @@ Grumpyscreen is a fork of GuppyScreen specifically for Simple AF
 :white_check_mark: Temperature Control  
 :white_check_mark: Fans/LED/Move Control  
 :white_check_mark: Print Fine Tune (Speed, Flow, Baby Stepping, Pressure Advance)  
-:white_check_mark: File Browser  
+:white_check_mark: Start a Print from Usb or Reprint  
 :white_check_mark: Spoolman Integration
 
 ## Credits
@@ -19,4 +19,3 @@ Grumpyscreen is a fork of GuppyScreen specifically for Simple AF
 - [Moonraker](https://github.com/Arksine/moonraker)  
 - [KlipperScreen](https://github.com/KlipperScreen/KlipperScreen)  
 - [Fluidd](https://github.com/fluidd-core/fluidd)  
-- [Klippain-shaketune](https://github.com/Frix-x/klippain-shaketune)  
