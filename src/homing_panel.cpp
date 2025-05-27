@@ -108,6 +108,14 @@ void HomingPanel::consume(json &j) {
   if (!pstat_state.is_null()) {
     if (pstat_state.template get<std::string>() == "printing") {
       lv_obj_move_background(homing_cont);
+    } else if (pstat_state.template get<std::string>() == "paused") {
+      home_all_btn.disable();
+      home_xy_btn.disable();
+      motoroff_btn.disable();
+    } else {
+      home_all_btn.enable();
+      home_xy_btn.enable();
+      motoroff_btn.enable();
     }
   }
 }
