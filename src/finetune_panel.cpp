@@ -37,7 +37,7 @@ FineTunePanel::FineTunePanel(KWebSocketClient &websocket_client, std::mutex &l)
   , back_btn(panel_cont, &back, "Back", &FineTunePanel::_handle_callback, this)
   , zoffset_selector(panel_cont, "Z (mm) - PA (mm/s)",
 		     {"0.01", "0.05", "0.10", ""}, 0, 30, 15, &FineTunePanel::_handle_callback, this)
-  , multipler_selector(panel_cont, "Multipler Step (%)",
+  , multipler_selector(panel_cont, "Multiplier Step (%)",
 		       {"1", "5", "10", "25", ""}, 0, 40, 15, &FineTunePanel::_handle_callback, this)
   , z_offset(values_cont, &home_z, 150, 100, 15, "0.0 mm")
   , pa(values_cont, &pa_plus_img, 150, 100, 15, "0.0 mm/s")
@@ -116,13 +116,13 @@ void FineTunePanel::foreground() {
 		"/printer_state/gcode_move/speed_factor"_json_pointer);
   if (!v.is_null()) {
     speed_factor.update_label(fmt::format("{}%",
-	   static_cast<int>(v.template get<double>() * 100)).c_str());
+    static_cast<int>(v.template get<double>() * 100)).c_str());
   }
 
   v = State::get_instance()->get_data("/printer_state/gcode_move/extrude_factor"_json_pointer);
   if (!v.is_null()) {
     flow_factor.update_label(fmt::format("{}%",
-	   static_cast<int>(v.template get<double>() * 100)).c_str());
+    static_cast<int>(v.template get<double>() * 100)).c_str());
   }
 
   //Set the Z axis buttons
@@ -155,13 +155,13 @@ void FineTunePanel::consume(json &j) {
   v = j["/params/0/gcode_move/speed_factor"_json_pointer];
   if (!v.is_null()) {
     speed_factor.update_label(fmt::format("{}%",
-	   static_cast<int>(v.template get<double>() * 100)).c_str());
+    static_cast<int>(v.template get<double>() * 100)).c_str());
   }
 
   v = j["/params/0/gcode_move/extrude_factor"_json_pointer];
   if (!v.is_null()) {
     flow_factor.update_label(fmt::format("{}%",
-	   static_cast<int>(v.template get<double>() * 100)).c_str());
+    static_cast<int>(v.template get<double>() * 100)).c_str());
   }
 }
 
@@ -215,20 +215,16 @@ void FineTunePanel::handle_pa(lv_event_t *e) {
       auto v = State::get_instance()->get_data(
 		     "/printer_state/configfile/settings/extruder/pressure_advance"_json_pointer);
       if (!v.is_null()) {
-	ws.gcode_script(fmt::format("SET_PRESSURE_ADVANCE ADVANCE={}", v.template get<double>()));
+	      ws.gcode_script(fmt::format("SET_PRESSURE_ADVANCE ADVANCE={}", v.template get<double>()));
       }
     } else {
-
-      auto cur_pa = State::get_instance()
-	->get_data("/printer_state/extruder/pressure_advance"_json_pointer);
+      auto cur_pa = State::get_instance()->get_data("/printer_state/extruder/pressure_advance"_json_pointer);
       if (!cur_pa.is_null()) {
-	const char * step = lv_btnmatrix_get_btn_text(zoffset_selector.get_selector(),
-						      zoffset_selector.get_selected_idx());
-	
-	double direction = btn == paup_btn.get_container() ? std::stod(step) : -std::stod(step);
-	double new_pa = cur_pa.template get<double>() + direction;
-	new_pa = new_pa < 0 ? 0 : new_pa;
-	ws.gcode_script(fmt::format("SET_PRESSURE_ADVANCE ADVANCE={}", new_pa));
+        const char * step = lv_btnmatrix_get_btn_text(zoffset_selector.get_selector(), zoffset_selector.get_selected_idx());
+        double direction = btn == paup_btn.get_container() ? std::stod(step) : -std::stod(step);
+        double new_pa = cur_pa.template get<double>() + direction;
+        new_pa = new_pa < 0 ? 0 : new_pa;
+        ws.gcode_script(fmt::format("SET_PRESSURE_ADVANCE ADVANCE={}", new_pa));
       }
     }
   }
@@ -241,17 +237,16 @@ void FineTunePanel::handle_speed(lv_event_t *e) {
       spdlog::trace("speed reset");
       ws.gcode_script("M220 S100");
     } else {
-      auto spd_factor = State::get_instance()
-	->get_data("/printer_state/gcode_move/speed_factor"_json_pointer);
+      auto spd_factor = State::get_instance()->get_data("/printer_state/gcode_move/speed_factor"_json_pointer);
       if (!spd_factor.is_null()) {
-	const char * step = lv_btnmatrix_get_btn_text(multipler_selector.get_selector(),
+	      const char * step = lv_btnmatrix_get_btn_text(multipler_selector.get_selector(),
 						      multipler_selector.get_selected_idx());
 
-	int32_t direction = btn == speed_up_btn.get_container() ? std::stoi(step) : -std::stoi(step);
-	int32_t new_speed = static_cast<int32_t>(spd_factor.template get<double>() * 100 + direction);
-	new_speed = std::max(new_speed, 1);
-	spdlog::trace("speed step {}, {}", direction, new_speed);
-	ws.gcode_script(fmt::format("M220 S{}", new_speed));
+        int32_t direction = btn == speed_up_btn.get_container() ? std::stoi(step) : -std::stoi(step);
+        int32_t new_speed = static_cast<int32_t>(spd_factor.template get<double>() * 100 + direction);
+        new_speed = std::max(new_speed, 1);
+        spdlog::trace("speed step {}, {}", direction, new_speed);
+        ws.gcode_script(fmt::format("M220 S{}", new_speed));
       }
     }
   }
@@ -264,18 +259,16 @@ void FineTunePanel::handle_flow(lv_event_t *e) {
       spdlog::trace("flow reset");
       ws.gcode_script("M221 S100");
     } else {
-      auto extrude_factor = State::get_instance()
-	->get_data("/printer_state/gcode_move/extrude_factor"_json_pointer);
+      auto extrude_factor = State::get_instance()->get_data("/printer_state/gcode_move/extrude_factor"_json_pointer);
       if (!extrude_factor.is_null()) {
-	const char * step = lv_btnmatrix_get_btn_text(multipler_selector.get_selector(),
+	      const char * step = lv_btnmatrix_get_btn_text(multipler_selector.get_selector(),
 						      multipler_selector.get_selected_idx());
 
-	int32_t direction = btn == flow_up_btn.get_container() ? std::stoi(step) : -std::stoi(step);
-	
-	int32_t new_flow = static_cast<int32_t>(extrude_factor.template get<double>() * 100 + direction);
-	new_flow = std::max(new_flow, 1);
-	spdlog::trace("flow step {}, {}", direction, new_flow);
-	ws.gcode_script(fmt::format("M221 S{}", new_flow));
+        int32_t direction = btn == flow_up_btn.get_container() ? std::stoi(step) : -std::stoi(step);
+        int32_t new_flow = static_cast<int32_t>(extrude_factor.template get<double>() * 100 + direction);
+        new_flow = std::max(new_flow, 1);
+        spdlog::trace("flow step {}, {}", direction, new_flow);
+        ws.gcode_script(fmt::format("M221 S{}", new_flow));
       }
     }
   }

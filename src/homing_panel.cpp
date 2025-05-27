@@ -34,7 +34,7 @@ HomingPanel::HomingPanel(KWebSocketClient &websocket_client, std::mutex &lock)
 		    spdlog::debug("emergency stop pressed");
 		    websocket_client.send_jsonrpc("printer.emergency_stop");
 		  })
-  , motoroff_btn(homing_cont, &motor_off_img, "Motor Off", &HomingPanel::_handle_callback, this)
+  , motoroff_btn(homing_cont, &motor_off_img, "Motors Off", &HomingPanel::_handle_callback, this)
   , back_btn(homing_cont, &back, "Back", &HomingPanel::_handle_callback, this)
   , distance_selector(homing_cont, "Move Distance (mm)",
 		     {".1", ".5", "1", "5", "10", "25", "50", ""}, 2, 70, 15, &HomingPanel::_handle_selector_cb, this)

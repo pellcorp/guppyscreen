@@ -40,75 +40,72 @@ void InitPanel::connected(KWebSocketClient &ws) {
 
   ws.send_jsonrpc("printer.objects.list", [this, &ws](json& d) {
     State *state = State::get_instance();
-	state->set_data("printer_objs", d, "/result");
+	  state->set_data("printer_objs", d, "/result");
 
-	ws.send_jsonrpc("server.files.roots",
+	  ws.send_jsonrpc("server.files.roots",
 			[](json& j) { State::get_instance()->set_data("roots", j, "/result"); });
 
-	ws.send_jsonrpc("printer.info",
+	  ws.send_jsonrpc("printer.info",
 			[](json& j) { State::get_instance()->set_data("printer_info", j, "/result"); });
 	
-	json h = {
-	  { "namespace", "fluidd" },
-	  { "key", "console" }
-	};
-	ws.send_jsonrpc("server.database.get_item", h,
-			[](json& j) { State::get_instance()->set_data("console", j, "/result/value"); });
+    json h = {
+      { "namespace", "fluidd" },
+      { "key", "console" }
+    };
+    ws.send_jsonrpc("server.database.get_item", h,
+        [](json& j) { State::get_instance()->set_data("console", j, "/result/value"); });
 
-	h = {
-	  { "namespace", "guppyscreen" }
-	};
-	ws.send_jsonrpc("server.database.get_item", h,
-			[](json& j) { State::get_instance()->set_data("guppysettings", j, "/result/value"); });	
+    h = {
+      { "namespace", "guppyscreen" }
+    };
+    ws.send_jsonrpc("server.database.get_item", h,
+        [](json& j) { State::get_instance()->set_data("guppysettings", j, "/result/value"); });
 
-	// spoolman
-	ws.send_jsonrpc("server.info", [this](json &j) {
-	  spdlog::debug("server_info {}", j.dump());
-	  State::get_instance()->set_data("server_info", j, "/result");
-	  
-	  auto &components = j["/result/components"_json_pointer];
-	  if (!components.is_null()) {
-	    const auto &has_spoolman = components.template get<std::vector<std::string>>();
-	    if (std::find(has_spoolman.begin(), has_spoolman.end(), "spoolman") != has_spoolman.end()) {
-	      this->main_panel.enable_spoolman();
-	    }
-	  }
-	});
+    // spoolman
+    ws.send_jsonrpc("server.info", [this](json &j) {
+      spdlog::debug("server_info {}", j.dump());
+      State::get_instance()->set_data("server_info", j, "/result");
 
-	auto display_sensors = state->get_display_sensors();
-	this->main_panel.create_sensors(display_sensors);
+      auto &components = j["/result/components"_json_pointer];
+      if (!components.is_null()) {
+        const auto &has_spoolman = components.template get<std::vector<std::string>>();
+        if (std::find(has_spoolman.begin(), has_spoolman.end(), "spoolman") != has_spoolman.end()) {
+          this->main_panel.enable_spoolman();
+        }
+      }
+    });
 
-	auto display_fans = state->get_display_fans();
-	this->main_panel.create_fans(display_fans);
+    auto display_sensors = state->get_display_sensors();
+    this->main_panel.create_sensors(display_sensors);
 
-	auto display_leds = state->get_display_leds();
-	this->main_panel.create_leds(display_leds);
+    auto display_fans = state->get_display_fans();
+    this->main_panel.create_fans(display_fans);
 
-	// subscribe to all objects except gcode_macro
-	auto objs = d["/result/objects"_json_pointer];
-	if (!objs.is_null()) {
-	  json sub_objs;
-	  for (auto &obj : objs) {
-	    std::string obj_name = obj.template get<std::string>();
-	    if (obj_name.rfind("gcode_macro ", 0 ) != 0) {
-	      sub_objs[obj_name] = nullptr;
-	    }
-	  }
+    auto display_leds = state->get_display_leds();
+    this->main_panel.create_leds(display_leds);
 
-	  json subs = {{ "objects", sub_objs }};
-	  spdlog::debug("subcribing to {}", subs.dump());
-	  ws.send_jsonrpc("printer.objects.subscribe", subs,
-			  [this](json &data) {
-			    State::get_instance()->set_data("printer_state",
-							    data, "/result/status");
-			    this->main_panel.init(data);
-			    spdlog::debug("done init");
-			    std::lock_guard<std::mutex> lock(this->lv_lock);
-			    lv_obj_add_flag(this->cont, LV_OBJ_FLAG_HIDDEN);
-			    lv_obj_move_background(this->cont);
-					
-			  });
-	}
+    // subscribe to all objects except gcode_macro
+    auto objs = d["/result/objects"_json_pointer];
+    if (!objs.is_null()) {
+      json sub_objs;
+      for (auto &obj : objs) {
+        std::string obj_name = obj.template get<std::string>();
+        if (obj_name.rfind("gcode_macro ", 0 ) != 0) {
+          sub_objs[obj_name] = nullptr;
+        }
+      }
+
+      json subs = {{ "objects", sub_objs }};
+      spdlog::debug("subscribing to {}", subs.dump());
+      ws.send_jsonrpc("printer.objects.subscribe", subs, [this](json &data) {
+        State::get_instance()->set_data("printer_state", data, "/result/status");
+        this->main_panel.init(data);
+        spdlog::debug("done init");
+        std::lock_guard<std::mutex> lock(this->lv_lock);
+        lv_obj_add_flag(this->cont, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_move_background(this->cont);
+      });
+    }
   });
 }
 
