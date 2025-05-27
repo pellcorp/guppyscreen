@@ -169,8 +169,7 @@ void PrintStatusPanel::reset() {
   time_left.update_label("...");
   estimated_time_s = 0;
 
-  auto v = State::get_instance()
-    ->get_data("/printer_state/configfile/config/extruder/filament_diameter"_json_pointer);
+  auto v = State::get_instance()->get_data("/printer_state/configfile/config/extruder/filament_diameter"_json_pointer);
   filament_diameter = v.is_null() ? 1.750 : std::stod(v.template get<std::string>());
   extruder_target = -1;
   heater_bed_target = -1;
@@ -189,16 +188,14 @@ void PrintStatusPanel::init(json &fans) {
   for (auto &f : fans.items()) {
     std::string fan_name = f.key();
 
-    auto fan_value = State::get_instance()
-      ->get_data(json::json_pointer(fmt::format("/printer_state/{}/value", fan_name)));    
+    auto fan_value = State::get_instance()->get_data(json::json_pointer(fmt::format("/printer_state/{}/value", fan_name)));
     if (!fan_value.is_null()) {
       int v = static_cast<int>(fan_value.template get<double>() * 100);
       fan_speeds.insert({fan_name, v});
       values.push_back(fmt::format("{}%", v));
     }
 
-    fan_value = State::get_instance()
-      ->get_data(json::json_pointer(fmt::format("/printer_state/{}/speed", fan_name)));
+    fan_value = State::get_instance()->get_data(json::json_pointer(fmt::format("/printer_state/{}/speed", fan_name)));
     if (!fan_value.is_null()) {
       int v = static_cast<int>(fan_value.template get<double>() * 100);
       fan_speeds.insert({fan_name, v});
@@ -210,8 +207,7 @@ void PrintStatusPanel::init(json &fans) {
 
   reset();
   populate();
-  json &pstat_state = State::get_instance()
-    ->get_data("/printer_state/print_stats/state"_json_pointer);
+  json &pstat_state = State::get_instance()->get_data("/printer_state/print_stats/state"_json_pointer);
   if (!pstat_state.is_null()) {
     auto pstatus = pstat_state.template get<std::string>();
     if (pstatus != "printing" && pstatus != "paused") {
@@ -221,7 +217,6 @@ void PrintStatusPanel::init(json &fans) {
   } else {
     mini_print_status.show();
   }
-  
 }
 
 void PrintStatusPanel::populate() {
@@ -256,10 +251,15 @@ void PrintStatusPanel::populate() {
     mini_print_status.update_progress(new_value);
   }
 
-  v = s->get_data(
-      "/printer_state/gcode_move/homing_origin/2"_json_pointer);
+  v = s->get_data("/printer_state/gcode_move/homing_origin/2"_json_pointer);
   if (!v.is_null()) {
-    z_offset.update_label(fmt::format("{:.5} mm", v.template get<double>()).c_str());
+    std::string z_offset_str = fmt::format("{:.5} mm", v.template get<double>());
+    // this is some dodgy shit not even sure why it happens
+    if (z_offset_str.find("e-") == std::string::npos && z_offset_str.find("E-") == std::string::npos) {
+      z_offset.update_label(z_offset_str.c_str());
+    } else {
+      z_offset.update_label("0.0 mm");
+    }
   }
 }
 
@@ -296,7 +296,6 @@ void PrintStatusPanel::handle_metadata(const std::string &gcode_file, json &j) {
     mini_print_status.update_img(img_path, thumb_detail.second);
   }
 }
-
 
 void PrintStatusPanel::consume(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
@@ -359,7 +358,13 @@ void PrintStatusPanel::consume(json &j) {
   // zoffset
   v = j["/params/0/gcode_move/homing_origin/2"_json_pointer];
   if (!v.is_null()) {
-    z_offset.update_label(fmt::format("{:.5} mm", v.template get<double>()).c_str());
+    std::string z_offset_str = fmt::format("{:.5} mm", v.template get<double>());
+    // this is some dodgy shit not even sure why it happens
+    if (z_offset_str.find("e-") == std::string::npos && z_offset_str.find("E-") == std::string::npos) {
+      z_offset.update_label(z_offset_str.c_str());
+    } else {
+      z_offset.update_label("0.0 mm");
+    }
   }
 
   std::vector<std::string> values;

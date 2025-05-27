@@ -55,12 +55,6 @@ void InitPanel::connected(KWebSocketClient &ws) {
     ws.send_jsonrpc("server.database.get_item", h,
         [](json& j) { State::get_instance()->set_data("console", j, "/result/value"); });
 
-    h = {
-      { "namespace", "guppyscreen" }
-    };
-    ws.send_jsonrpc("server.database.get_item", h,
-        [](json& j) { State::get_instance()->set_data("guppysettings", j, "/result/value"); });
-
     // spoolman
     ws.send_jsonrpc("server.info", [this](json &j) {
       spdlog::debug("server_info {}", j.dump());
