@@ -108,6 +108,13 @@ void ExtruderPanel::consume(json& j) {
     int value = temp_value.template get<int>();
     extruder_temp.update_value(value);
   }
+
+  json &pstat_state = j["/params/0/print_stats/state"_json_pointer];
+  if (!pstat_state.is_null()) {
+    if (pstat_state.template get<std::string>() == "printing") {
+      lv_obj_move_background(panel_cont);
+    }
+  }
 }
 
 void ExtruderPanel::handle_callback(lv_event_t *e) {
