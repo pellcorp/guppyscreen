@@ -20,9 +20,7 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   , files_cont(lv_obj_create(lv_scr_act()))
   , prompt_cont(lv_obj_create(lv_scr_act()))
   , msgbox(lv_obj_create(prompt_cont))
-  , job_btn(lv_btn_create(msgbox))
-  , cancel_btn(lv_btn_create(msgbox))
-  , queue_btn(lv_btn_create(msgbox))
+  , ok_btn(lv_btn_create(msgbox))
   , left_cont(lv_obj_create(files_cont))
   , file_table_btns(lv_obj_create(left_cont))
   , refresh_btn(lv_btn_create(file_table_btns))
@@ -115,25 +113,11 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   
   lv_obj_align(msgbox, LV_ALIGN_CENTER, 0, 0);
 
-  lv_obj_add_event_cb(job_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
-  lv_obj_align(job_btn, LV_ALIGN_BOTTOM_MID, 0, 0);
+  lv_obj_add_event_cb(ok_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
+  lv_obj_align(ok_btn, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
 
-  lv_obj_add_event_cb(cancel_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
-  lv_obj_align(cancel_btn, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
-
-  lv_obj_add_event_cb(queue_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
-  lv_obj_align(queue_btn, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-  
-  label = lv_label_create(job_btn);
-  lv_label_set_text(label, "View Job");
-  lv_obj_center(label);
-
-  label = lv_label_create(cancel_btn);
-  lv_label_set_text(label, "Cancel");
-  lv_obj_center(label);
-
-  label = lv_label_create(queue_btn);
-  lv_label_set_text(label, "Queue Job");
+  label = lv_label_create(ok_btn);
+  lv_label_set_text(label, "Ok");
   lv_obj_center(label);
 
   label = lv_label_create(msgbox);
@@ -256,21 +240,21 @@ void PrintPanel::show_dir(Tree *dir, uint32_t sort_type) {
   std::vector<Tree> sorted_files;
   if (sort_type == SORTED_BY_MODIFIED) {
     KUtils::sort_map_values<std::string, Tree>(dir->children, sorted_files, [reversed](Tree &x, Tree &y) {
-      if (x.is_leaf() && !y.is_leaf()) {
-        return false;
-      } else if (!x.is_leaf() && y.is_leaf()) {
-        return true;
-      }
-      return reversed ? x.date_modified > y.date_modified : y.date_modified > x.date_modified;
+    if (x.is_leaf() && !y.is_leaf()) {
+      return false;
+    } else if (!x.is_leaf() && y.is_leaf()) {
+      return true;
+    }
+    return reversed ? x.date_modified > y.date_modified : y.date_modified > x.date_modified;
     });
   } else {
     KUtils::sort_map_values<std::string, Tree>(dir->children, sorted_files, [reversed](Tree &x, Tree &y) {
-      if (x.is_leaf() && !y.is_leaf()) {
-        return false;
-      } else if (!x.is_leaf() && y.is_leaf()) {
-        return true;
-      }
-      return reversed ? x.name > y.name : y.name > x.name;
+    if (x.is_leaf() && !y.is_leaf()) {
+      return false;
+    } else if (!x.is_leaf() && y.is_leaf()) {
+      return true;
+    }
+    return reversed ? x.name > y.name : y.name > x.name;
     });
   }
 
@@ -366,17 +350,8 @@ void PrintPanel::handle_btns(lv_event_t *event) {
   if (code == LV_EVENT_CLICKED) {
     lv_obj_t *btn = lv_event_get_current_target(event);
     if (cur_file != NULL) {
-      spdlog::trace("status prompt clicked");
-      if (btn == queue_btn) {
-	      spdlog::trace("status prompt queue clicked");
-      }
-
-      if (btn == job_btn) {
-	      spdlog::trace("status prompt job clicked");
-      }
-
-      if (btn == cancel_btn) {
-        spdlog::trace("status prompt cancel clicked");
+      if (btn == ok_btn) {
+        spdlog::trace("status prompt ok clicked");
         lv_obj_move_background(prompt_cont);
         lv_obj_add_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
       }

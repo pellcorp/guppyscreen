@@ -61,9 +61,7 @@ class PrintPanel : public NotifyConsumer {
   // prompt
   lv_obj_t *prompt_cont;
   lv_obj_t *msgbox;
-  lv_obj_t *job_btn;
-  lv_obj_t *cancel_btn;
-  lv_obj_t *queue_btn;
+  lv_obj_t *ok_btn;
 
   lv_obj_t *left_cont;
   lv_obj_t *file_table_btns;
@@ -82,7 +80,6 @@ class PrintPanel : public NotifyConsumer {
   FilePanel file_panel;
   PrintStatusPanel &print_status;
   uint32_t sorted_by;
-
 };
 
 #endif // __PRINT_PANEL_H__
