@@ -87,8 +87,6 @@ void MainPanel::init(json &j) {
       el.second->update_value(value);
     }
   }
-
-
   auto fans = State::get_instance()->get_display_fans();
   print_status_panel.init(fans);
 }
@@ -108,7 +106,18 @@ void MainPanel::consume(json &j) {
       el.second->update_series(value);
       el.second->update_value(value);
     }
-  }  
+  }
+
+  json &pstat_state = j["/params/0/print_stats/state"_json_pointer];
+  if (!pstat_state.is_null()) {
+    if (pstat_state.template get<std::string>() != "printing") {
+      homing_btn.enable();
+      extrude_btn.enable();
+    } else {
+      homing_btn.disable();
+      extrude_btn.disable();
+    }
+  }
 }
 
 static void scroll_begin_event(lv_event_t * e) {
