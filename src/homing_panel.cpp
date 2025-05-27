@@ -75,10 +75,10 @@ HomingPanel::~HomingPanel() {
 }
 
 void HomingPanel::consume(json &j) {
+  std::lock_guard<std::mutex> lock(lv_lock);
   auto v = j["/params/0/toolhead/homed_axes"_json_pointer];
   if (!v.is_null()) {
     std::string homed_axes = v.template get<std::string>();
-    std::lock_guard<std::mutex> lock(lv_lock);
     if (homed_axes.find("x") != std::string::npos) {
       x_up_btn.enable();
       x_down_btn.enable();
@@ -101,6 +101,13 @@ void HomingPanel::consume(json &j) {
     } else {
       z_up_btn.disable();
       z_down_btn.disable();
+    }
+  }
+
+  json &pstat_state = j["/params/0/print_stats/state"_json_pointer];
+  if (!pstat_state.is_null()) {
+    if (pstat_state.template get<std::string>() == "printing") {
+      lv_obj_move_background(homing_cont);
     }
   }
 }
