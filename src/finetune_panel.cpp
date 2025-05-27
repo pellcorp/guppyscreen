@@ -100,20 +100,23 @@ FineTunePanel::~FineTunePanel() {
 }
 
 void FineTunePanel::foreground() {
-  auto v = State::get_instance()->get_data(
-		"/printer_state/gcode_move/homing_origin/2"_json_pointer);
+  auto v = State::get_instance()->get_data("/printer_state/gcode_move/homing_origin/2"_json_pointer);
   if (!v.is_null()) {
-    z_offset.update_label(fmt::format("{:.5} mm", v.template get<double>()).c_str());
+    std::string z_offset_str = fmt::format("{:.5} mm", v.template get<double>());
+    // this is some dodgy shit not even sure why it happens
+    if (z_offset_str.find("e-") == std::string::npos && z_offset_str.find("E-") == std::string::npos) {
+      z_offset.update_label(z_offset_str.c_str());
+    } else {
+      z_offset.update_label("0.0 mm");
+    }
   }
 
-  v = State::get_instance()->get_data(
-		"/printer_state/extruder/pressure_advance"_json_pointer);
+  v = State::get_instance()->get_data("/printer_state/extruder/pressure_advance"_json_pointer);
   if (!v.is_null()) {
     pa.update_label(fmt::format("{:.5} mm/s", v.template get<double>()).c_str());
   }
 
-  v = State::get_instance()->get_data(
-		"/printer_state/gcode_move/speed_factor"_json_pointer);
+  v = State::get_instance()->get_data("/printer_state/gcode_move/speed_factor"_json_pointer);
   if (!v.is_null()) {
     speed_factor.update_label(fmt::format("{}%",
     static_cast<int>(v.template get<double>() * 100)).c_str());
@@ -144,7 +147,13 @@ void FineTunePanel::consume(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
   auto v = j["/params/0/gcode_move/homing_origin/2"_json_pointer];
   if (!v.is_null()) {
-    z_offset.update_label(fmt::format("{:.5} mm", v.template get<double>()).c_str());
+    std::string z_offset_str = fmt::format("{:.5} mm", v.template get<double>());
+    // this is some dodgy shit not even sure why it happens
+    if (z_offset_str.find("e-") == std::string::npos && z_offset_str.find("E-") == std::string::npos) {
+      z_offset.update_label(z_offset_str.c_str());
+    } else {
+      z_offset.update_label("0.0 mm");
+    }
   }
 
   v = j["/params/0/extruder/pressure_advance"_json_pointer];
