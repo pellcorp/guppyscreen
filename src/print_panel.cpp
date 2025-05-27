@@ -172,6 +172,8 @@ void PrintPanel::foreground() {
   json &pstat_state = State::get_instance()->get_data("/printer_state/print_stats/state"_json_pointer);
   spdlog::debug("print panel print stats {}", pstat_state.is_null() ? "nil" : pstat_state.template get<std::string>());
 
+  subscribe();
+
   if (!pstat_state.is_null()
       && pstat_state.template get<std::string>() != "printing"
       && pstat_state.template get<std::string>() != "paused") {
