@@ -23,8 +23,7 @@ namespace fs = std::experimental::filesystem;
 namespace KUtils {
 
   bool is_homed() {
-    auto v = State::get_instance()
-      ->get_data("/printer_state/toolhead/homed_axes"_json_pointer);
+    auto v = State::get_instance()->get_data("/printer_state/toolhead/homed_axes"_json_pointer);
     if (!v.is_null()) {
       std::string homed_axes = v.template get<std::string>();
       return homed_axes.find("x") != std::string::npos

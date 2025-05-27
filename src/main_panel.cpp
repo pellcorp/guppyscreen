@@ -71,7 +71,6 @@ MainPanel::~MainPanel() {
   sensors.clear();
 }
 
-
 void MainPanel::init(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
   for (const auto &el : sensors) {
@@ -139,7 +138,6 @@ void MainPanel::create_panel() {
 }
 
 void MainPanel::handle_homing_cb(lv_event_t *event) {
-  spdlog::trace("clicked homing1");
   if (lv_event_get_code(event) == LV_EVENT_CLICKED) {
     spdlog::trace("clicked homing");
     homing_panel.foreground();
