@@ -313,10 +313,12 @@ void PrintStatusPanel::consume(json &j) {
     auto print_status = pstate.template get<std::string>();
     if (print_status != "printing" && print_status != "paused") {
       mini_print_status.hide();
+      if (print_status != "standby") {
+        background();
+      }
     } else {
       mini_print_status.show();
     }
-
     mini_print_status.update_status(print_status);
   }
 
