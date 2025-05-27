@@ -20,7 +20,6 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   , files_cont(lv_obj_create(lv_scr_act()))
   , prompt_cont(lv_obj_create(lv_scr_act()))
   , msgbox(lv_obj_create(prompt_cont))
-  , ok_btn(lv_btn_create(msgbox))
   , left_cont(lv_obj_create(files_cont))
   , file_table_btns(lv_obj_create(left_cont))
   , refresh_btn(lv_btn_create(file_table_btns))
@@ -113,17 +112,6 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   
   lv_obj_align(msgbox, LV_ALIGN_CENTER, 0, 0);
 
-  lv_obj_add_event_cb(ok_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
-  lv_obj_align(ok_btn, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
-
-  label = lv_label_create(ok_btn);
-  lv_label_set_text(label, "Ok");
-  lv_obj_center(label);
-
-  label = lv_label_create(msgbox);
-  lv_label_set_text(label, "Printing in progress...");
-  lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 0);
-
   ws.register_notify_update(this);
 }
 
@@ -153,8 +141,10 @@ void PrintPanel::consume(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
   if (pstat_state.template get<std::string>() != "printing" && pstat_state.template get<std::string>() != "paused") {
     status_btn.disable();
+    print_btn.enable();
   } else {
     status_btn.enable();
+    print_btn.disable();
   }
 }
 
@@ -186,8 +176,10 @@ void PrintPanel::foreground() {
       && pstat_state.template get<std::string>() != "printing"
       && pstat_state.template get<std::string>() != "paused") {
     status_btn.disable();
+    print_btn.enable();
   } else {
     status_btn.enable();
+    print_btn.disable();
   }
   
   lv_obj_move_foreground(files_cont);
@@ -349,14 +341,6 @@ void PrintPanel::handle_btns(lv_event_t *event) {
   lv_event_code_t code = lv_event_get_code(event);
   if (code == LV_EVENT_CLICKED) {
     lv_obj_t *btn = lv_event_get_current_target(event);
-    if (cur_file != NULL) {
-      if (btn == ok_btn) {
-        spdlog::trace("status prompt ok clicked");
-        lv_obj_move_background(prompt_cont);
-        lv_obj_add_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
-      }
-    }
-
     if (btn == refresh_btn) {
       subscribe();
     } else if (btn == modified_sort_btn) {
