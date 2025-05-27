@@ -49,8 +49,7 @@ class PrintPanel : public NotifyConsumer {
     PrintPanel *panel = (PrintPanel*)event->user_data;
     panel->handle_btns(event);
   };
-  
-  
+
  private:
   void show_dir(Tree *dir, uint32_t sort_type);
   void show_file_detail(Tree *f);
@@ -61,7 +60,6 @@ class PrintPanel : public NotifyConsumer {
   // prompt
   lv_obj_t *prompt_cont;
   lv_obj_t *msgbox;
-  lv_obj_t *ok_btn;
 
   lv_obj_t *left_cont;
   lv_obj_t *file_table_btns;
