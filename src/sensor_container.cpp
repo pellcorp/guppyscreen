@@ -139,7 +139,6 @@ void SensorContainer::update_series(int v) {
   }
 }
 
-// SET_TEMPERATURE_FAN_TARGET TEMPERATURE_FAN=chamber_fan TARGET=50
 void SensorContainer::handle_edit(lv_event_t *e) {
   if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
     spdlog::trace("sensor callback this {}, {}, {}", id, fmt::ptr(this), fmt::ptr(&numpad));

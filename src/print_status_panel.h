@@ -15,7 +15,6 @@
 
 class PrintStatusPanel : public NotifyConsumer {
  public:
-  /* PrintStatusPanel(KWebSocketClient &ws, std::mutex &lock, json &j); */
   PrintStatusPanel(KWebSocketClient &ws, std::mutex &lock, lv_obj_t *mini_parent);
   ~PrintStatusPanel();
 
@@ -63,11 +62,12 @@ class PrintStatusPanel : public NotifyConsumer {
 
   ImageLabel extruder_temp;
   ImageLabel bed_temp;
+  ImageLabel chamber_temp;
   ImageLabel print_speed;
   ImageLabel z_offset;
   ImageLabel flow_rate;
   ImageLabel layers;
-  ImageLabel fan0;
+  ImageLabel fans;
   ImageLabel elapsed;
   /* ImageLabel fan1; */
   ImageLabel time_left;
@@ -83,6 +83,7 @@ class PrintStatusPanel : public NotifyConsumer {
   double flow;
   int extruder_target;
   int heater_bed_target;
+  int chamber_target;
   json current_file;
 
   std::map<std::string, int> fan_speeds;
