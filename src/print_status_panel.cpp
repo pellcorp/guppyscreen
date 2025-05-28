@@ -11,6 +11,7 @@ LV_IMG_DECLARE(extrude);
 LV_IMG_DECLARE(clock_img);
 LV_IMG_DECLARE(hourglass);
 LV_IMG_DECLARE(bed);
+LV_IMG_DECLARE(heater);
 LV_IMG_DECLARE(home_z);
 LV_IMG_DECLARE(fan);
 LV_IMG_DECLARE(layers_img);
@@ -57,17 +58,19 @@ PrintStatusPanel::PrintStatusPanel(KWebSocketClient &websocket_client,
   , detail_cont(lv_obj_create(status_cont))
   , extruder_temp(detail_cont, &extruder, 100, "20")
   , bed_temp(detail_cont, &bed, 100, "21")
+  , chamber_temp(detail_cont, &heater, 100, "35")
   , print_speed(detail_cont, &speed_up_img, 100, "0 mm/s")
   , z_offset(detail_cont, &home_z, 100, "0.0 mm")
   , flow_rate(detail_cont, &extrude, 100, "0.0 mm3/s")
   , layers(detail_cont, &layers_img, 100, "...")
-  , fan0(detail_cont, &fan, 100, "0%")
+  , fans(detail_cont, &fan, 100, "0%")
   , elapsed(detail_cont, &clock_img, 100, "0s")
   , time_left(detail_cont, &hourglass, 100, "...")
   , estimated_time_s(0)
   , filament_diameter(1.75) // XXX: check config
   , extruder_target(-1)
   , heater_bed_target(-1)
+  , chamber_target(-1)
 {
   lv_obj_move_background(status_cont);
   lv_obj_clear_flag(status_cont, LV_OBJ_FLAG_SCROLLABLE);  
@@ -86,20 +89,20 @@ PrintStatusPanel::PrintStatusPanel(KWebSocketClient &websocket_client,
   lv_obj_set_grid_cell(bed_temp.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 0, 1);  
 
   //detail containter row 2
-  lv_obj_set_grid_cell(print_speed.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 1, 1);
-  lv_obj_set_grid_cell(z_offset.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 1, 1);  
+  lv_obj_set_grid_cell(chamber_temp.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 1, 1);
+  lv_obj_set_grid_cell(fans.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 1, 1);
 
   //detail containter row 3
-  lv_obj_set_grid_cell(flow_rate.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 2, 1);
-  lv_obj_set_grid_cell(layers.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+  lv_obj_set_grid_cell(print_speed.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 2, 1);
+  lv_obj_set_grid_cell(z_offset.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 
   //detail containter row 4
-  lv_obj_set_grid_cell(elapsed.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 3, 1);
-  lv_obj_set_grid_cell(fan0.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 3, 1);
+  lv_obj_set_grid_cell(flow_rate.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 3, 1);
+  lv_obj_set_grid_cell(layers.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 3, 1);
 
   //detail containter row 5
-  lv_obj_set_grid_cell(time_left.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 4, 1);
-  // lv_obj_set_grid_cell(fan2.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 4, 1);  
+  lv_obj_set_grid_cell(elapsed.get_container(), LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 4, 1);
+  lv_obj_set_grid_cell(time_left.get_container(), LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 4, 1);
   
   static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
   static lv_coord_t grid_main_col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -113,8 +116,6 @@ PrintStatusPanel::PrintStatusPanel(KWebSocketClient &websocket_client,
 
   lv_obj_set_style_pad_all(pbar_cont, 0, 0);
   lv_obj_set_size(pbar_cont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-  // lv_obj_set_style_border_width(pbar_cont, 2, 0);
-  // lv_obj_set_style_border_width(thumbnail_cont, 2, 0);
 
   auto bar_width = (double)lv_disp_get_physical_hor_res(NULL) * 0.35;
   auto hscale = (double)lv_disp_get_physical_ver_res(NULL) / 480.0;
@@ -173,6 +174,7 @@ void PrintStatusPanel::reset() {
   filament_diameter = v.is_null() ? 1.750 : std::stod(v.template get<std::string>());
   extruder_target = -1;
   heater_bed_target = -1;
+  chamber_target = -1;
 
   // free src
   lv_img_set_src(thumbnail, NULL);
@@ -182,10 +184,10 @@ void PrintStatusPanel::reset() {
   mini_print_status.reset();
 }
 
-void PrintStatusPanel::init(json &fans) {
+void PrintStatusPanel::init(json &fan_cfgs) {
   fan_speeds.clear();
   std::vector<std::string> values;
-  for (auto &f : fans.items()) {
+  for (auto &f : fan_cfgs.items()) {
     std::string fan_name = f.key();
 
     auto fan_value = State::get_instance()->get_data(json::json_pointer(fmt::format("/printer_state/{}/value", fan_name)));
@@ -203,7 +205,7 @@ void PrintStatusPanel::init(json &fans) {
     }
   }
 
-  fan0.update_label(fmt::format("{}", fmt::join(values, ", ")).c_str());
+  fans.update_label(fmt::format("{}", fmt::join(values, ", ")).c_str());
 
   reset();
   populate();
@@ -308,6 +310,7 @@ void PrintStatusPanel::consume(json &j) {
     foreground(); // auto move to front when print is detected
   }
 
+//  spdlog::info("{}", j.dump());
   auto& pstate = j["/params/0/print_stats/state"_json_pointer];
   if (!pstate.is_null()) {
     auto print_status = pstate.template get<std::string>();
@@ -330,8 +333,13 @@ void PrintStatusPanel::consume(json &j) {
   v = j["/params/0/heater_bed/target"_json_pointer];
   if (!v.is_null()) {
     heater_bed_target = v.template get<int>();
-  }  
-  
+  }
+
+  v = j["/params/0/temperature_fan chamber_fan/target"_json_pointer];
+  if (!v.is_null()) {
+    chamber_target = v.template get<int>();
+  }
+
   v = j["/params/0/extruder/temperature"_json_pointer];
   if (!v.is_null()) {
     if (extruder_target > 0) {
@@ -347,6 +355,15 @@ void PrintStatusPanel::consume(json &j) {
       bed_temp.update_label(fmt::format("{} / {}", v.template get<int>(), heater_bed_target).c_str());
     } else {
       bed_temp.update_label(fmt::format("{}", v.template get<int>()).c_str());
+    }
+  }
+
+  v = j["/params/0/temperature_fan chamber_fan/temperature"_json_pointer];
+  if (!v.is_null()) {
+    if (chamber_target > 0) {
+      chamber_temp.update_label(fmt::format("{} / {}", v.template get<int>(), chamber_target).c_str());
+    } else {
+      chamber_temp.update_label(fmt::format("{}", v.template get<int>()).c_str());
     }
   }
 
@@ -388,7 +405,7 @@ void PrintStatusPanel::consume(json &j) {
     values.push_back(fmt::format("{}%", fv));
   }
 
-  fan0.update_label(fmt::format("{}", fmt::join(values, ", ")).c_str());
+  fans.update_label(fmt::format("{}", fmt::join(values, ", ")).c_str());
 
   // progress
   v = j["/params/0/print_stats/print_duration"_json_pointer];
