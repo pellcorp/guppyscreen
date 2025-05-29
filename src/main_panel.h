@@ -12,6 +12,7 @@
 #include "fan_panel.h"
 #include "led_panel.h"
 #include "print_panel.h"
+#include "console_panel.h"
 #include "setting_panel.h"
 #include "print_status_panel.h"
 #include "spoolman_panel.h"
@@ -94,6 +95,8 @@ class MainPanel : public NotifyConsumer {
   lv_obj_t *main_tab;
   lv_obj_t *setting_tab;
   SettingPanel setting_panel;
+  lv_obj_t *console_tab;
+  ConsolePanel console_panel;
   lv_obj_t *main_cont;
   PrintStatusPanel print_status_panel;
   PrintPanel print_panel;
