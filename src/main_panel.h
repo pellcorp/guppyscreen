@@ -30,6 +30,7 @@ class MainPanel : public NotifyConsumer {
   ~MainPanel();
   void consume(json &data);
   void init(json &data);
+  void subscribe();
   void enable_spoolman();
   
   void create_panel();

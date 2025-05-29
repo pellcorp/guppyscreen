@@ -22,7 +22,6 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   , msgbox(lv_obj_create(prompt_cont))
   , left_cont(lv_obj_create(files_cont))
   , file_table_btns(lv_obj_create(left_cont))
-  , refresh_btn(lv_btn_create(file_table_btns))
   , modified_sort_btn(lv_btn_create(file_table_btns))
   , az_sort_btn(lv_btn_create(file_table_btns))
   , file_table(lv_table_create(left_cont))
@@ -53,10 +52,6 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
 
   // file view buttons
   lv_obj_t * label = NULL;
-  
-  label = lv_label_create(refresh_btn);
-  lv_label_set_text(label, LV_SYMBOL_REFRESH " Reload");
-  lv_obj_center(label);
 
   label = lv_label_create(modified_sort_btn);
   lv_label_set_text(label, LV_SYMBOL_LIST " Modified");
@@ -66,7 +61,6 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   lv_label_set_text(label, LV_SYMBOL_LIST " A-Z");
   lv_obj_center(label);
 
-  lv_obj_add_event_cb(refresh_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
   lv_obj_add_event_cb(modified_sort_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
   lv_obj_add_event_cb(az_sort_btn, &PrintPanel::_handle_btns, LV_EVENT_CLICKED, this);
   
@@ -132,7 +126,13 @@ void PrintPanel::populate_files(json &j) {
   show_dir(cur_dir, SORTED_BY_MODIFIED);
 }
 
-void PrintPanel::consume(json &j) {  
+void PrintPanel::consume(json &j) {
+  if (j.contains("method") && j["method"] == "notify_filelist_changed") {
+    auto action = j["/params/0/action"_json_pointer];
+    subscribe();
+    return;
+  }
+
   json &pstat_state = j["/params/0/print_stats/state"_json_pointer];
   if (pstat_state.is_null()) {
     return;
@@ -149,6 +149,14 @@ void PrintPanel::consume(json &j) {
 }
 
 void PrintPanel::subscribe() {
+  {
+    std::lock_guard<std::mutex> lock(lv_lock);
+    if (listing_files) {
+      return;
+    }
+    listing_files = true;
+  }
+
   ws.send_jsonrpc("server.files.list", R"({"root":"gcodes"})"_json, [this](json &d) {
     std::lock_guard<std::mutex> lock(lv_lock);
     std::string cur_path = cur_dir->full_path;
@@ -165,14 +173,13 @@ void PrintPanel::subscribe() {
     // need to simplify this using the directory endpoint
     cur_dir = dir;
     this->populate_files(d);
+    listing_files = false;
   });
 }
 
 void PrintPanel::foreground() {
   json &pstat_state = State::get_instance()->get_data("/printer_state/print_stats/state"_json_pointer);
   spdlog::debug("print panel print stats {}", pstat_state.is_null() ? "nil" : pstat_state.template get<std::string>());
-
-  subscribe();
 
   if (!pstat_state.is_null()
       && pstat_state.template get<std::string>() != "printing"
@@ -343,9 +350,7 @@ void PrintPanel::handle_btns(lv_event_t *event) {
   lv_event_code_t code = lv_event_get_code(event);
   if (code == LV_EVENT_CLICKED) {
     lv_obj_t *btn = lv_event_get_current_target(event);
-    if (btn == refresh_btn) {
-      subscribe();
-    } else if (btn == modified_sort_btn) {
+    if (btn == modified_sort_btn) {
       show_dir(cur_dir, SORTED_BY_MODIFIED);
     } else if (btn == az_sort_btn) {
       show_dir(cur_dir, SORTED_BY_NAME);

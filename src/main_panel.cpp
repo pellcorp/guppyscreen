@@ -71,6 +71,11 @@ MainPanel::~MainPanel() {
   sensors.clear();
 }
 
+void MainPanel::subscribe() {
+  spdlog::trace("main panel subscribing");
+  print_panel.subscribe();
+}
+
 void MainPanel::init(json &j) {
   std::lock_guard<std::mutex> lock(lv_lock);
   for (const auto &el : sensors) {

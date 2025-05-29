@@ -63,7 +63,6 @@ class PrintPanel : public NotifyConsumer {
 
   lv_obj_t *left_cont;
   lv_obj_t *file_table_btns;
-  lv_obj_t *refresh_btn;
   lv_obj_t *modified_sort_btn;
   lv_obj_t *az_sort_btn;
   
@@ -78,6 +77,8 @@ class PrintPanel : public NotifyConsumer {
   FilePanel file_panel;
   PrintStatusPanel &print_status;
   uint32_t sorted_by;
+
+  bool listing_files = false;
 };
 
 #endif // __PRINT_PANEL_H__

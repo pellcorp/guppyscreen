@@ -55,6 +55,8 @@ void InitPanel::connected(KWebSocketClient &ws) {
     ws.send_jsonrpc("server.database.get_item", h,
         [](json& j) { State::get_instance()->set_data("console", j, "/result/value"); });
 
+    this->main_panel.subscribe();
+
     // spoolman
     ws.send_jsonrpc("server.info", [this](json &j) {
       spdlog::debug("server_info {}", j.dump());

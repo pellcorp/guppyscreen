@@ -61,16 +61,11 @@ int KWebSocketClient::connect(const char* url,
 
     if (j.contains("method")) {
       std::string method = j["method"].template get<std::string>();
-      if ("notify_status_update" == method) {
+      if ("notify_status_update" == method || "notify_filelist_changed" == method) {
         for (const auto &entry : notify_consumers) {
           entry->consume(j);
         }
-      }  //  else if ("notify_gcode_response" == method) {
-      // 	for (const auto &gcode_cb : gcode_resp_cbs) {
-      // 	  gcode_cb(j);
-      // 	}
-      // }
-      else if ("notify_klippy_disconnected" == method) {
+      } else if ("notify_klippy_disconnected" == method) {
         disconnected();
       } else if ("notify_klippy_ready" == method) {
         connected();
@@ -121,8 +116,7 @@ int KWebSocketClient::send_jsonrpc(const std::string &method,
   return 0;
 }
 
-int KWebSocketClient::send_jsonrpc(const std::string &method,
-				   std::function<void(json&)> cb) {
+int KWebSocketClient::send_jsonrpc(const std::string &method, std::function<void(json&)> cb) {
   const auto &entry = callbacks.find(id);
   if (entry == callbacks.end()) {
     // spdlog::debug("registering consume %d, %x\n", id, consumer);
@@ -132,7 +126,6 @@ int KWebSocketClient::send_jsonrpc(const std::string &method,
   } else {
     // spdlog::debug("WARN: id %d is already register with a consumer\n", id);
   }
-
   return 0;
 }
 
@@ -159,8 +152,7 @@ void KWebSocketClient::unregister_notify_update(NotifyConsumer *consumer) {
     }));
 }
 
-int KWebSocketClient::send_jsonrpc(const std::string &method,
-				   const json &params) {
+int KWebSocketClient::send_jsonrpc(const std::string &method, const json &params) {
   json rpc;
   rpc["jsonrpc"] = "2.0";
   rpc["method"] = method;
