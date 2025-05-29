@@ -70,7 +70,6 @@ PrintStatusPanel::PrintStatusPanel(KWebSocketClient &websocket_client,
   , filament_diameter(1.75) // XXX: check config
   , extruder_target(-1)
   , heater_bed_target(-1)
-  , chamber_target(-1)
 {
   lv_obj_move_background(status_cont);
   lv_obj_clear_flag(status_cont, LV_OBJ_FLAG_SCROLLABLE);  
@@ -174,7 +173,6 @@ void PrintStatusPanel::reset() {
   filament_diameter = v.is_null() ? 1.750 : std::stod(v.template get<std::string>());
   extruder_target = -1;
   heater_bed_target = -1;
-  chamber_target = -1;
 
   // free src
   lv_img_set_src(thumbnail, NULL);
@@ -335,11 +333,6 @@ void PrintStatusPanel::consume(json &j) {
     heater_bed_target = v.template get<int>();
   }
 
-  v = j["/params/0/temperature_fan chamber_fan/target"_json_pointer];
-  if (!v.is_null()) {
-    chamber_target = v.template get<int>();
-  }
-
   v = j["/params/0/extruder/temperature"_json_pointer];
   if (!v.is_null()) {
     if (extruder_target > 0) {
@@ -358,13 +351,9 @@ void PrintStatusPanel::consume(json &j) {
     }
   }
 
-  v = j["/params/0/temperature_fan chamber_fan/temperature"_json_pointer];
+  v = j["/params/0/temperature_sensor chamber_temp/temperature"_json_pointer];
   if (!v.is_null()) {
-    if (chamber_target > 0) {
-      chamber_temp.update_label(fmt::format("{} / {}", v.template get<int>(), chamber_target).c_str());
-    } else {
-      chamber_temp.update_label(fmt::format("{}", v.template get<int>()).c_str());
-    }
+    chamber_temp.update_label(fmt::format("{}", v.template get<int>()).c_str());
   }
 
   // speed

@@ -88,7 +88,6 @@
             "id": "temperature_fan chamber_fan"
         }
     ],
-    "moonraker_api_key": false,
     "moonraker_host": "127.0.0.1",
     "moonraker_port": 7125,
     "prompt_emergency_stop": true,
