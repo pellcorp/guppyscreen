@@ -23,8 +23,7 @@ class PrintPanel : public NotifyConsumer {
   void handle_back_btn(lv_event_t *event);
   void handle_print_callback(lv_event_t *event);
   void handle_status_btn(lv_event_t *event);
-  void handle_btns(lv_event_t *event);
-  
+
   static void _handle_callback(lv_event_t *event) {
     PrintPanel *panel = (PrintPanel*)event->user_data;
     panel->handle_callback(event);
@@ -45,11 +44,6 @@ class PrintPanel : public NotifyConsumer {
     panel->handle_status_btn(event);
   };
 
-  static void _handle_btns(lv_event_t *event) {
-    PrintPanel *panel = (PrintPanel*)event->user_data;
-    panel->handle_btns(event);
-  };
-
  private:
   void show_dir(Tree *dir, uint32_t sort_type);
   void show_file_detail(Tree *f);
@@ -57,15 +51,8 @@ class PrintPanel : public NotifyConsumer {
   KWebSocketClient &ws;
   lv_obj_t *files_cont;
 
-  // prompt
-  lv_obj_t *prompt_cont;
-  lv_obj_t *msgbox;
-
   lv_obj_t *left_cont;
-  lv_obj_t *file_table_btns;
-  lv_obj_t *modified_sort_btn;
-  lv_obj_t *az_sort_btn;
-  
+
   lv_obj_t *file_table;
   lv_obj_t *file_view;
   ButtonContainer status_btn;
