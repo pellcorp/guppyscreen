@@ -16,6 +16,7 @@ LV_IMG_DECLARE(heater);
 LV_IMG_DECLARE(emergency);
 
 LV_FONT_DECLARE(materialdesign_font_40);
+#define CONSOLE_SYMBOL "\xF3\xB0\x86\x8D"
 #define TUNE_SYMBOL "\xF3\xB1\x95\x82"
 #define HOME_SYMBOL "\xF3\xB0\x8B\x9C"
 #define SETTING_SYMBOL "\xF3\xB0\x92\x93"
@@ -32,6 +33,8 @@ MainPanel::MainPanel(KWebSocketClient &websocket,
   , main_tab(lv_tabview_add_tab(tabview, HOME_SYMBOL))
   , setting_tab(lv_tabview_add_tab(tabview, SETTING_SYMBOL))
   , setting_panel(websocket, lock, setting_tab, sm)
+  , console_tab(lv_tabview_add_tab(tabview, CONSOLE_SYMBOL))
+  , console_panel(ws, lock, console_tab)
   , main_cont(lv_obj_create(main_tab))
   , print_status_panel(websocket, lock, main_cont)
   , print_panel(ws, lock, print_status_panel)
@@ -143,10 +146,9 @@ void MainPanel::create_panel() {
   lv_obj_set_style_border_side(tab_btns, 0, LV_PART_ITEMS | LV_STATE_CHECKED);
   lv_obj_set_style_text_font(tab_btns, &materialdesign_font_40, LV_STATE_DEFAULT);
 
-  // lv_obj_set_style_text_font(lv_scr_act(), LV_FONT_DEFAULT, 0);
-
   lv_obj_set_style_pad_all(main_tab, 0, 0);
   lv_obj_set_style_pad_all(setting_tab, 0, 0);
+  lv_obj_set_style_pad_all(console_tab, 0, 0);
 
   create_main(main_tab);
 }
