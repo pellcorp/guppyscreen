@@ -83,7 +83,6 @@ class PrintStatusPanel : public NotifyConsumer {
   double flow;
   int extruder_target;
   int heater_bed_target;
-  int chamber_target;
   json current_file;
 
   std::map<std::string, int> fan_speeds;
