@@ -26,7 +26,6 @@ FilePanel::FilePanel(lv_obj_t *parent)
   lv_obj_set_width(fname_label, LV_PCT(90));
   lv_label_set_long_mode(fname_label, LV_LABEL_LONG_SCROLL);
   lv_obj_set_style_text_align(fname_label, LV_TEXT_ALIGN_CENTER, 0);
-  
 
   static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(3), LV_GRID_FR(2), LV_GRID_TEMPLATE_LAST};
   static lv_coord_t grid_main_col_dsc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -64,11 +63,10 @@ void FilePanel::refresh_view(json &j, const std::string &gcode_path) {
   auto filename = fs::path(gcode_path).filename();
   lv_label_set_text(fname_label, filename.string().c_str());
   
-  std::string detail = fmt::format("Filament Weight: {} g\nPrint Time: {}\nSize: {} MB\nModified: {}",
+  std::string detail = fmt::format("Filament Weight: {} g\nPrint Time: {}\nSize: {} MB",
 				   fweight > 0 ? std::to_string(fweight) : "(unknown)",
 				   eta > 0 ? KUtils::eta_string(eta) : "(unknown)",
-				   KUtils::bytes_to_mb(j["result"]["size"].template get<size_t>()),
-				   time_stream.str());
+				   KUtils::bytes_to_mb(j["result"]["size"].template get<size_t>()));
 
   auto width_scale = (double)lv_disp_get_physical_hor_res(NULL) / 800.0;
   auto thumb_detail = KUtils::get_thumbnail(gcode_path, j, width_scale);
