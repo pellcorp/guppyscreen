@@ -11,6 +11,7 @@ Grumpyscreen is a fork of GuppyScreen specifically for Simple AF
 :white_check_mark: Print Fine Tune (Speed, Flow, Baby Stepping, Pressure Advance)  
 :white_check_mark: Start a Print from Usb or Reprint  
 :white_check_mark: Spoolman Integration
+:white_check_mark: Console Logging
 
 ## Credits
 
