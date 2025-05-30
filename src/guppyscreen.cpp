@@ -58,14 +58,14 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
   auto console_sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
   spdlog::sinks_init_list log_sinks{console_sink};
 
-  auto klogger = std::make_shared<spdlog::logger>("guppyscreen", log_sinks);
+  auto klogger = std::make_shared<spdlog::logger>("grumpyscreen", log_sinks);
   spdlog::register_logger(klogger);
 
   spdlog::set_level(ll);
   spdlog::set_default_logger(klogger);
   klogger->flush_on(ll);
 
-  spdlog::info("Grumpy Screen Version: {}-{}", GUPPYSCREEN_BRANCH, GUPPYSCREEN_VERSION);
+  spdlog::info("GrumpyScreen Version: {}-{}", GUPPYSCREEN_BRANCH, GUPPYSCREEN_VERSION);
 
   spdlog::info("DPI: {}", LV_DPI_DEF);
   /*LittlevGL init*/
@@ -81,10 +81,6 @@ GuppyScreen *GuppyScreen::init(std::function<void(lv_color_t, lv_color_t)> hal_i
   lv_style_init(&style_container);
   lv_style_set_border_width(&style_container, 0);
   lv_style_set_radius(&style_container, 0);
-
-//  lv_style_init(&style_imgbtn_default);
-//  lv_style_set_img_recolor_opa(&style_imgbtn_default, LV_OPA_100);
-//  lv_style_set_img_recolor(&style_imgbtn_default, lv_color_black());
 
   lv_style_init(&style_imgbtn_pressed);
   lv_style_set_img_recolor_opa(&style_imgbtn_pressed, LV_OPA_100);
@@ -183,7 +179,7 @@ std::mutex &GuppyScreen::get_lock() {
 }
 
 void GuppyScreen::connect_ws(const std::string &url) {
-  init_panel.set_message(LV_SYMBOL_WARNING " Waiting for printer to initialize...");
+  init_panel.set_message(LV_SYMBOL_WARNING " Waiting for printer to initialise...");
   ws.connect(url.c_str(),
    [this]() { init_panel.connected(ws); },
    [this]() { init_panel.disconnected(ws); });

@@ -38,10 +38,6 @@ int KWebSocketClient::connect(const char* url,
     connected();
   };
   onmessage = [this, connected, disconnected](const std::string &msg) {
-    // if (msg.find("notify_proc_stat_update") == std::string::npos) {
-    //   spdlog::trace("onmessage(type={} len={}): {}", opcode() == WS_OPCODE_TEXT ? "text" : "binary",
-    // 	     (int)msg.size(), msg);
-    // }
     auto j = json::parse(msg);
 
     if (j.contains("id")) {
@@ -66,8 +62,13 @@ int KWebSocketClient::connect(const char* url,
           entry->consume(j);
         }
       } else if ("notify_klippy_disconnected" == method) {
+        spdlog::debug("klippy disconnected");
+        disconnected();
+      } else if ("notify_klippy_shutdown" == method) {
+        spdlog::debug("klippy shutdown");
         disconnected();
       } else if ("notify_klippy_ready" == method) {
+        spdlog::debug("klippy connected");
         connected();
       }
 
@@ -182,7 +183,6 @@ int KWebSocketClient::gcode_script(const std::string &gcode) {
 void KWebSocketClient::register_method_callback(std::string resp_method,
 						std::string handler_name,
 						std::function<void(json&)> cb) {
-
   const auto &entry = method_resp_cbs.find(resp_method);
   if (entry == method_resp_cbs.end()) {
     spdlog::debug("registering new method {}, handler {}", resp_method, handler_name);
