@@ -27,10 +27,6 @@ void Config::init(std::string config_path) {
   o << std::setw(2) << data << std::endl;
 }
 
-std::string Config::get_thumbnail_path() {
-  return get<std::string>("/thumbnail_path");
-}
-
 std::string Config::get_wifi_interface() {
   return fs::path(get<std::string>("/wpa_supplicant"))
     .filename()
