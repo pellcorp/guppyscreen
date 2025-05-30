@@ -23,6 +23,7 @@ class PrintPanel : public NotifyConsumer {
   void handle_back_btn(lv_event_t *event);
   void handle_print_callback(lv_event_t *event);
   void handle_status_btn(lv_event_t *event);
+  void handle_file_list_change(json &d);
 
   static void _handle_callback(lv_event_t *event) {
     PrintPanel *panel = (PrintPanel*)event->user_data;
