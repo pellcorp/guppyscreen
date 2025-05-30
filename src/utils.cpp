@@ -86,11 +86,10 @@ namespace KUtils {
       Config *conf = Config::get_instance();
       std::string moonraker_host = conf->get<std::string>("/moonraker_host");
       std::string fname = relative_path.substr(relative_path.find_last_of("/\\") + 1);
-      std::string fullpath = fmt::format("{}/{}", conf->get<std::string>("/thumbnail_path"), fname);
-    
+
       // download thumbnail
       auto gcode_root = get_root_path("gcodes");
-      fullpath = fmt::format("{}/{}", gcode_root, relative_path);
+      std::string fullpath = fmt::format("{}/{}", gcode_root, relative_path);
 
       return std::make_pair(fullpath, thumb_width);
     }

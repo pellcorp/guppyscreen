@@ -92,7 +92,3 @@ void FilePanel::foreground() {
 lv_obj_t *FilePanel::get_container() {
   return file_cont;
 }
-
-const char* FilePanel::get_thumbnail_path() {
-  return (const char*)lv_img_get_src(thumbnail);
-}
