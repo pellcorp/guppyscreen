@@ -68,6 +68,9 @@ PrintPanel::PrintPanel(KWebSocketClient &websocket, std::mutex &lock, PrintStatu
   lv_obj_move_foreground(status_btn.get_container());
 
   ws.register_notify_update(this);
+  ws.register_method_callback("notify_filelist_changed",
+    			      "PrintPanel",
+    			      [this](json& d) { this->handle_file_list_change(d); });
 }
 
 PrintPanel::~PrintPanel() {
@@ -82,13 +85,12 @@ void PrintPanel::populate_files(json &j) {
   show_dir(cur_dir, SORTED_BY_MODIFIED);
 }
 
-void PrintPanel::consume(json &j) {
-  if (j.contains("method") && j["method"] == "notify_filelist_changed") {
-    auto action = j["/params/0/action"_json_pointer];
-    subscribe();
-    return;
-  }
+void PrintPanel::handle_file_list_change(json &j) {
+  spdlog::trace("file list change response {}", j.dump());
+  subscribe();
+}
 
+void PrintPanel::consume(json &j) {
   json &pstat_state = j["/params/0/print_stats/state"_json_pointer];
   if (pstat_state.is_null()) {
     return;
