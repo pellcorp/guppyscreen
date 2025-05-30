@@ -21,18 +21,6 @@
 namespace fs = std::experimental::filesystem;
 
 namespace KUtils {
-
-  bool is_homed() {
-    auto v = State::get_instance()->get_data("/printer_state/toolhead/homed_axes"_json_pointer);
-    if (!v.is_null()) {
-      std::string homed_axes = v.template get<std::string>();
-      return homed_axes.find("x") != std::string::npos
-	      && homed_axes.find("y") != std::string::npos
-	      && homed_axes.find("z") != std::string::npos;
-    }
-    return false;
-  }
-
   std::string get_root_path(const std::string root_name) {
     auto roots = State::get_instance()->get_data("/roots"_json_pointer);
     json filtered;
@@ -94,28 +82,6 @@ namespace KUtils {
       return std::make_pair(fullpath, thumb_width);
     }
     return std::make_pair("", 0);
-  }
-
-  std::string download_file(const std::string &root, const std::string &fname, const std::string &dest) {
-    auto filename = fs::path(fname).filename();
-    auto dest_fullpath = fs::path(dest) / filename;
-
-    spdlog::trace("root {}, fname {}, base filename {}, dest_fp {}", root, fname,
-		  filename.string(), dest_fullpath.string());
-    Config *conf = Config::get_instance();
-    std::string moonraker_host = conf->get<std::string>("/moonraker_host");
-
-    std::string file_url = fmt::format("http://{}:{}/server/files/{}/{}",
-					moonraker_host,
-					conf->get<uint32_t>("/moonraker_port"),
-					root,
-					HUrl::escape(fname));
-    // threadpool this
-    spdlog::debug("file url {}", file_url);
-    auto size = requests::downloadFile(file_url.c_str(), dest_fullpath.c_str());
-    spdlog::trace("downloaded file size {}", size);
-
-    return dest_fullpath.string();
   }
 
   std::vector<std::string> get_interfaces() {
@@ -214,49 +180,4 @@ namespace KUtils {
   size_t bytes_to_mb(size_t s) {
     return s / 1024 / 1024;
   }
-
-  std::map<std::string, std::map<std::string, std::string>> parse_macros(json &m) {
-    std::map<std::string, std::map<std::string, std::string>> macros;
-
-    std::regex param_regex(R"(params\.(\w+)(.*))", std::regex_constants::icase);
-    std::regex default_value_regex(R"(\|\s*default\s*\(\s*((["'])(?:\\.|[^\x02])*\2|-?[0-9][^,)]*))",
-                                   std::regex_constants::icase);
-    for (auto &el : m.items()) {
-      std::string key = el.key();
-      if (key.rfind("gcode_macro ", 0) == 0) {
-        auto &gcode = el.value()["/gcode"_json_pointer];
-        if (!gcode.is_null()) {
-          auto macro_split = split(el.key(), ' ');
-          if (macro_split.size() > 1 && macro_split[1].rfind("_", 0) != 0) {
-            std::string macro_name = macro_split[1];
-
-            const auto &gcode_str = gcode.template get<std::string>();
-            auto param_begin =
-                std::sregex_iterator(gcode_str.begin(), gcode_str.end(), param_regex);
-            auto param_end = std::sregex_iterator();
-
-            std::map<std::string, std::string> macro_params;
-            for (std::sregex_iterator i = param_begin; i != param_end; ++i) {
-              std::smatch match = *i;
-              std::string param_name = match.str(1);
-              std::string rest = match.str(2);
-              std::smatch matches;
-              std::string default_value = "";
-
-              spdlog::trace("macro: {}, param; {}, rest: {}", macro_name, param_name, rest);
-
-              if (std::regex_search(rest, matches, default_value_regex)) {
-                default_value = matches.str(1);
-              }
-
-              macro_params.insert({param_name, default_value});
-            }
-            macros.insert({macro_name, macro_params});
-          }
-        }
-      }
-    }
-
-    return macros;
-  }
-  }  // namespace KUtils
+}  // namespace KUtils
