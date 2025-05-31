@@ -103,7 +103,7 @@ void SpoolmanPanel::init() {
 
       std::vector<json> sorted_spools;
       KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [](json &a, json &b) {
-	return a["id"].template get<uint32_t>() < b["id"].template get<uint32_t>();
+	      return a["id"].template get<uint32_t>() < b["id"].template get<uint32_t>();
       });
       sorted_by = SORTED_BY_ID;
       
@@ -120,13 +120,12 @@ void SpoolmanPanel::init() {
 
       std::vector<json> sorted_spools;
       KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [](json &a, json &b) {
-	return a["id"].template get<uint32_t>() < b["id"].template get<uint32_t>();
+	      return a["id"].template get<uint32_t>() < b["id"].template get<uint32_t>();
       });
       sorted_by = SORTED_BY_ID;
       
       std::lock_guard<std::mutex> lock(this->lv_lock);
       populate_spools(sorted_spools);
-
     }
   });
 }
@@ -151,7 +150,7 @@ void SpoolmanPanel::populate_spools(std::vector<json> &sorted_spools) {
       spdlog::trace("spool {}", el.dump());
       bool is_archived = el["archived"].template get<bool>();
       if (skip_archive && is_archived) {
-	continue;
+	      continue;
       }
       
       auto id = el["/id"_json_pointer].template get<uint32_t>();
@@ -186,25 +185,24 @@ void SpoolmanPanel::populate_spools(std::vector<json> &sorted_spools) {
       lv_table_clear_cell_ctrl(spool_table, row_idx, 6, LV_TABLE_CELL_CTRL_MERGE_RIGHT);
 
       if (is_archived) {
-	lv_table_set_cell_value(spool_table, row_idx, 7, LV_SYMBOL_UPLOAD);
+	      lv_table_set_cell_value(spool_table, row_idx, 7, LV_SYMBOL_UPLOAD);
       } else {
-	if (!is_active) {
-	  // prevent archiving active spool
-	  lv_table_set_cell_value(spool_table, row_idx, 7, LV_SYMBOL_DRIVE);
-	}
+        if (!is_active) {
+          // prevent archiving active spool
+          lv_table_set_cell_value(spool_table, row_idx, 7, LV_SYMBOL_DRIVE);
+        }
       }
 
       if (is_active) {
-	lv_table_add_cell_ctrl(spool_table, row_idx, 6, LV_TABLE_CELL_CTRL_MERGE_RIGHT);
-	lv_table_set_cell_value(spool_table, row_idx, 6, "(active)");
+        lv_table_add_cell_ctrl(spool_table, row_idx, 6, LV_TABLE_CELL_CTRL_MERGE_RIGHT);
+        lv_table_set_cell_value(spool_table, row_idx, 6, "(active)");
       } else {
-	if (is_archived) {
-	  lv_table_set_cell_value(spool_table, row_idx, 6, "");
-	} else {
-	  lv_table_set_cell_value(spool_table, row_idx, 6, LV_SYMBOL_PLAY);
-	}
+        if (is_archived) {
+          lv_table_set_cell_value(spool_table, row_idx, 6, "");
+        } else {
+          lv_table_set_cell_value(spool_table, row_idx, 6, LV_SYMBOL_PLAY);
+        }
       }
-
       row_idx++;
     }
     lv_table_set_row_cnt(spool_table, row_idx);
@@ -241,12 +239,12 @@ void SpoolmanPanel::handle_callback(lv_event_t *event) {
 
 void SpoolmanPanel::handle_spoolman_action(lv_event_t *e) {
   lv_event_code_t code = lv_event_get_code(e);
-  if(code == LV_EVENT_VALUE_CHANGED) {
+  if (code == LV_EVENT_VALUE_CHANGED) {
     lv_obj_t *clicked = lv_event_get_target(e);
     if (clicked == show_archived) {
       std::vector<json> sorted_spools;
       KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [](json &a, json &b) {
-	return a["id"].template get<uint32_t>() < b["id"].template get<uint32_t>();
+	      return a["id"].template get<uint32_t>() < b["id"].template get<uint32_t>();
       });
       sorted_by = SORTED_BY_ID;
 
@@ -265,84 +263,74 @@ void SpoolmanPanel::handle_spoolman_action(lv_event_t *e) {
 
     if (row == 0) {
       if (col == 0) {
-	// sort by id
-	bool reversed = sorted_by & SORTED_BY_ID;
-	std::vector<json> sorted_spools;
-	KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
-	  auto x = a["/id"_json_pointer].template get<uint32_t>();
-	  auto y = b["/id"_json_pointer].template get<uint32_t>();
+        // sort by id
+        bool reversed = sorted_by & SORTED_BY_ID;
+        std::vector<json> sorted_spools;
+        KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
+          auto x = a["/id"_json_pointer].template get<uint32_t>();
+          auto y = b["/id"_json_pointer].template get<uint32_t>();
+	        return reversed ? x > y : y > x;
+	      });
 
-	  return reversed ? x > y : y > x;
-	});
-
-	sorted_by = (sorted_by ^ SORTED_BY_ID) & SORTED_BY_ID;
-
-	populate_spools(sorted_spools);
-	
+        sorted_by = (sorted_by ^ SORTED_BY_ID) & SORTED_BY_ID;
+        populate_spools(sorted_spools);
       } else if (col == 1) {
-	// sort by name
-	bool reversed = sorted_by & SORTED_BY_NAME;
-	std::vector<json> sorted_spools;
-	KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
-	  auto vendor = a["/filament/vendor/name"_json_pointer].template get<std::string>();
-	  auto filament_name = a["/filament/name"_json_pointer].template get<std::string>();
-	  auto x = fmt::format("{} - {}", vendor, filament_name);
+        // sort by name
+        bool reversed = sorted_by & SORTED_BY_NAME;
+        std::vector<json> sorted_spools;
+        KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
+          auto vendor = a["/filament/vendor/name"_json_pointer].template get<std::string>();
+          auto filament_name = a["/filament/name"_json_pointer].template get<std::string>();
+          auto x = fmt::format("{} - {}", vendor, filament_name);
 
-	  vendor = b["/filament/vendor/name"_json_pointer].template get<std::string>();
-	  filament_name = b["/filament/name"_json_pointer].template get<std::string>();
-	  auto y = fmt::format("{} - {}", vendor, filament_name);
+          vendor = b["/filament/vendor/name"_json_pointer].template get<std::string>();
+          filament_name = b["/filament/name"_json_pointer].template get<std::string>();
+          auto y = fmt::format("{} - {}", vendor, filament_name);
 
-	  return reversed ? x > y : y > x;
-	});
-	sorted_by = (sorted_by ^ SORTED_BY_NAME) & SORTED_BY_NAME;
-
-	populate_spools(sorted_spools);
-	
+          return reversed ? x > y : y > x;
+        });
+        sorted_by = (sorted_by ^ SORTED_BY_NAME) & SORTED_BY_NAME;
+        populate_spools(sorted_spools);
       } else if (col == 2) {
-	// sort by material
-	bool reversed = sorted_by & SORTED_BY_MAT;
-	std::vector<json> sorted_spools;
-	KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
-	  auto x = a["/filament/material"_json_pointer].template get<std::string>();
-	  auto y = b["/filament/material"_json_pointer].template get<std::string>();
+        // sort by material
+        bool reversed = sorted_by & SORTED_BY_MAT;
+        std::vector<json> sorted_spools;
+        KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
+          auto x = a["/filament/material"_json_pointer].template get<std::string>();
+          auto y = b["/filament/material"_json_pointer].template get<std::string>();
 
-	  return reversed ? x > y : y > x;
-	});
-	sorted_by = (sorted_by ^ SORTED_BY_MAT) & SORTED_BY_MAT;
+          return reversed ? x > y : y > x;
+        });
+        sorted_by = (sorted_by ^ SORTED_BY_MAT) & SORTED_BY_MAT;
 
-	populate_spools(sorted_spools);
-	
+        populate_spools(sorted_spools);
       } else if (col == 3) {
-	// sort by color
-	// TODO: calculate color distance
-
+        // sort by color
+        // TODO: calculate color distance
       } else if (col == 4) {
-	// sort by weight
-	bool reversed = sorted_by & SORTED_BY_WT;
-	std::vector<json> sorted_spools;
-	KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
-	  auto x = a["/remaining_weight"_json_pointer].template get<double>();
-	  auto y = b["/remaining_weight"_json_pointer].template get<double>();	  
+        // sort by weight
+        bool reversed = sorted_by & SORTED_BY_WT;
+        std::vector<json> sorted_spools;
+        KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
+          auto x = a["/remaining_weight"_json_pointer].template get<double>();
+          auto y = b["/remaining_weight"_json_pointer].template get<double>();
 
-	  return reversed ? x > y : y > x;
-	});
-	sorted_by = (sorted_by ^ SORTED_BY_WT) & SORTED_BY_WT;
+          return reversed ? x > y : y > x;
+        });
+        sorted_by = (sorted_by ^ SORTED_BY_WT) & SORTED_BY_WT;
 
-	populate_spools(sorted_spools);
-	
+        populate_spools(sorted_spools);
       } else if (col == 5) {
-	// sort by length
-	bool reversed = sorted_by & SORTED_BY_LEN;
-	std::vector<json> sorted_spools;
-	KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
-	  auto x = a["/remaining_length"_json_pointer].template get<double>();
-	  auto y = b["/remaining_length"_json_pointer].template get<double>();
-	  return reversed ? x > y : y > x;
-	});
-	sorted_by = (sorted_by ^ SORTED_BY_LEN) & SORTED_BY_LEN;
-
-	populate_spools(sorted_spools);
-
+        // sort by length
+        bool reversed = sorted_by & SORTED_BY_LEN;
+        std::vector<json> sorted_spools;
+        KUtils::sort_map_values<uint32_t, json>(spools, sorted_spools, [reversed](json &a, json &b) {
+          auto x = a["/remaining_length"_json_pointer].template get<double>();
+          auto y = b["/remaining_length"_json_pointer].template get<double>();
+          return reversed ? x > y : y > x;
+        });
+        sorted_by = (sorted_by ^ SORTED_BY_LEN) & SORTED_BY_LEN;
+        populate_spools(sorted_spools);
       }
     }
     
@@ -350,51 +338,47 @@ void SpoolmanPanel::handle_spoolman_action(lv_event_t *e) {
     const char *spool_id = lv_table_get_cell_value(spool_table, row, 0);
     spdlog::trace("selected {}, {}, value {}", row, col, spool_id);
     if (row != 0) {
-      if (col == 6 && selected != NULL && strlen(selected) != 0
-	  && std::memcmp(LV_SYMBOL_PLAY, selected, 3) == 0) {
-	// set active spool
-	int id = std::stoi(spool_id);
-	spdlog::trace("set active spool id {}", id);
-	json param = {
-	  {"spool_id", id}
-	};
+      if (col == 6 && selected != NULL && strlen(selected) != 0 && std::memcmp(LV_SYMBOL_PLAY, selected, 3) == 0) {
+        // set active spool
+        int id = std::stoi(spool_id);
+        spdlog::trace("set active spool id {}", id);
+        json param = {
+          {"spool_id", id}
+        };
 
-	ws.send_jsonrpc("server.spoolman.post_spool_id", param);
-
+        ws.send_jsonrpc("server.spoolman.post_spool_id", param);
       }
 
       if (col == 7 && selected != NULL && strlen(selected) != 0) {
-	if (std::memcmp(LV_SYMBOL_DRIVE, selected, 3) == 0) {
-	  // archive
-	  json param = {
-	    { "request_method", "PATCH" },
-	    { "path", fmt::format("/v1/spool/{}", spool_id) },
-	    { "body", {
-		{ "archived", true }
-	      }
-	    }
-	  };
-	  
-	  ws.send_jsonrpc("server.spoolman.proxy", param, [this](json &d) {
-	    this->init();
-	  });
-	} else if (std::memcmp(LV_SYMBOL_UPLOAD, selected, 3) == 0) {
-	  // unarchive
-	  json param = {
-	    { "request_method", "PATCH" },
-	    { "path", fmt::format("/v1/spool/{}", spool_id) },
-	    { "body", {
-		{ "archived", false }
-	      }
-	    }
-	  };
-	  
-	  ws.send_jsonrpc("server.spoolman.proxy", param, [this](json &d) {
-	    this->init();
-	  });
-	}
+        if (std::memcmp(LV_SYMBOL_DRIVE, selected, 3) == 0) {
+          // archive
+          json param = {
+            { "request_method", "PATCH" },
+            { "path", fmt::format("/v1/spool/{}", spool_id) },
+            { "body", {
+                { "archived", true }
+              }
+            }
+          };
+          ws.send_jsonrpc("server.spoolman.proxy", param, [this](json &d) {
+            this->init();
+          });
+        } else if (std::memcmp(LV_SYMBOL_UPLOAD, selected, 3) == 0) {
+          // unarchive
+          json param = {
+            { "request_method", "PATCH" },
+            { "path", fmt::format("/v1/spool/{}", spool_id) },
+            { "body", {
+          { "archived", false }
+              }
+            }
+          };
+
+          ws.send_jsonrpc("server.spoolman.proxy", param, [this](json &d) {
+            this->init();
+          });
+        }
       }
-      
     }
   } else if (code == LV_EVENT_DRAW_PART_BEGIN) {
     lv_obj_draw_part_dsc_t * dsc = lv_event_get_draw_part_dsc(e);
@@ -403,29 +387,29 @@ void SpoolmanPanel::handle_spoolman_action(lv_event_t *e) {
       uint32_t col = dsc->id - row * lv_table_get_col_cnt(spool_table);
 
       if(row == 0) {
-	dsc->label_dsc->align = LV_TEXT_ALIGN_CENTER;
-	dsc->rect_dsc->bg_color = lv_color_mix(lv_palette_main(LV_PALETTE_BLUE),
-					       dsc->rect_dsc->bg_color, LV_OPA_20);
-	dsc->rect_dsc->bg_opa = LV_OPA_COVER;
+        dsc->label_dsc->align = LV_TEXT_ALIGN_CENTER;
+        dsc->rect_dsc->bg_color = lv_color_mix(lv_palette_main(LV_PALETTE_BLUE),
+                       dsc->rect_dsc->bg_color, LV_OPA_20);
+        dsc->rect_dsc->bg_opa = LV_OPA_COVER;
       }
 
       if (row != 0 && col == 3) {
-	const char *spool_id = lv_table_get_cell_value(spool_table, row, 0);
-	uint32_t id = std::stoi(spool_id);
-	const auto &spool = spools.find(id);
-	if (spool != spools.end()) {
-	  auto &c = spool->second["/filament/color_hex"_json_pointer];
-	  if (!c.is_null()) {
-	    dsc->rect_dsc->bg_color = lv_color_hex(std::stoul(c.template get<std::string>(),
-							      nullptr, 16));
-	  }
-	}
+        const char *spool_id = lv_table_get_cell_value(spool_table, row, 0);
+        uint32_t id = std::stoi(spool_id);
+        const auto &spool = spools.find(id);
+	      if (spool != spools.end()) {
+	        auto &c = spool->second["/filament/color_hex"_json_pointer];
+          if (!c.is_null()) {
+            dsc->rect_dsc->bg_color = lv_color_hex(std::stoul(c.template get<std::string>(),
+                          nullptr, 16));
+          }
+	      }
       }
 
       if((row != 0 && row % 2) == 0) {
-	dsc->rect_dsc->bg_color = lv_color_mix(lv_palette_main(LV_PALETTE_GREY),
+	      dsc->rect_dsc->bg_color = lv_color_mix(lv_palette_main(LV_PALETTE_GREY),
 					       dsc->rect_dsc->bg_color, LV_OPA_10);
-	dsc->rect_dsc->bg_opa = LV_OPA_COVER;
+	      dsc->rect_dsc->bg_opa = LV_OPA_COVER;
       }
     }
   }

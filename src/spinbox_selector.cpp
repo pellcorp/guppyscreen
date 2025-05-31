@@ -55,7 +55,7 @@ SpinBoxSelector::SpinBoxSelector(lv_obj_t *parent,
     if (code == LV_EVENT_RELEASED) {
       lv_spinbox_increment(panel->sb);
       if (panel->cb) {
-	panel->cb(lv_spinbox_get_value(panel->sb));
+	      panel->cb(lv_spinbox_get_value(panel->sb));
       }
     }
       
@@ -76,7 +76,7 @@ SpinBoxSelector::SpinBoxSelector(lv_obj_t *parent,
     if (code == LV_EVENT_RELEASED) {
       lv_spinbox_decrement(panel->sb);
       if (panel->cb) {
-	panel->cb(lv_spinbox_get_value(panel->sb));
+	      panel->cb(lv_spinbox_get_value(panel->sb));
       }
     }
   }, LV_EVENT_ALL, this);

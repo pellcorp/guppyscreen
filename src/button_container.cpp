@@ -145,13 +145,13 @@ void ButtonContainer::handle_prompt() {
     }, LV_EVENT_VALUE_CHANGED, this);
   } else {
     lv_obj_add_event_cb(mbox1, [](lv_event_t *e) {
-        lv_obj_t *obj = lv_obj_get_parent(lv_event_get_target(e));
-        uint32_t clicked_btn = lv_msgbox_get_active_btn(obj);
-        if(clicked_btn == 0) {
-          ((ButtonContainer*)e->user_data)->run_callback();
-        }
-        lv_msgbox_close(obj);
-      }, LV_EVENT_VALUE_CHANGED, this);
+      lv_obj_t *obj = lv_obj_get_parent(lv_event_get_target(e));
+      uint32_t clicked_btn = lv_msgbox_get_active_btn(obj);
+      if(clicked_btn == 0) {
+        ((ButtonContainer*)e->user_data)->run_callback();
+      }
+      lv_msgbox_close(obj);
+    }, LV_EVENT_VALUE_CHANGED, this);
   }
 
   lv_obj_center(mbox1);

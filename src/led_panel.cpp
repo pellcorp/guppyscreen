@@ -89,7 +89,7 @@ void LedPanel::init(json &l) {
                     &cancel, "Off", led_cb, this,
                     &light_img, "On", led_cb, this,
                     null_cb, this, "%");
-          leds.insert({key, lptr});
+      leds.insert({key, lptr});
     }
   }
 

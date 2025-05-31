@@ -195,12 +195,12 @@ void WifiPanel::handle_callback(lv_event_t *e) {
     lv_obj_clear_flag(prompt_cont, LV_OBJ_FLAG_HIDDEN);
   } else if (code == LV_EVENT_LONG_PRESSED) {
     if (list_networks.count(selected_network)) {
-        static const char *btns[] = {"OK", "Cancel"};
-        lv_obj_t * mbox = lv_msgbox_create(NULL, "", fmt::format("Delete {}?", selected_network).c_str(), btns, false);
-        lv_obj_set_width(mbox, LV_PCT(50));
-        lv_obj_align(mbox, LV_ALIGN_TOP_MID, 0, 0);
-        lv_obj_add_event_cb(mbox, _remove_network, LV_EVENT_VALUE_CHANGED, this);
-        lv_obj_center(mbox);
+      static const char *btns[] = {"OK", "Cancel"};
+      lv_obj_t * mbox = lv_msgbox_create(NULL, "", fmt::format("Delete {}?", selected_network).c_str(), btns, false);
+      lv_obj_set_width(mbox, LV_PCT(50));
+      lv_obj_align(mbox, LV_ALIGN_TOP_MID, 0, 0);
+      lv_obj_add_event_cb(mbox, _remove_network, LV_EVENT_VALUE_CHANGED, this);
+      lv_obj_center(mbox);
     }
   }
 }

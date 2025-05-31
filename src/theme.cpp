@@ -28,8 +28,8 @@ void ThemeConfig::init(const std::string config_path) {
     data = json::parse(std::fstream(config_path));
   } else {
     data = {
-        {"primary_color", "0x2196F3"}, //blue
-        {"secondary_color", "0xF44336"} // red
+      {"primary_color", "0x2196F3"}, //blue
+      {"secondary_color", "0xF44336"} // red
     };
   }
 

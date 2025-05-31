@@ -199,21 +199,21 @@ void PrintPanel::show_dir(Tree *dir, uint32_t sort_type) {
   std::vector<Tree> sorted_files;
   if (sort_type == SORTED_BY_MODIFIED) {
     KUtils::sort_map_values<std::string, Tree>(dir->children, sorted_files, [reversed](Tree &x, Tree &y) {
-    if (x.is_leaf() && !y.is_leaf()) {
-      return false;
-    } else if (!x.is_leaf() && y.is_leaf()) {
-      return true;
-    }
-    return reversed ? x.date_modified > y.date_modified : y.date_modified > x.date_modified;
+      if (x.is_leaf() && !y.is_leaf()) {
+        return false;
+      } else if (!x.is_leaf() && y.is_leaf()) {
+        return true;
+      }
+      return reversed ? x.date_modified > y.date_modified : y.date_modified > x.date_modified;
     });
   } else {
     KUtils::sort_map_values<std::string, Tree>(dir->children, sorted_files, [reversed](Tree &x, Tree &y) {
-    if (x.is_leaf() && !y.is_leaf()) {
-      return false;
-    } else if (!x.is_leaf() && y.is_leaf()) {
-      return true;
-    }
-    return reversed ? x.name > y.name : y.name > x.name;
+      if (x.is_leaf() && !y.is_leaf()) {
+        return false;
+      } else if (!x.is_leaf() && y.is_leaf()) {
+        return true;
+      }
+      return reversed ? x.name > y.name : y.name > x.name;
     });
   }
 
