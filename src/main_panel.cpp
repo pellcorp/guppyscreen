@@ -195,44 +195,44 @@ void MainPanel::handle_emergency_cb(lv_event_t *event) {
 }
 
 void MainPanel::create_main(lv_obj_t * parent) {
-    lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_ROW_WRAP);
+  lv_obj_set_flex_flow(parent, LV_FLEX_FLOW_ROW_WRAP);
 
-    static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t grid_main_col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
-      LV_GRID_TEMPLATE_LAST};
+  static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+  static lv_coord_t grid_main_col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
+    LV_GRID_TEMPLATE_LAST};
 
-    lv_obj_clear_flag(main_cont, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_height(main_cont, LV_PCT(100));
+  lv_obj_clear_flag(main_cont, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_height(main_cont, LV_PCT(100));
 
-    lv_obj_set_flex_grow(main_cont, 1);
-    lv_obj_set_grid_dsc_array(main_cont, grid_main_col_dsc, grid_main_row_dsc);    
+  lv_obj_set_flex_grow(main_cont, 1);
+  lv_obj_set_grid_dsc_array(main_cont, grid_main_col_dsc, grid_main_row_dsc);
 
-    lv_obj_set_grid_cell(homing_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-    lv_obj_set_grid_cell(extrude_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-    lv_obj_set_grid_cell(action_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-    lv_obj_set_grid_cell(led_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-    lv_obj_set_grid_cell(print_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 2, 1);
-    lv_obj_set_grid_cell(emergency_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_CENTER, 2, 1);
+  lv_obj_set_grid_cell(homing_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 0, 1);
+  lv_obj_set_grid_cell(extrude_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_CENTER, 0, 1);
+  lv_obj_set_grid_cell(action_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+  lv_obj_set_grid_cell(led_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+  lv_obj_set_grid_cell(print_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 2, 1);
+  lv_obj_set_grid_cell(emergency_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_CENTER, 2, 1);
 
-    lv_obj_clear_flag(temp_cont, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_size(temp_cont, LV_PCT(50), LV_PCT(50));
-    lv_obj_set_style_pad_all(temp_cont, 0, 0);
+  lv_obj_clear_flag(temp_cont, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_size(temp_cont, LV_PCT(50), LV_PCT(50));
+  lv_obj_set_style_pad_all(temp_cont, 0, 0);
 
-    lv_obj_set_flex_flow(temp_cont, LV_FLEX_FLOW_ROW_WRAP);
-    lv_obj_set_grid_cell(temp_cont, LV_GRID_ALIGN_START, 0, 2, LV_GRID_ALIGN_CENTER, 0, 2);
-    
-    lv_obj_align(temp_chart, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_size(temp_chart, LV_PCT(45), LV_PCT(40));
-    lv_obj_set_style_size(temp_chart, 0, LV_PART_INDICATOR);
+  lv_obj_set_flex_flow(temp_cont, LV_FLEX_FLOW_ROW_WRAP);
+  lv_obj_set_grid_cell(temp_cont, LV_GRID_ALIGN_START, 0, 2, LV_GRID_ALIGN_CENTER, 0, 2);
 
-    lv_chart_set_range(temp_chart, LV_CHART_AXIS_PRIMARY_Y, 0, 300);
-    lv_obj_set_grid_cell(temp_chart, LV_GRID_ALIGN_END, 0, 2, LV_GRID_ALIGN_END, 2, 1);
-    lv_chart_set_axis_tick(temp_chart, LV_CHART_AXIS_PRIMARY_Y, 0, 0, 6, 5, true, 50);
+  lv_obj_align(temp_chart, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_size(temp_chart, LV_PCT(45), LV_PCT(40));
+  lv_obj_set_style_size(temp_chart, 0, LV_PART_INDICATOR);
 
-    lv_chart_set_div_line_count(temp_chart, 3, 8);
-    lv_chart_set_point_count(temp_chart, 5000);
-    lv_chart_set_zoom_x(temp_chart, 5000);
-    lv_obj_scroll_to_x(temp_chart, LV_COORD_MAX, LV_ANIM_OFF);
+  lv_chart_set_range(temp_chart, LV_CHART_AXIS_PRIMARY_Y, 0, 300);
+  lv_obj_set_grid_cell(temp_chart, LV_GRID_ALIGN_END, 0, 2, LV_GRID_ALIGN_END, 2, 1);
+  lv_chart_set_axis_tick(temp_chart, LV_CHART_AXIS_PRIMARY_Y, 0, 0, 6, 5, true, 50);
+
+  lv_chart_set_div_line_count(temp_chart, 3, 8);
+  lv_chart_set_point_count(temp_chart, 5000);
+  lv_chart_set_zoom_x(temp_chart, 5000);
+  lv_obj_scroll_to_x(temp_chart, LV_COORD_MAX, LV_ANIM_OFF);
 }
 
 void MainPanel::create_sensors(json &temp_sensors) {

@@ -175,7 +175,7 @@ void GuppyScreen::loop() {
 }
 
 std::mutex &GuppyScreen::get_lock() {
-    return lv_lock;
+  return lv_lock;
 }
 
 void GuppyScreen::connect_ws(const std::string &url) {

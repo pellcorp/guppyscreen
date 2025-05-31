@@ -23,7 +23,6 @@ MiniPrintStatus::MiniPrintStatus(lv_obj_t *parent,
 
   auto scale = (double)lv_disp_get_physical_hor_res(NULL) / 800.0;
 
-  
   lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
   lv_obj_set_style_pad_top(cont, 0, 0);
   lv_obj_set_style_pad_bottom(cont, 0, 0);

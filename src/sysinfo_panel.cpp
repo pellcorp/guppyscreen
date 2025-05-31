@@ -186,8 +186,8 @@ SysInfoPanel::SysInfoPanel()
   const std::string theme_id = conf->get<std::string>("/theme");
   auto theme_idx = std::find(themes.begin(), themes.end(), theme_id);
   if (theme_idx != std::end(themes)) {
-      theme = std::distance(themes.begin(), theme_idx);
-      lv_dropdown_set_selected(theme_dd, theme);
+    theme = std::distance(themes.begin(), theme_idx);
+    lv_dropdown_set_selected(theme_dd, theme);
   }
 
   lv_obj_add_event_cb(theme_dd, &SysInfoPanel::_handle_callback, LV_EVENT_VALUE_CHANGED, this);

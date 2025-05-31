@@ -89,9 +89,9 @@ namespace KUtils {
     struct ifaddrs *addrs;
     getifaddrs(&addrs);
     for (struct ifaddrs *addr = addrs; addr != nullptr; addr = addr->ifa_next) {
-        if (addr->ifa_addr && addr->ifa_addr->sa_family == AF_PACKET) {
-	        ifaces.push_back(addr->ifa_name);
-        }
+      if (addr->ifa_addr && addr->ifa_addr->sa_family == AF_PACKET) {
+        ifaces.push_back(addr->ifa_name);
+      }
     }
 
     freeifaddrs(addrs);
@@ -129,7 +129,7 @@ namespace KUtils {
     std::istringstream iss(s);
     std::string item;
     while (std::getline(iss, item, delim)) {
-        *result++ = item;
+      *result++ = item;
     }
   }
 

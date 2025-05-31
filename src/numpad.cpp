@@ -36,7 +36,6 @@ Numpad::Numpad(lv_obj_t *parent)
   lv_keyboard_set_textarea(kb, input);
 
   lv_obj_add_event_cb(input, &Numpad::_handle_input, LV_EVENT_ALL, this);
-  // lv_obj_add_event_cb(edit_cont, &Numpad::_handle_defocused, LV_EVENT_DEFOCUSED, this);
 }
 
 Numpad::~Numpad() {
@@ -52,23 +51,6 @@ void Numpad::set_callback(std::function<void(double)> cb) {
 
 void Numpad::handle_input(lv_event_t *e) {
   const lv_event_code_t code = lv_event_get_code(e);
-
-  // if(code == LV_EVENT_FOCUSED) {
-  //   spdlog::debug("input focused");
-  //   lv_keyboard_set_textarea(kb, input);
-  //   // lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
-  // }
-  
-
-  // if(code == LV_EVENT_DEFOCUSED) {
-  //   // lv_keyboard_set_textarea(kb, NULL);
-  //   // lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-  //   spdlog::debug("input defocused");
-  //   lv_obj_add_flag(edit_cont, LV_OBJ_FLAG_HIDDEN);
-  //   lv_obj_move_background(edit_cont);
-  //   lv_textarea_set_text(input, "");
-  //   lv_keyboard_set_textarea(kb, NULL);
-  // }
 
   if (code == LV_EVENT_VALUE_CHANGED) {
     // input validation, e.g. range
@@ -91,17 +73,6 @@ void Numpad::handle_input(lv_event_t *e) {
     lv_textarea_set_text(input, "");
   }
 }
-
-// void Numpad::handle_defocused(lv_event_t *e) {
-//   const lv_event_code_t code = lv_event_get_code(e);
-
-//   if (code == LV_EVENT_DEFOCUSED) {
-//     spdlog::debug("numpad group defocused");
-//     lv_obj_add_flag(edit_cont, LV_OBJ_FLAG_HIDDEN);
-//     lv_obj_move_background(edit_cont);
-//     lv_textarea_set_text(input, "");
-//   }
-// }
 
 void Numpad::foreground_reset() {
   spdlog::trace("resetting foreground");

@@ -2,20 +2,6 @@
 #include <cstring>
 #include <cstdio>
 
-// ImageLabel::ImageLabel(lv_obj_t *parent, const void *img, const char *value)
-//   : ImageLabel(parent, img, v, 100)
-// {
-//   lv_obj_clear_flag(cont, LV_OBJ_FLAG_SCROLLABLE);
-//   lv_obj_set_size(cont, LV_PCT(45), LV_PCT(20));
-//   lv_obj_set_style_border_width(cont, 2, 0);
-
-//   lv_img_set_src(image, img);
-//   lv_label_set_text(label, value);
-
-//   lv_obj_align(image, LV_ALIGN_LEFT_MID, -30, 0);
-//   lv_obj_align(label, LV_ALIGN_RIGHT_MID, 0, 0);
-// }
-
 ImageLabel::ImageLabel(lv_obj_t *parent,
 		       const void* img,
 		       int32_t width_pct,
