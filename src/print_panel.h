@@ -65,8 +65,6 @@ class PrintPanel : public NotifyConsumer {
   FilePanel file_panel;
   PrintStatusPanel &print_status;
   uint32_t sorted_by;
-
-  bool listing_files = false;
 };
 
 #endif // __PRINT_PANEL_H__
