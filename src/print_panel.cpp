@@ -107,14 +107,6 @@ void PrintPanel::consume(json &j) {
 }
 
 void PrintPanel::subscribe() {
-  {
-    std::lock_guard<std::mutex> lock(lv_lock);
-    if (listing_files) {
-      return;
-    }
-    listing_files = true;
-  }
-
   ws.send_jsonrpc("server.files.list", R"({"root":"gcodes"})"_json, [this](json &d) {
     std::lock_guard<std::mutex> lock(lv_lock);
     std::string cur_path = cur_dir->full_path;
@@ -131,7 +123,6 @@ void PrintPanel::subscribe() {
     // need to simplify this using the directory endpoint
     cur_dir = dir;
     this->populate_files(d);
-    listing_files = false;
   });
 }
 
@@ -150,6 +141,7 @@ void PrintPanel::foreground() {
   }
   
   lv_obj_move_foreground(files_cont);
+  subscribe();
 }
 
 void PrintPanel::handle_callback(lv_event_t *e) {
