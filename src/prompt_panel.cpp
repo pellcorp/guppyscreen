@@ -36,10 +36,10 @@ PromptPanel::PromptPanel(KWebSocketClient &websocket_client, std::mutex &lock, l
   lv_obj_set_style_radius(prompt_cont, 5, LV_PART_MAIN);
   lv_obj_set_style_border_width(prompt_cont, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_border_color(prompt_cont, lv_palette_main(LV_PALETTE_GREY), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_max_height(prompt_cont, lv_pct(80), 0);
-  lv_obj_set_style_max_width(prompt_cont, lv_pct(75), 0);
-  lv_obj_set_style_min_height(prompt_cont, lv_pct(50), 0);
-  lv_obj_set_style_min_width(prompt_cont, lv_pct(60), 0);
+  lv_obj_set_style_max_height(prompt_cont, lv_pct(100), 0);
+  lv_obj_set_style_max_width(prompt_cont, lv_pct(100), 0);
+  lv_obj_set_style_min_height(prompt_cont, lv_pct(100), 0);
+  lv_obj_set_style_min_width(prompt_cont, lv_pct(100), 0);
   lv_obj_set_size(prompt_cont, lv_pct(60), lv_pct(50));
   lv_obj_set_grid_dsc_array(prompt_cont, grid_main_col_dsc_detail, grid_main_row_dsc_detail);
 
