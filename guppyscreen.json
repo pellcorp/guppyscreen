@@ -1,8 +1,6 @@
 {
     "default_macros": {
-        "belts_shaper_calibration": "BELTS_SHAPER_CALIBRATION",
         "cooldown": "TURN_OFF_HEATERS",
-        "excitate_axis_at_frequency": "EXCITATE_AXIS_AT_FREQUENCY",
         "extrude": "_GUPPYSCREEN_EXTRUDE EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
         "retract": "_GUPPYSCREEN_RETRACT EXTRUDER_TEMP={} EXTRUDE_LEN={} SPEED={}",
         "load_filament": "LOAD_FILAMENT EXTRUDER_TEMP={}",
