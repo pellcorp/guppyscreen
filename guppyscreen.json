@@ -9,7 +9,7 @@
     "display_brightness": 90,
     "display_rotate": 3,
     "display_sleep_sec": 600,
-    "factory_reset_script": "/etc/init.d/S58factoryreset",
+    "factory_reset_cmd": "/etc/init.d/S58factoryreset reset",
     "fans": [
         {
             "display_name": "Toolhead",
@@ -37,6 +37,7 @@
         }
     ],
     "guppy_restart_cmd": "sudo systemctl restart grumpyscreen",
+    "guppy_update_cmd": "",
     "invert_z_icon": false,
     "leds": [
         {

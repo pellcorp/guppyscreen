@@ -24,6 +24,7 @@ if [ "$ASSET_NAME" = "guppyscreen-smallscreen" ]; then
   sed -i 's/"display_rotate": 3/"display_rotate": 2/g' $RELEASES_DIR/guppyscreen.json
 elif [ "$ASSET_NAME" = "guppyscreen-rpi" ]; then
   sed -i 's/"display_rotate": 3/"display_rotate": 0/g' $RELEASES_DIR/guppyscreen.json
-  sed -i '/S58factoryreset/d' $RELEASES_DIR/guppyscreen.json
+  # rpi does not have factory reset
+  sed -i 's:/etc/init.d/S58factoryreset::g' $RELEASES_DIR/guppyscreen.json
 fi
 tar czf $ASSET_NAME.tar.gz -C releases .

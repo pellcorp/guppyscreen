@@ -19,19 +19,16 @@ jobs:
             asset: guppyscreen
             calibrate: false
             belt_calibrations: true
-            factory_reset: true
 
           - arch: mipsel-buildroot-linux-musl-
             small: true
             asset: guppyscreen-smallscreen
             calibrate: true
             belt_calibrations: true
-            factory_reset: true
 
           - arch: armv8-rpi3-linux-gnueabihf-
             small: false
             calibrate: false
-            factory_reset: false
             belt_calibrations: false
             asset: guppyscreen-rpi
 
@@ -64,11 +61,6 @@ jobs:
       name: export belt_calibrations flag
       run: |
         echo "GUPPY_BELT_CALIBRATIONS=${{ matrix.belt_calibrations }}" >> $GITHUB_ENV
-
-    - if: matrix.factory_reset
-      name: export factory reset flag
-      run: |
-        echo "GUPPY_FACTORY_RESET=${{ matrix.factory_reset }}" >> $GITHUB_ENV
 
     - if: matrix.calibrate
       name: export touch calibrate

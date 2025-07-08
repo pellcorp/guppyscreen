@@ -28,26 +28,32 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   , sysinfo_btn(cont, &sysinfo_img, "System", &SettingPanel::_handle_callback, this)
   , spoolman_btn(cont, &spoolman_img, "Spoolman", &SettingPanel::_handle_callback, this)
   , guppy_restart_btn(cont, &refresh_img, "Restart Grumpy", &SettingPanel::_handle_callback, this)
-  #ifdef GUPPY_FACTORY_RESET
+  , guppy_update_btn(cont, &update_img, "Update Grumpy", &SettingPanel::_handle_callback, this)
   , factory_reset_btn(cont, &emergency, "Factory\nReset", &SettingPanel::_handle_callback, this,
     		  "**WARNING** **WARNING** **WARNING** **WARNING**\n\nAre you sure you want to execute an emergency factory reset?\n\nThis will reset the printer to stock creality firmware!",
           [](){
             spdlog::info("emergency factory reset pressed");
             Config *conf = Config::get_instance();
-            auto factory_reset_script = conf->get<std::string>("/factory_reset_script");
-            const fs::path script(factory_reset_script);
-            if (fs::exists(script)) {
-              sp::call({factory_reset_script, "reset"});
-            } else {
-              spdlog::warn("Failed to execute emergency factory reset.");
+            auto factory_reset_cmd = conf->get<std::string>("/factory_reset_cmd");
+            auto ret = sp::call(factory_reset_cmd);
+            if (ret != 0) {
+              spdlog::warn("Failed to initiate factory reset.");
             }
           },
           true)
-#endif
 {
   lv_obj_clear_flag(cont, LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_set_size(cont, LV_PCT(100), LV_PCT(100));
 
+  Config *conf = Config::get_instance();
+  auto update_script = conf->get<std::string>("/guppy_update_cmd");
+  if (update_script == "") {
+    guppy_update_btn.disable();
+  }
+  auto factory_reset_cmd = conf->get<std::string>("/factory_reset_cmd");
+  if (factory_reset_cmd == "") {
+    factory_reset_btn.disable();
+  }
   spoolman_btn.disable();
 
   static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(5), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
@@ -65,9 +71,8 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   // row 2
   lv_obj_set_grid_cell(spoolman_btn.get_container(), LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 2, 1);
   lv_obj_set_grid_cell(guppy_restart_btn.get_container(), LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_START, 2, 1);
-#ifdef GUPPY_FACTORY_RESET
+  lv_obj_set_grid_cell(guppy_update_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 2, 1);
   lv_obj_set_grid_cell(factory_reset_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 2, 1);
-#endif
 }
 
 SettingPanel::~SettingPanel() {
@@ -84,7 +89,6 @@ lv_obj_t *SettingPanel::get_container() {
 void SettingPanel::handle_callback(lv_event_t *event) {
   if (lv_event_get_code(event) == LV_EVENT_CLICKED) {
     lv_obj_t *btn = lv_event_get_current_target(event);
-
     if (btn == wifi_btn.get_container()) {
       spdlog::trace("wifi pressed");
       wifi_panel.foreground();
@@ -104,7 +108,18 @@ void SettingPanel::handle_callback(lv_event_t *event) {
       spdlog::trace("restart guppy pressed");
       Config *conf = Config::get_instance();
       auto restart_command = conf->get<std::string>("/guppy_restart_cmd");
-      sp::call(restart_command);
+      auto ret = sp::call(restart_command);
+      if (ret != 0) {
+        spdlog::warn("Failed to restart Grumpy Screen.");
+      }
+    } else if (btn == guppy_update_btn.get_container()) {
+      spdlog::trace("update guppy pressed");
+      Config *conf = Config::get_instance();
+      auto update_script = conf->get<std::string>("/guppy_update_cmd");
+      auto ret = sp::call(update_script);
+      if (ret != 0) {
+        spdlog::warn("Failed to update Grumpy Screen.");
+      }
     }
   }
 }
