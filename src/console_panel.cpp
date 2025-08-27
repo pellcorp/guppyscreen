@@ -47,14 +47,52 @@ lv_obj_t *ConsolePanel::get_container() {
   return console_cont;
 }
 
+// thanks Chad
+void ta_add_text_limit_lines(lv_obj_t * ta, const std::string &line)
+{
+    // Always append a newline at the end
+    std::string msg = line + "\n";
+    lv_textarea_add_text(ta, msg.c_str());
+
+    // Get the full text after appending
+    const char * full = lv_textarea_get_text(ta);
+
+    // Count lines
+    int line_count = 0;
+    const char *p = full;
+    while (*p) {
+        if(*p == '\n') line_count++;
+        p++;
+    }
+    if (p != full && *(p-1) != '\n') line_count++;
+
+    // Trim if too many lines
+    if (line_count > 100) {
+        int drop = line_count - 100;
+
+        // Find pointer to first line we want to keep
+        const char * keep = full;
+        while(drop > 0 && *keep) {
+            if(*keep == '\n') drop--;
+            keep++;
+        }
+
+        // Replace textarea with trimmed content
+        lv_textarea_set_text(ta, keep);
+    }
+
+    // Auto-scroll to bottom
+    lv_textarea_set_cursor_pos(ta, LV_TEXTAREA_CURSOR_LAST);
+}
+
 void ConsolePanel::handle_macro_response(json &j) {
   spdlog::trace("console macro response {}", j.dump());
 
   if (j.contains("params")) {
     std::lock_guard<std::mutex> lock(lv_lock);
     for (auto &l : j["params"]) {
-      lv_textarea_add_text(output, l.template get<std::string>().c_str());
-      lv_textarea_add_text(output, "\n");
+      std::string v = l.template get<std::string>() + "\n";
+      ta_add_text_limit_lines(output, v);
     }
   }
 }
