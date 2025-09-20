@@ -11,17 +11,20 @@ GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 function docker_make() {
     target_arg=""
-    if [ -n "$GUPPY_SMALL_SCREEN" ]; then
+    if [ "$GUPPY_SMALL_SCREEN" = "true" ]; then
         target_arg="GUPPY_SMALL_SCREEN=true GUPPY_CALIBRATE=true"
     fi
     if [ "$TARGET" = "mips" ]; then
-        target_arg+="GUPPY_FACTORY_RESET=true GUPPY_BELT_CALIBRATIONS=true"
+        target_arg+=" GUPPY_FACTORY_RESET=true"
     fi
 
+    echo "Target Arguments: $target_arg"
     docker run -ti -v $PWD:$PWD pellcorp/guppydev /bin/bash -c "cd $PWD && GUPPYSCREEN_VERSION=$GIT_REVISION GUPPYSCREEN_BRANCH=$GIT_BRANCH $target_arg CROSS_COMPILE=$CROSS_COMPILE make $@"
 }
 
-unset GUPPY_SMALL_SCREEN
+TARGET=
+GUPPY_SMALL_SCREEN=false
+SETUP=false
 
 while true; do
     if [ "$1" = "--setup" ]; then
@@ -33,12 +36,6 @@ while true; do
           exit 1
         fi
         shift
-        if [ "$TARGET" = "rpi" ]; then
-          echo "rpi" > $CURRENT_DIR/.target.cfg
-        else
-          echo "mips" > $CURRENT_DIR/.target.cfg
-        fi
-
     elif [ "$1" = "--small" ]; then
         export GUPPY_SMALL_SCREEN=true
         shift
@@ -51,8 +48,23 @@ while true; do
     fi
 done
 
+if [ "$SETUP" = "true" ]; then
+  if [ "$TARGET" = "rpi" ]; then
+    echo "rpi" > $CURRENT_DIR/.target.cfg
+  else
+    echo "mips" > $CURRENT_DIR/.target.cfg
+  fi
+
+  if [ "$GUPPY_SMALL_SCREEN" = "true" ]; then
+    echo "small=true" >> $CURRENT_DIR/.target.cfg
+  fi
+fi
+
 if [ -f $CURRENT_DIR/.target.cfg ]; then
-  TARGET=$(cat $CURRENT_DIR/.target.cfg)
+  TARGET=$(cat $CURRENT_DIR/.target.cfg | head -1)
+  if [ $(cat $CURRENT_DIR/.target.cfg | grep "small=true" | wc -l) -gt 0 ]; then
+    export GUPPY_SMALL_SCREEN=true
+  fi
 fi
 
 if [ "$TARGET" = "rpi" ]; then
@@ -75,11 +87,18 @@ else
 
     if [ -n "$PRINTER_IP" ] && [ -f build/bin/guppyscreen ]; then
         if [ "$TARGET" = "mips" ]; then
-          sshpass -p 'creality_2023' scp build/bin/guppyscreen root@$PRINTER_IP:
-          sshpass -p 'creality_2023' scp guppyscreen.json root@$PRINTER_IP:
-          sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen /usr/data/guppyscreen/"
-          sshpass -p 'creality_2023' ssh root@$PRINTER_IP "mv /root/guppyscreen.json /usr/data/guppyscreen/"
-          sshpass -p 'creality_2023' ssh root@$PRINTER_IP "/etc/init.d/S99guppyscreen restart"
+          password=creality_2023
+          if [ "$GUPPY_SMALL_SCREEN" = "true" ]; then
+            password=Creality2023
+          fi
+          sshpass -p $password scp build/bin/guppyscreen root@$PRINTER_IP:
+          sshpass -p $password scp guppyscreen.json root@$PRINTER_IP:
+          sshpass -p $password ssh root@$PRINTER_IP "mv /root/guppyscreen /usr/data/guppyscreen/"
+          sshpass -p $password ssh root@$PRINTER_IP "mv /root/guppyscreen.json /usr/data/guppyscreen/"
+          if [ "$GUPPY_SMALL_SCREEN" = "true" ]; then
+            sshpass -p $password ssh root@$PRINTER_IP "/usr/data/pellcorp/tools/rotate-grumpyscreen.sh 0"
+          fi
+          sshpass -p $password ssh root@$PRINTER_IP "/etc/init.d/S99guppyscreen restart"
         else # rpi
           sshpass -p 'raspberry' scp build/bin/guppyscreen pi@$PRINTER_IP:/tmp/
           cp guppyscreen.json /tmp

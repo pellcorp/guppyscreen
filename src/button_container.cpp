@@ -128,8 +128,13 @@ void ButtonContainer::handle_prompt() {
 
   lv_obj_set_size(btnm, LV_PCT(90), 50 *hscale);
   if (force_prompt) {
+#ifdef GUPPY_SMALL_SCREEN
+    lv_obj_set_size(mbox1, LV_PCT(95), LV_PCT(65));
+    lv_obj_set_style_text_font(mbox1, &lv_font_montserrat_16, LV_STATE_DEFAULT);
+#else
     lv_obj_set_size(mbox1, LV_PCT(95), LV_PCT(52));
     lv_obj_set_style_text_font(mbox1, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+#endif
   } else {
     lv_obj_set_size(mbox1, LV_PCT(50), LV_PCT(35));
   }
