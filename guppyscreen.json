@@ -10,7 +10,6 @@
     "display_rotate": 3,
     "display_sleep_sec": 600,
     "factory_reset_cmd": "/etc/init.d/S58factoryreset reset",
-    "switch_to_stock_cmd": "/usr/data/pellcorp/k1/switch-to-stock.sh",
     "fans": [
         {
             "display_name": "Toolhead",
@@ -91,6 +90,7 @@
     "moonraker_host": "127.0.0.1",
     "moonraker_port": 7125,
     "prompt_emergency_stop": true,
+    "switch_to_stock_cmd": "/usr/data/pellcorp/k1/switch-to-stock.sh",
     "theme": "blue",
     "wpa_supplicant": "/var/run/wpa_supplicant"
 }
