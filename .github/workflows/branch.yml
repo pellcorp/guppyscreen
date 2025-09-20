@@ -18,18 +18,15 @@ jobs:
             small: false
             asset: guppyscreen
             calibrate: false
-            belt_calibrations: true
 
           - arch: mipsel-buildroot-linux-musl-
             small: true
             asset: guppyscreen-smallscreen
             calibrate: true
-            belt_calibrations: true
 
           - arch: armv8-rpi3-linux-gnueabihf-
             small: false
             calibrate: false
-            belt_calibrations: false
             asset: guppyscreen-rpi
 
     runs-on: ubuntu-22.04
