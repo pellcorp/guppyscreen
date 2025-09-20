@@ -10,6 +10,7 @@
     "display_rotate": 3,
     "display_sleep_sec": 600,
     "factory_reset_cmd": "/etc/init.d/S58factoryreset reset",
+    "switch_to_stock_cmd": "/usr/data/pellcorp/k1/switch-to-stock.sh",
     "fans": [
         {
             "display_name": "Toolhead",

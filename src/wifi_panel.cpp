@@ -60,7 +60,6 @@ WifiPanel::WifiPanel(std::mutex &l)
   lv_obj_set_width(top_cont, LV_PCT(100));
   
   lv_obj_set_height(wifi_table, LV_PCT(90));
-  // lv_obj_remove_style(wifi_table, NULL, LV_PART_ITEMS | LV_STATE_PRESSED);
   lv_obj_add_flag(wifi_table, LV_OBJ_FLAG_HIDDEN);
 
   auto screen_width = lv_disp_get_physical_hor_res(NULL) / 2 - 100;
@@ -85,12 +84,17 @@ WifiPanel::WifiPanel(std::mutex &l)
   lv_obj_set_style_border_width(prompt_cont, 0, 0);
   
   lv_obj_align(wifi_label, LV_ALIGN_TOP_LEFT, 0, 10);
+#ifdef GUPPY_SMALL_SCREEN
+  lv_obj_align(password_input, LV_ALIGN_TOP_MID, 0, 65);
+#else
   lv_obj_align(password_input, LV_ALIGN_TOP_MID, 0, 100);
+#endif
 
   lv_obj_set_size(password_input, LV_PCT(100), LV_SIZE_CONTENT);
-  //lv_textarea_set_password_mode(password_input, true);
   lv_textarea_set_one_line(password_input, true);
 
+  lv_keyboard_set_textarea(kb, password_input);
+  lv_obj_align(kb, LV_ALIGN_BOTTOM_MID, 0, 0);
   lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
   lv_obj_add_event_cb(password_input, &WifiPanel::_handle_kb_input, LV_EVENT_FOCUSED, this);
   lv_obj_add_event_cb(password_input, &WifiPanel::_handle_kb_input, LV_EVENT_DEFOCUSED, this);
@@ -304,10 +308,8 @@ void WifiPanel::handle_wpa_event(const std::string &event) {
 void WifiPanel::handle_kb_input(lv_event_t *e) {
   const lv_event_code_t code = lv_event_get_code(e);
   if (code == LV_EVENT_FOCUSED) {
-    lv_keyboard_set_textarea(kb, password_input);
     lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
   } else if (code == LV_EVENT_DEFOCUSED) {
-    lv_keyboard_set_textarea(kb, NULL);
     lv_label_set_text(wifi_label, "Please select your wifi network");
     lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(password_input, LV_OBJ_FLAG_HIDDEN);

@@ -10,27 +10,36 @@ namespace sp = subprocess;
 
 LV_IMG_DECLARE(network_img);
 LV_IMG_DECLARE(refresh_img);
-LV_IMG_DECLARE(spoolman_img);
 LV_IMG_DECLARE(update_img);
 LV_IMG_DECLARE(sysinfo_img);
 LV_IMG_DECLARE(emergency);
 LV_IMG_DECLARE(print);
 
-SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent, SpoolmanPanel &sm)
+SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent)
   : ws(c)
   , cont(lv_obj_create(parent))
   , wifi_panel(l)
   , sysinfo_panel()
-  , spoolman_panel(sm)
   , wifi_btn(cont, &network_img, "WIFI", &SettingPanel::_handle_callback, this)
   , restart_klipper_btn(cont, &refresh_img, "Restart Klipper", &SettingPanel::_handle_callback, this)
   , restart_firmware_btn(cont, &refresh_img, "Restart\nFirmware", &SettingPanel::_handle_callback, this)
-  , sysinfo_btn(cont, &sysinfo_img, "System", &SettingPanel::_handle_callback, this)
-  , spoolman_btn(cont, &spoolman_img, "Spoolman", &SettingPanel::_handle_callback, this)
   , guppy_restart_btn(cont, &refresh_img, "Restart Grumpy", &SettingPanel::_handle_callback, this)
+  , sysinfo_btn(cont, &sysinfo_img, "System", &SettingPanel::_handle_callback, this)
   , guppy_update_btn(cont, &update_img, "Update Grumpy", &SettingPanel::_handle_callback, this)
+  , switch_to_stock_btn(cont, &emergency, "Switch to\nStock", &SettingPanel::_handle_callback, this,
+    "**WARNING** **WARNING** **WARNING**\n\nAre you sure you want to switch to stock?\n\nThis will temporarily switch the printer to stock creality firmware!",
+            [](){
+              spdlog::info("switch to stock pressed");
+              Config *conf = Config::get_instance();
+              auto switch_to_stock_cmd = conf->get<std::string>("/switch_to_stock_cmd");
+              auto ret = sp::call(switch_to_stock_cmd);
+              if (ret != 0) {
+                spdlog::warn("Failed to initiate switch to stock.");
+              }
+            },
+            true)
   , factory_reset_btn(cont, &emergency, "Factory\nReset", &SettingPanel::_handle_callback, this,
-    		  "**WARNING** **WARNING** **WARNING** **WARNING**\n\nAre you sure you want to execute an emergency factory reset?\n\nThis will reset the printer to stock creality firmware!",
+    		  "**WARNING** **WARNING** **WARNING**\n\nAre you sure you want to execute an emergency factory reset?\n\nThis will reset the printer to stock creality firmware!",
           [](){
             spdlog::info("emergency factory reset pressed");
             Config *conf = Config::get_instance();
@@ -50,11 +59,14 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   if (update_script == "") {
     guppy_update_btn.disable();
   }
-  auto factory_reset_cmd = conf->get<std::string>("/factory_reset_cmd");
-  if (factory_reset_cmd == "") {
-    factory_reset_btn.disable();
+  auto switch_to_stock_cmd = conf->get<std::string>("/switch_to_stock_cmd");
+  if (switch_to_stock_cmd == "") {
+    switch_to_stock_btn.disable();
   }
-  spoolman_btn.disable();
+  auto factory_reset_cmd = conf->get<std::string>("/factory_reset_cmd");
+    if (factory_reset_cmd == "") {
+      factory_reset_btn.disable();
+    }
 
   static lv_coord_t grid_main_row_dsc[] = {LV_GRID_FR(2), LV_GRID_FR(5), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
   static lv_coord_t grid_main_col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
@@ -66,12 +78,12 @@ SettingPanel::SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent,
   lv_obj_set_grid_cell(wifi_btn.get_container(), LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 1, 1);
   lv_obj_set_grid_cell(restart_klipper_btn.get_container(), LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_START, 1, 1);
   lv_obj_set_grid_cell(restart_firmware_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 1, 1);
-  lv_obj_set_grid_cell(sysinfo_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 1, 1);
+  lv_obj_set_grid_cell(guppy_restart_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 1, 1);
 
   // row 2
-  lv_obj_set_grid_cell(spoolman_btn.get_container(), LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 2, 1);
-  lv_obj_set_grid_cell(guppy_restart_btn.get_container(), LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_START, 2, 1);
-  lv_obj_set_grid_cell(guppy_update_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 2, 1);
+  lv_obj_set_grid_cell(sysinfo_btn.get_container(), LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 2, 1);
+  lv_obj_set_grid_cell(guppy_update_btn.get_container(), LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+  lv_obj_set_grid_cell(switch_to_stock_btn.get_container(), LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_START, 2, 1);
   lv_obj_set_grid_cell(factory_reset_btn.get_container(), LV_GRID_ALIGN_CENTER, 3, 1, LV_GRID_ALIGN_START, 2, 1);
 }
 
@@ -101,9 +113,6 @@ void SettingPanel::handle_callback(lv_event_t *event) {
     } else if (btn == restart_firmware_btn.get_container()) {
       spdlog::trace("setting restart klipper pressed");
       ws.send_jsonrpc("printer.firmware_restart");
-    } else if (btn == spoolman_btn.get_container()) {
-      spdlog::trace("setting spoolman pressed");
-      spoolman_panel.foreground();
     } else if (btn == guppy_restart_btn.get_container()) {
       spdlog::trace("restart guppy pressed");
       Config *conf = Config::get_instance();
@@ -122,8 +131,4 @@ void SettingPanel::handle_callback(lv_event_t *event) {
       }
     }
   }
-}
-
-void SettingPanel::enable_spoolman() {
-  spoolman_btn.enable();
 }

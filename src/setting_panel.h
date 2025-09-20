@@ -4,7 +4,6 @@
 #include "platform.h"
 #include "wifi_panel.h"
 #include "sysinfo_panel.h"
-#include "spoolman_panel.h"
 #include "button_container.h"
 #include "websocket_client.h"
 #include "lvgl/lvgl.h"
@@ -13,11 +12,10 @@
 
 class SettingPanel {
  public:
-  SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent, SpoolmanPanel &sm);
+  SettingPanel(KWebSocketClient &c, std::mutex &l, lv_obj_t *parent);
   ~SettingPanel();
 
   lv_obj_t *get_container();
-  void enable_spoolman();
 
   void handle_callback(lv_event_t *event);
 
@@ -33,16 +31,14 @@ class SettingPanel {
   WifiPanel wifi_panel;
 
   SysInfoPanel sysinfo_panel;
-  SpoolmanPanel &spoolman_panel;
   ButtonContainer wifi_btn;
   ButtonContainer restart_klipper_btn;
   ButtonContainer restart_firmware_btn;
-  ButtonContainer sysinfo_btn;
-  ButtonContainer spoolman_btn;
   ButtonContainer guppy_restart_btn;
+  ButtonContainer sysinfo_btn;
   ButtonContainer guppy_update_btn;
+  ButtonContainer switch_to_stock_btn;
   ButtonContainer factory_reset_btn;
 };
 
 #endif // __SETTING_PANEL_H__
-
