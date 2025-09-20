@@ -1,6 +1,7 @@
 #include "console_panel.h"
 #include "state.h"
 #include "spdlog/spdlog.h"
+#include "klipper_temp_filter.h"
 
 #include <algorithm>
 #include <cctype>
@@ -92,6 +93,10 @@ void ConsolePanel::handle_macro_response(json &j) {
     std::lock_guard<std::mutex> lock(lv_lock);
     for (auto &l : j["params"]) {
       std::string v = l.template get<std::string>() + "\n";
+      if (klipper_is_temp_report(v.c_str())) {
+          // Ignore TEMPERATURE_WAIT spam
+          return;
+      }
       ta_add_text_limit_lines(output, v);
     }
   }
