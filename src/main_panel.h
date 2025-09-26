@@ -93,10 +93,10 @@ class MainPanel : public NotifyConsumer {
   LedPanel led_panel;
   lv_obj_t *tabview;
   lv_obj_t *main_tab;
-  lv_obj_t *setting_tab;
-  SettingPanel setting_panel;
   lv_obj_t *console_tab;
   ConsolePanel console_panel;
+  lv_obj_t *setting_tab;
+  SettingPanel setting_panel;
   lv_obj_t *main_cont;
   PrintStatusPanel print_status_panel;
   PrintPanel print_panel;
