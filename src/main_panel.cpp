@@ -31,10 +31,10 @@ MainPanel::MainPanel(KWebSocketClient &websocket,
   , led_panel(ws, lock)    
   , tabview(lv_tabview_create(lv_scr_act(), LV_DIR_LEFT, 60))
   , main_tab(lv_tabview_add_tab(tabview, HOME_SYMBOL))
-  , setting_tab(lv_tabview_add_tab(tabview, SETTING_SYMBOL))
-  , setting_panel(websocket, lock, setting_tab)
   , console_tab(lv_tabview_add_tab(tabview, CONSOLE_SYMBOL))
   , console_panel(ws, lock, console_tab)
+  , setting_tab(lv_tabview_add_tab(tabview, SETTING_SYMBOL))
+  , setting_panel(websocket, lock, setting_tab)
   , main_cont(lv_obj_create(main_tab))
   , print_status_panel(websocket, lock, main_cont)
   , print_panel(ws, lock, print_status_panel)
@@ -147,8 +147,8 @@ void MainPanel::create_panel() {
   lv_obj_set_style_text_font(tab_btns, &materialdesign_font_40, LV_STATE_DEFAULT);
 
   lv_obj_set_style_pad_all(main_tab, 0, 0);
-  lv_obj_set_style_pad_all(setting_tab, 0, 0);
   lv_obj_set_style_pad_all(console_tab, 0, 0);
+  lv_obj_set_style_pad_all(setting_tab, 0, 0);
 
   create_main(main_tab);
 }
