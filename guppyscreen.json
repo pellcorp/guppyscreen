@@ -28,6 +28,10 @@
             "id": "output_pin fan0"
         },
         {
+            "display_name": "Toolhead",
+            "id": "fan"
+        },
+        {
             "display_name": "Auxiliary",
             "id": "output_pin fan2"
         },
