@@ -33,7 +33,7 @@ https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
 
 Clone the guppyscreen repo (and submodules) and apply a couple of patches locally.
 
-1. `git clone --recursive https://github.com/ballaswag/guppyscreen && cd guppyscreen`
+1. `git clone --recursive https://github.com/pellcorp/guppyscreen grumpyscreen && cd grumpyscreen`
 2. `(cd lv_drivers/ && git apply ../patches/0001-lv_driver_fb_ioctls.patch)`
 3. `(cd spdlog/ && git apply ../patches/0002-spdlog_fmt_initializer_list.patch)`
 4. `(cd lvgl/ && git apply ../patches/0003-lvgl-dpi-text-scale.patch)`
